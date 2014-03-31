@@ -17,10 +17,13 @@ var processDevice = function (location, callback) {
         });
         res.on('end', function () {
             parseXml(body, function (err, result) {
-                callback({
+                device = {
                     name: result.root.device[0].friendlyName[0],
-                    icon: result.root.device[0].iconList[0].icon[0]
-                });
+                }
+                if (result.root.device[0].iconList) {
+                    device['icon'] = result.root.device[0].iconList[0].icon[0]
+                }
+                callback(device);
             });
         });
     });
