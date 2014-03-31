@@ -1,0 +1,17 @@
+doctype html
+html(lang=en)
+  head
+    title #{title}
+  body
+    header
+      h1 #{title}
+    .container
+      .main-content
+        block content
+      .sidebar
+        block sidebar
+    footer
+      p 
+        | Fork me on Github! (
+        a(href='https://github.com/bazwilliams/node-upnp-client') https://github.com/bazwilliams/node-upnp-client
+        | )

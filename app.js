@@ -5,12 +5,24 @@ var _ = require('underscore');
 var manager = new DeviceManager();
 var app = express();
 
+app.set('views', __dirname + '/views')
+app.set('view engine', 'jade')
+
 app.get('/', function(req, res) {
-	_.each(manager.getDevices(), function (uuid) {
-		res.send(manager.getDevice(uuid).name);
+	var devices = _.map(manager.getDevices(), function (uuid) { 
+		var device = manager.getDevice(uuid); 
+		return {
+			uuid: uuid,
+			icon: device.icon,
+			name: device.name
+		}
 	});
+	res.render('index', { 
+		title : 'Devices',
+		devices: devices
+	} );
 });
 
-var server = app.listen(3000, function() {
+var server = app.listen(80, function() {
     console.log('Listening on port %d', server.address().port);
 });

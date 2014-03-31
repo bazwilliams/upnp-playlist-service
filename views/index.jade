@@ -1,0 +1,7 @@
+extend layout
+block content
+  each device in devices
+    div
+      h2= device.name
+      img(src=device.icon.url,width=device.icon.width,height=device.icon.height)
+      p= device.uuid
