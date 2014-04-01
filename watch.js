@@ -3,7 +3,9 @@ var DeviceManager = require('./devicemanager.js').DeviceManager;
 var manager = new DeviceManager();
 
 manager.on('discovered', function (uuid) {
-    console.log('Discovered: ' + manager.getDevice(uuid).name);
+	var device = manager.getDevice(uuid);
+    console.log('Discovered: ' + device.name + ' with ' + device.serviceList.length + ' services');
+    manager.subscribe(device, 'urn:av-openhome-org:service:Playlist:1');
 });
 
 manager.on('available', function (uuid) {

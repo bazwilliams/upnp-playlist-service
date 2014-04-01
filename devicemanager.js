@@ -1,9 +1,11 @@
 var upnp = require("./lib/upnp.js");
 var http = require('http');
-var parseXml = require('xml2js').parseString;
+var xml2js = require('xml2js');
 var util = require('util');
 var EventEmitter = require('events').EventEmitter;
 var _ = require('underscore');
+var xmlParser = new xml2js.Parser({explicitArray: false});
+var url = require('url');
 
 var DeviceManager = function () {
     const playlistService = 'urn:av-openhome-org:service:Playlist:1';
@@ -19,11 +21,7 @@ var DeviceManager = function () {
     }
 
     this.getDevice = function (uuid) {
-        var device = devices[uuid];
-        return { 
-            name: device.name, 
-            icon: _.clone(devices[uuid].icon)
-        };
+        return devices[uuid];
     }
 
     controlPoint.on("DeviceAvailable", function(res) {
@@ -74,15 +72,23 @@ DeviceManager.prototype.processDevice = function (location, callback) {
             body += chunk;
         });
         res.on('end', function () {
-            parseXml(body, function (err, result) {
+            xmlParser.parseString(body, function (err, result) {
                 device = {
-                    name: result.root.device[0].friendlyName[0],
+                    name: result.root.device.friendlyName,
+                    urlRoot: result.root.URLBase,
+                    serviceList: result.root.device.serviceList.service
                 }
-                if (result.root.device[0].iconList) {
-                    device['icon'] = result.root.device[0].iconList[0].icon[0]
+                if (result.root.device.iconList) {
+                    device['icon'] = result.root.device.iconList.icon
                 }
                 callback(device);
             });
         });
     });
+}
+
+DeviceManager.prototype.subscribe = function (device, serviceType) {
+    var urlRoot = url.parse(device.urlRoot);
+    var service = _.findWhere(device.serviceList, { serviceType : serviceType });
+    upnp.subscribe(urlRoot.hostname, urlRoot.port, service.eventSubURL);
 }
