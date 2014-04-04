@@ -18,11 +18,11 @@ var DeviceManager = function () {
 
     this.getDevices = function () {
         return _.keys(devices);
-    }
+    };
 
     this.getDevice = function (uuid) {
         return devices[uuid];
-    }
+    };
 
     controlPoint.on("DeviceAvailable", function(res) {
         if (res.nt === playlistService)
@@ -56,13 +56,13 @@ var DeviceManager = function () {
     });
 
     controlPoint.search(linnSources);
-}
+};
 util.inherits(DeviceManager, EventEmitter);
 exports.DeviceManager = DeviceManager;
 
 DeviceManager.prototype.parseUuid = function (usn, st) {
-    return /uuid:(.*)?::.*/.exec(usn)[1];
-}
+    return (/uuid:(.*)?::.*/).exec(usn)[1];
+};
 
 DeviceManager.prototype.processDevice = function (location, callback) {
     http.get(location, function (res) {
@@ -77,18 +77,20 @@ DeviceManager.prototype.processDevice = function (location, callback) {
                     name: result.root.device.friendlyName,
                     urlRoot: result.root.URLBase,
                     serviceList: result.root.device.serviceList.service
-                }
+                };
                 if (result.root.device.iconList) {
-                    device['icon'] = result.root.device.iconList.icon
+                    device['icon'] = result.root.device.iconList.icon;
                 }
                 callback(device);
             });
         });
     });
-}
+};
 
 DeviceManager.prototype.subscribe = function (device, serviceType) {
     var urlRoot = url.parse(device.urlRoot);
     var service = _.findWhere(device.serviceList, { serviceType : serviceType });
-    upnp.subscribe(urlRoot.hostname, urlRoot.port, service.eventSubURL);
-}
+    if (service) {
+        upnp.subscribe(urlRoot.hostname, urlRoot.port, service.eventSubURL);
+    }
+};
