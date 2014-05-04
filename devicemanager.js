@@ -109,7 +109,6 @@ DeviceManager.prototype.changeSource = function (device, source) {
 
   var buffer = new Buffer(bodyString);
 
-  console.log(buffer.toString());
   var req = http.request({
     host: deviceUrl.hostname,
     port: 80,
