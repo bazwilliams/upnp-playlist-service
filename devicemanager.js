@@ -94,3 +94,34 @@ DeviceManager.prototype.subscribe = function (device, serviceType) {
         upnp.subscribe(urlRoot.hostname, urlRoot.port, service.eventSubURL);
     }
 };
+
+DeviceManager.prototype.changeSource = function (device, source) {
+  var deviceUrl = url.parse(device.urlRoot);
+
+  var bodyString = '<?xml version="1.0"?>';
+  bodyString += '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">';
+  bodyString += '  <s:Body s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">';
+  bodyString += '    <u:SetSourceIndex xmlns:u="urn:av-openhome.org:service:Product:1">';
+  bodyString += '      <Value>'+source+'</Value>';
+  bodyString += '    </u:SetSourceIndex>';
+  bodyString += '  </s:Body>';
+  bodyString += '</s:Envelope>';
+
+  var buffer = new Buffer(bodyString);
+
+  console.log(buffer.toString());
+  var req = http.request({
+    host: deviceUrl.hostname,
+    port: 80,
+    path: 'Ds/Product/control',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'text/xml',
+      'Accept': 'text/xml',
+      'SOAPAction': 'urn:av-openhome.org:service:Product:1#SetSourceIndex',
+      'Content-length': buffer.length
+    }
+  });
+  req.write(buffer);
+  req.end();
+};
