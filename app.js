@@ -26,22 +26,6 @@ var wakeUpSchedulesFor = function (uuid) {
         .value();
 };
 
-app.get('/', function(req, res) {
-    var devices = _.map(manager.getDevices(), function (uuid) { 
-        var device = manager.getDevice(uuid); 
-        return {
-            uuid: uuid,
-            icon: device.icon,
-            name: device.name,
-            schedules: wakeUpSchedulesFor(uuid)
-        }
-    });
-    res.render('index', { 
-        title : 'Devices',
-        devices: devices
-    } );
-});
-
 var changeSource = function (uuid, sourceId) {
     return function () {
         var device = manager.getDevice(uuid);
@@ -60,5 +44,21 @@ var recurrenceRuleFactory = function (schedule) {
 };
 
 _.each(storage.getItem('schedules.json'), function (schedule) {
-    scheduler.scheduleJob(recurrenceRuleFactory(schedule), changeSource(schedule.uuid,schedule.source));
+    scheduler.scheduleJob(recurrenceRuleFactory(schedule), changeSource(schedule.uuid, schedule.source));
+});
+
+app.get('/', function(req, res) {
+    var devices = _.map(manager.getDevices(), function (uuid) { 
+        var device = manager.getDevice(uuid); 
+        return {
+            uuid: uuid,
+            icon: device.icon,
+            name: device.name,
+            schedules: wakeUpSchedulesFor(uuid)
+        }
+    });
+    res.render('index', { 
+        title : 'Devices',
+        devices: devices
+    } );
 });
