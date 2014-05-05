@@ -1,7 +1,8 @@
 var express = require('express');
 var DeviceManager = require('./devicemanager.js').DeviceManager;
 var _ = require('underscore');
-var schedule = require('node-schedule');
+var scheduler = require('node-schedule');
+var storage = require('node-persist');
 
 var manager = new DeviceManager();
 var app = express();
@@ -26,14 +27,19 @@ app.get('/', function(req, res) {
 
 var server = app.listen(18080);
 
-var switchOnKitchenRadio = function () {
-    var kitchen = manager.getDevice('4c494e4e-0026-0f21-d74b-01333078013f');
-    manager.changeSource(kitchen, 1);
+var changeSource= function (uuid, sourceId) {
+    return function () {
+        var device = manager.getDevice(uuid);
+        manager.changeSource(device, sourceId);
+    }
 };
 
-var weekdayMornings = new schedule.RecurrenceRule();
-weekdayMornings.dayOfWeek = [new schedule.Range(1, 5)];
-weekdayMornings.hour = 6;
-weekdayMornings.minute = 45;
+storage.initSync();
 
-schedule.scheduleJob(weekdayMornings, switchOnKitchenRadio);
+_.each(storage.getItem('schedules'), function (schedule) {
+	var recurrence = new scheduler.RecurrenceRule();
+	recurrence.dayOfWeek = schedule.dayOfWeek;
+	recurrence.hour = schedule.hour;
+	recurrence.minute = schedule.minute;
+	scheduler.scheduleJob(recurrence, changeSource(schedule.uuid,schedule.source));
+});
