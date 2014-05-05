@@ -3,7 +3,7 @@ DS Service
 
 Node.js based system for monitoring a suite of UPNP renderers on a network. A simple wake up system exists which can be configured to wake a DS given a UUID and change it to a particular source. It is intended to run all the time so it can discover your renderers and control them. 
 
-Place a file with the following contents in a folder called 'persist' named 'schedules.json':
+Place a file with the following contents in a folder called `persist` named `schedules.json`:
 
 ```javascript
 [
