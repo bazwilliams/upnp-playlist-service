@@ -9,7 +9,7 @@ Place a file with the following contents in a folder called `persist` named `sch
 [
   {
     "uuid": <<UUID of your DS>>,
-    "source": 1,
+    "source": <<ID of the source you wish to start, use 1 for the radio>>,
     "wakeUp": {
       "dayOfWeek": <<array of numeric days of week, e.g. [1,2,3,4,5] for weekdays>>
       "hour": <<24 hour clock hour>>,
@@ -28,7 +28,13 @@ Clone this repository onto your server and run `app.js` with node.
 
 An upstart script has been included in `etc/init/ds-service.conf` which assumes you have cloned the repository into `/opt/upnp-playlist-service` it also assumes you have node.js installed and have a user called `nodejs` which has read and write privileges to the `/opt/upnp-playlist-service/persist` folder. Copy this into your `/etc/init/` folder. 
 
+You will need to run `npm install` to install all the dependencies. 
+
 Future Plans
 ============
+
+Ability to view, add or edit wakeup schedules through the web application. 
+
+Easy installation on windows, mac and linux. 
 
 As the repo name suggests, the intention is to download your playlists on your renderers and store them with the ability to restore them or move them to other renderers. If I can reverse the URIs stored within the playlist back to a file (like you can with Minimserver) I'd like to be able to generate a .m3u file which your media server can serve back up allowing you to restore a playlist through your usual upnp controller. 
