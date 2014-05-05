@@ -33,7 +33,7 @@ You will need to run `npm install` to install all the dependencies.
 Future Plans
 ============
 
-Ability to view, add or edit wakeup schedules through the web application. 
+Ability to add or edit wakeup schedules through the web application. 
 
 Easy installation on windows, mac and linux. 
 
