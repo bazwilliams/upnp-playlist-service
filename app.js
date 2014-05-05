@@ -38,7 +38,7 @@ var changeSource= function (uuid, sourceId) {
 
 storage.initSync();
 
-if (!storage.getItem('schedules.json') {
+if (!storage.getItem('schedules.json')) {
     storeage.setItem('schedules.json', []);
 }
 
