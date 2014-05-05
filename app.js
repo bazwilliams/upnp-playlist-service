@@ -30,13 +30,19 @@ var server = app.listen(18080);
 var changeSource= function (uuid, sourceId) {
     return function () {
         var device = manager.getDevice(uuid);
-        manager.changeSource(device, sourceId);
+	if (device) {
+            manager.changeSource(device, sourceId);
+	}
     }
 };
 
 storage.initSync();
 
-_.each(storage.getItem('schedules'), function (schedule) {
+if (!storage.getItem('schedules.json') {
+    storeage.setItem('schedules.json', []);
+}
+
+_.each(storage.getItem('schedules.json'), function (schedule) {
 	var recurrence = new scheduler.RecurrenceRule();
 	recurrence.dayOfWeek = schedule.dayOfWeek;
 	recurrence.hour = schedule.hour;
