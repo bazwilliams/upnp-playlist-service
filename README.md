@@ -1,13 +1,11 @@
-upnp-playlist-service
-=====================
+DS Service
+==========
 
-Node.js based playlist server which subscribes to UPNP playlist services, storing and reloading playlists. 
-
-A simple wake up system is in place which can be configured to wake a DS given a UUID and change it to a particular source. 
+Node.js based system for monitoring a suite of UPNP renderers on a network. A simple wake up system exists which can be configured to wake a DS given a UUID and change it to a particular source. 
 
 Place a file with the following contents in a folder called 'persist' named 'schedule.json':
 
-`
+```javascript
 [
   {
     "uuid": <<UUID of your DS>>,
@@ -19,4 +17,4 @@ Place a file with the following contents in a folder called 'persist' named 'sch
     }
   }
 ]
-`
+```
