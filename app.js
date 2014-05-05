@@ -39,13 +39,13 @@ var changeSource= function (uuid, sourceId) {
 storage.initSync();
 
 if (!storage.getItem('schedules.json')) {
-    storeage.setItem('schedules.json', []);
+    storage.setItem('schedules.json', []);
 }
 
 _.each(storage.getItem('schedules.json'), function (schedule) {
 	var recurrence = new scheduler.RecurrenceRule();
-	recurrence.dayOfWeek = schedule.dayOfWeek;
-	recurrence.hour = schedule.hour;
-	recurrence.minute = schedule.minute;
+	recurrence.dayOfWeek = schedule.wakeUp.dayOfWeek;
+	recurrence.hour = schedule.wakeUp.hour;
+	recurrence.minute = schedule.wakeUp.minute;
 	scheduler.scheduleJob(recurrence, changeSource(schedule.uuid,schedule.source));
 });
