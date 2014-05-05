@@ -7,20 +7,24 @@ var storage = require('node-persist');
 var manager = new DeviceManager();
 var app = express();
 
+app.set('views', __dirname + '/views')
+app.set('view engine', 'jade')
+app.listen(18080);
+
 storage.initSync();
 
 if (!storage.getItem('schedules.json')) {
     storage.setItem('schedules.json', []);
 }
 
-var schedulesFor = function (uuid) {
-    return _.filter(storage.getItem('schedules.json'), function(schedule) {
-        return schedule.uuid === uuid;
-    });
+var wakeUpSchedulesFor = function (uuid) {
+    return _.chain(storage.getItem('schedules.json'))
+        .filter(function(schedule) {
+            return schedule.uuid === uuid;
+        })
+        .pluck('wakeUp')
+        .value();
 };
-
-app.set('views', __dirname + '/views')
-app.set('view engine', 'jade')
 
 app.get('/', function(req, res) {
     var devices = _.map(manager.getDevices(), function (uuid) { 
@@ -29,7 +33,7 @@ app.get('/', function(req, res) {
             uuid: uuid,
             icon: device.icon,
             name: device.name,
-            schedules: schedulesFor(uuid)
+            schedules: wakeUpSchedulesFor(uuid)
         }
     });
     res.render('index', { 
@@ -38,21 +42,23 @@ app.get('/', function(req, res) {
     } );
 });
 
-var server = app.listen(18080);
-
-var changeSource= function (uuid, sourceId) {
+var changeSource = function (uuid, sourceId) {
     return function () {
         var device = manager.getDevice(uuid);
         if (device) {
-                manager.changeSource(device, sourceId);
+            manager.changeSource(device, sourceId);
         }
     }
 };
 
-_.each(storage.getItem('schedules.json'), function (schedule) {
+var recurrenceRuleFactory = function (schedule) {
     var recurrence = new scheduler.RecurrenceRule();
     recurrence.dayOfWeek = schedule.wakeUp.dayOfWeek;
     recurrence.hour = schedule.wakeUp.hour;
     recurrence.minute = schedule.wakeUp.minute;
-    scheduler.scheduleJob(recurrence, changeSource(schedule.uuid,schedule.source));
+    return recurrence;
+};
+
+_.each(storage.getItem('schedules.json'), function (schedule) {
+    scheduler.scheduleJob(recurrenceRuleFactory(schedule), changeSource(schedule.uuid,schedule.source));
 });
