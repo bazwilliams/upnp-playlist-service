@@ -15,7 +15,7 @@ To create an alarm, send a POST to `/{uuid}/wake-up` with Content-Type `applicat
 
 E.g. to wake device with UUID 4c494e4e-0026-0f21-cc9a-01320147013f at 10:00 on Sunday and Wednesday: 
 
-`POST 4c494e4e-0026-0f21-cc9a-01320147013f/wake-up`
+`POST /4c494e4e-0026-0f21-cc9a-01320147013f/wake-up`
 
 ```javascript
 {
