@@ -3,12 +3,14 @@ var DeviceManager = require('./devicemanager.js').DeviceManager;
 var _ = require('underscore');
 var scheduler = require('node-schedule');
 var storage = require('node-persist');
+var guid = require('node-uuid');
 
 var manager = new DeviceManager();
 var app = express();
 
 app.set('views', __dirname + '/views')
 app.set('view engine', 'jade')
+app.use(express.bodyParser());
 app.listen(18080);
 
 storage.initSync();
@@ -25,6 +27,34 @@ var wakeUpSchedulesFor = function (uuid) {
         .pluck('wakeUp')
         .value();
 };
+
+var addWakeUpScheduleFor = function (uuid, schedule) {
+    var schedules = storage.getItem('schedules.json');
+    var wakeUp = {
+        id: guid.v1(),
+        uuid: uuid,
+        wakeUp: schedule
+    };
+    schedules.push(wakeUp)
+    storage.setItem('schedules.json', schedules);
+    return wakeUp;
+}
+
+var deleteWakeUpSchedule = function (uuid, id) {
+    var schedules = storage.getItem('schedules.json');
+    var newSchedules = _.reject(schedules, function (wakeUpSchedule) {
+        return wakeUpSchedule.uuid === uuid && wakeUpSchedule.id == id;
+    });
+    console.log(uuid);
+    console.log(id);
+    console.log(schedules);
+    console.log(newSchedules);
+    if (newSchedules.length < schedules.length) {
+        storage.setItem('schedules.json', newSchedules);
+        return true;
+    }
+    return false;
+}
 
 var changeSource = function (uuid, sourceId) {
     return function () {
@@ -61,4 +91,39 @@ app.get('/', function(req, res) {
         title : 'Devices',
         devices: devices
     } );
+});
+
+var isValidSchedule = function (schedule) {
+    return _.isArray(schedule.dayOfWeek) && _.isNumber(schedule.hour) && _.isNumber(schedule.minute);
+};
+
+app.post('/:uuid/wakeUp', function(req, res) {
+    var uuid = req.params.uuid;
+    var device = manager.getDevice(uuid);
+    if (device) {
+        var schedule = {
+            dayOfWeek: req.body.dayOfWeek,
+            hour: req.body.hour,
+            minute: req.body.minute
+        };
+        if (isValidSchedule(schedule)) {
+            var wakeUp = addWakeUpScheduleFor(uuid, schedule);
+            res.location('/'+uuid+'/wakeUp/'+wakeUp.id);
+            res.send(201, schedule);
+        } else {
+            res.send(400);
+        }
+    } else {
+        res.send(404);
+    }
+});
+
+app.delete('/:uuid/wakeUp/:id', function(req, res) {
+    var uuid = req.params.uuid;
+    var id = req.params.id;
+    if (deleteWakeUpSchedule(uuid, id)) {
+        res.send(204);
+    } else {
+        res.send(404);
+    }
 });
