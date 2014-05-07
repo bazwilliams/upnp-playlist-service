@@ -3,11 +3,11 @@ DS Service
 
 Node.js based system for monitoring a suite of UPNP renderers on a network. A simple wake up system exists which can be configured to wake a DS given a UUID and change it to a particular source. It is intended to run all the time so it can discover your renderers and control them. 
 
-To create an alarm, send a POST to `/{uuid}` with Content-Type `application/json` and the following body:
+To create an alarm, send a POST to `/{uuid}/wake-up` with Content-Type `application/json` and the following body:
 
 ```javascript
 {
-	"dayOfWeek": {array of day numbers, sunday is 0},
+    "dayOfWeek": {array of day numbers, sunday is 0},
     "hour": {hour},
     "minute": {minute}
 }
@@ -15,7 +15,7 @@ To create an alarm, send a POST to `/{uuid}` with Content-Type `application/json
 
 E.g. to wake device with UUID 4c494e4e-0026-0f21-cc9a-01320147013f at 10:00 on Sunday and Wednesday: 
 
-`POST 4c494e4e-0026-0f21-cc9a-01320147013f/wakeUp`
+`POST 4c494e4e-0026-0f21-cc9a-01320147013f/wake-up`
 
 ```javascript
 {
