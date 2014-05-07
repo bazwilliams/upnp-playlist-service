@@ -45,6 +45,8 @@ Future Plans
 
 Ability to add or edit wakeup schedules through the web application. 
 
+Ability to start with sources other than 1, also send signals to power on and start playing. 
+
 Easy installation on windows, mac and linux. 
 
 As the repo name suggests, the intention is to download your playlists on your renderers and store them with the ability to restore them or move them to other renderers. If I can reverse the URIs stored within the playlist back to a file (like you can with Minimserver) I'd like to be able to generate a .m3u file which your media server can serve back up allowing you to restore a playlist through your usual upnp controller. 

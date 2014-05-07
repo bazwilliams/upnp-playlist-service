@@ -33,6 +33,7 @@ var addWakeUpScheduleFor = function (uuid, schedule) {
     var wakeUp = {
         id: guid.v1(),
         uuid: uuid,
+        source: 1,
         wakeUp: schedule
     };
     schedules.push(wakeUp)
@@ -45,10 +46,6 @@ var deleteWakeUpSchedule = function (uuid, id) {
     var newSchedules = _.reject(schedules, function (wakeUpSchedule) {
         return wakeUpSchedule.uuid === uuid && wakeUpSchedule.id == id;
     });
-    console.log(uuid);
-    console.log(id);
-    console.log(schedules);
-    console.log(newSchedules);
     if (newSchedules.length < schedules.length) {
         storage.setItem('schedules.json', newSchedules);
         return true;
@@ -73,9 +70,16 @@ var recurrenceRuleFactory = function (schedule) {
     return recurrence;
 };
 
-_.each(storage.getItem('schedules.json'), function (schedule) {
-    scheduler.scheduleJob(recurrenceRuleFactory(schedule), changeSource(schedule.uuid, schedule.source));
-});
+
+var jobs = [];
+var scheduleJobs = function () {
+    _.each(jobs, function (job) {
+        job.cancel();
+    });
+    jobs = _.map(storage.getItem('schedules.json'), function (schedule) {
+        return scheduler.scheduleJob(recurrenceRuleFactory(schedule), changeSource(schedule.uuid, schedule.source));
+    });
+};
 
 app.get('/', function(req, res) {
     var devices = _.map(manager.getDevices(), function (uuid) { 
@@ -94,10 +98,12 @@ app.get('/', function(req, res) {
 });
 
 var isValidSchedule = function (schedule) {
-    return _.isArray(schedule.dayOfWeek) && _.isNumber(schedule.hour) && _.isNumber(schedule.minute);
+    return _.isArray(schedule.dayOfWeek) &&
+           _.isNumber(schedule.hour) &&
+           _.isNumber(schedule.minute);
 };
 
-app.post('/:uuid/wakeUp', function(req, res) {
+app.post('/:uuid/wake-up', function(req, res) {
     var uuid = req.params.uuid;
     var device = manager.getDevice(uuid);
     if (device) {
@@ -108,7 +114,8 @@ app.post('/:uuid/wakeUp', function(req, res) {
         };
         if (isValidSchedule(schedule)) {
             var wakeUp = addWakeUpScheduleFor(uuid, schedule);
-            res.location('/'+uuid+'/wakeUp/'+wakeUp.id);
+            scheduleJobs();
+            res.location('/'+uuid+'/wake-up/'+wakeUp.id);
             res.send(201, schedule);
         } else {
             res.send(400);
@@ -118,12 +125,15 @@ app.post('/:uuid/wakeUp', function(req, res) {
     }
 });
 
-app.delete('/:uuid/wakeUp/:id', function(req, res) {
+app.delete('/:uuid/wake-up/:id', function(req, res) {
     var uuid = req.params.uuid;
     var id = req.params.id;
     if (deleteWakeUpSchedule(uuid, id)) {
+        scheduleJobs();
         res.send(204);
     } else {
         res.send(404);
     }
 });
+
+scheduleJobs();

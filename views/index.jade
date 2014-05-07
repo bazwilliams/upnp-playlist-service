@@ -7,7 +7,6 @@ block content
       p= device.uuid
       each schedule in device.schedules
         div.schedules
-          h3 Schedules
           span.time= 'Wake up at ' + schedule.hour + ':' + schedule.minute + ' on '
           each day in schedule.dayOfWeek
             span.day= ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][day] + ', '
