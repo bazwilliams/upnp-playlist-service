@@ -7,9 +7,9 @@ To create an alarm, send a POST to `/{uuid}` with Content-Type `application/json
 
 ```javascript
 {
-            dayOfWeek: {array of day numbers, sunday is 0},
-            hour: {hour},
-            minute: {minute}
+	"dayOfWeek": {array of day numbers, sunday is 0},
+    "hour": {hour},
+    "minute": {minute}
 }
 ```
 
@@ -19,9 +19,9 @@ E.g. to wake device with UUID 4c494e4e-0026-0f21-cc9a-01320147013f at 10:00 on S
 
 ```javascript
 {
-  "dayOfWeek": [0,3],
-  "hour" : 10,
-  "minute" : 0
+    "dayOfWeek": [0,3],
+    "hour" : 10,
+    "minute" : 0
 }
 ```
 
