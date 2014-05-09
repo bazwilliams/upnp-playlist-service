@@ -15,7 +15,7 @@ To create an alarm, send a POST to `/{uuid}/wake-up` with Content-Type `applicat
 
 E.g. to wake device with UUID 4c494e4e-0026-0f21-cc9a-01320147013f at 10:00 on Sunday and Wednesday: 
 
-`POST 4c494e4e-0026-0f21-cc9a-01320147013f/wake-up`
+`POST /4c494e4e-0026-0f21-cc9a-01320147013f/wake-up`
 
 ```javascript
 {
@@ -26,19 +26,19 @@ E.g. to wake device with UUID 4c494e4e-0026-0f21-cc9a-01320147013f at 10:00 on S
 ```
 
 The response will have status 201 if successful, 404 if the device hasn't been discovered and 400 if the body is not valid. 
-The location will be a URI to which you can send a DELETE to remove the alarm later. 
-The response body will contain the schedule you posted.  
+
+The header will contain location URI to which you can send a DELETE to remove the alarm. 
+
+The response body will contain the schedule you posted. 
 
 You can have multiple schedules for a single UUID or multiple UUIDs. 
 
 Installation
 ============
 
-Clone this repository onto your server and run `app.js` with node. 
+Clone this repository onto your server, `npm install` and run `app.js` with node. 
 
 An upstart script has been included in `etc/init/ds-service.conf` which assumes you have cloned the repository into `/opt/upnp-playlist-service` it also assumes you have node.js installed and have a user called `nodejs` which has read and write privileges to the `/opt/upnp-playlist-service/persist` folder. Copy this into your `/etc/init/` folder. 
-
-You will need to run `npm install` to install all the dependencies. 
 
 Future Plans
 ============
