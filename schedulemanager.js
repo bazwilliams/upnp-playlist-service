@@ -30,6 +30,15 @@ var ScheduleManager = function(options) {
         storage.setItem('schedules.json', []);
     }
 
+    var scheduleJobs = function () {
+        _.each(jobs, function (job) {
+            job.cancel();
+        });
+        jobs = _.map(storage.getItem('schedules.json'), function (schedule) {
+            return scheduler.scheduleJob(recurrenceRuleFactory(schedule), changeSource(schedule.uuid, schedule.source));
+        });
+    };
+
     this.wakeUpSchedulesFor = function (uuid) {
         return _.chain(storage.getItem('schedules.json'))
             .filter(function(schedule) {
@@ -49,6 +58,7 @@ var ScheduleManager = function(options) {
         };
         schedules.push(wakeUp)
         storage.setItem('schedules.json', schedules);
+        scheduleJobs();
         return wakeUp;
     }
 
@@ -59,19 +69,13 @@ var ScheduleManager = function(options) {
         });
         if (newSchedules.length < schedules.length) {
             storage.setItem('schedules.json', newSchedules);
+            scheduleJobs();
             return true;
         }
         return false;
     }
 
-    this.scheduleJobs = function () {
-        _.each(jobs, function (job) {
-            job.cancel();
-        });
-        jobs = _.map(storage.getItem('schedules.json'), function (schedule) {
-            return scheduler.scheduleJob(recurrenceRuleFactory(schedule), changeSource(schedule.uuid, schedule.source));
-        });
-    };
+    scheduleJobs();
 }
 
 storage.initSync();

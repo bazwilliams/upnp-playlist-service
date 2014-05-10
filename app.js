@@ -40,7 +40,6 @@ app.post('/:uuid/wake-up', function(req, res) {
         };
         if (_.isArray(schedule.dayOfWeek) && _.isNumber(schedule.hour) && _.isNumber(schedule.minute)) {
             var wakeUp = scheduleManager.addWakeUpScheduleFor(uuid, schedule);
-            scheduleManager.scheduleJobs();
             res.location('/'+uuid+'/wake-up/'+wakeUp.id);
             res.send(201, schedule);
         } else {
@@ -55,7 +54,6 @@ app.delete('/:uuid/wake-up/:id', function(req, res) {
     var uuid = req.params.uuid;
     var id = req.params.id;
     if (scheduleManager.deleteWakeUpSchedule(uuid, id)) {
-        scheduleManager.scheduleJobs();
         res.send(204);
     } else {
         res.send(404);
@@ -63,4 +61,3 @@ app.delete('/:uuid/wake-up/:id', function(req, res) {
 });
 
 app.listen(18080);
-scheduleManager.scheduleJobs();
