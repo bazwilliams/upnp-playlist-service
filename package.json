@@ -8,5 +8,12 @@
     "underscore": ">= 1.6.0",
     "xml2js": ">= 0.4.2",
     "node-uuid": "~1.4.1"
+  },
+  "devDependencies": {
+    "rewire": "~2.0.0",
+    "sinon": "~1.9.1",
+    "grunt": "~0.4.4",
+    "grunt-contrib-watch": "~0.6.1",
+    "grunt-contrib-nodeunit": "~0.3.3"
   }
 }

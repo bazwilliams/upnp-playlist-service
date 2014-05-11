@@ -1,4 +1,3 @@
-
 var storage = require('node-persist');
 var scheduler = require('node-schedule');
 var util = require('util');
@@ -6,17 +5,21 @@ var EventEmitter = require('events').EventEmitter;
 var _ = require('underscore');
 var guid = require('node-uuid');
 
+var recurrenceRuleFactory = function (schedule) {
+    var recurrence = new scheduler.RecurrenceRule();
+    recurrence.dayOfWeek = schedule.dayOfWeek;
+    recurrence.hour = schedule.hour;
+    recurrence.minute = schedule.minute;
+    return recurrence;
+};
+
 var ScheduleManager = function(options) {
 	var jobs = [];
 
-    var recurrenceRuleFactory = function (schedule) {
-        var recurrence = new scheduler.RecurrenceRule();
-        recurrence.dayOfWeek = schedule.wakeUp.dayOfWeek;
-        recurrence.hour = schedule.wakeUp.hour;
-        recurrence.minute = schedule.wakeUp.minute;
-        return recurrence;
-    };
-    
+    if (!storage.getItem('schedules.json')) {
+        storage.setItem('schedules.json', []);
+    }
+
     var changeSource = function (uuid, sourceId) {
         return function () {
             var device = options.manager.getDevice(uuid);
@@ -26,16 +29,12 @@ var ScheduleManager = function(options) {
         }
     };
 
-    if (!storage.getItem('schedules.json')) {
-        storage.setItem('schedules.json', []);
-    }
-
     var scheduleJobs = function () {
         _.each(jobs, function (job) {
             job.cancel();
         });
         jobs = _.map(storage.getItem('schedules.json'), function (schedule) {
-            return scheduler.scheduleJob(recurrenceRuleFactory(schedule), changeSource(schedule.uuid, schedule.source));
+            return scheduler.scheduleJob(recurrenceRuleFactory(schedule.wakeUp), changeSource(schedule.uuid, schedule.source));
         });
     };
 
