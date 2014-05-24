@@ -2,6 +2,7 @@ var _ = require('underscore');
 var express = require('express');
 var DeviceManager = require('./devicemanager.js').DeviceManager;
 var ScheduleManager = require('./schedulemanager.js').ScheduleManager;
+var playlistManager = require('./playlistmanager.js');
 
 var app = express();
 var manager = new DeviceManager();
@@ -45,9 +46,8 @@ app.post('/:uuid/wake-up', function(req, res) {
         } else {
             res.send(400);
         }
-    } else {
-        res.send(404);
     }
+    res.send(404);
 });
 
 app.delete('/:uuid/wake-up/:id', function(req, res) {
@@ -55,9 +55,19 @@ app.delete('/:uuid/wake-up/:id', function(req, res) {
     var id = req.params.id;
     if (scheduleManager.deleteWakeUpSchedule(uuid, id)) {
         res.send(204);
-    } else {
-        res.send(404);
     }
+    res.send(404);
+});
+
+app.put('/:uuid/playlist/:playlistName', function(req, res) {
+    var uuid = req.params.uuid;
+    var playlistName = req.params.playlistName;
+    var device = manager.getDevice(uuid);
+    if (device) {
+        playlistManager.savePlaylist(device, playlistName);
+        res.send(201);
+    }
+    res.send(404);
 });
 
 app.listen(18080);

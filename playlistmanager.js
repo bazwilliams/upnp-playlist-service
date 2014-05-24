@@ -21,9 +21,13 @@ var processReadListResponse = function (device, trackProcessor, callback) {
             xmlParser.parseString(body, function (err, result) {
                 xmlParser.parseString(result['s:Envelope']['s:Body']['u:ReadListResponse'].TrackList, function (err, result) {
                     var tracks = [];
-                    _.each(result.TrackList.Entry, function (track) {
-                        tracks.push(trackProcessor(track.Uri));
-                    });
+                    if (_.isArray(result.TrackList.Entry)) {
+                        _.each(result.TrackList.Entry, function (track) {
+                            tracks.push(trackProcessor(track.Uri));
+                        });
+                    } else {
+                        tracks.push(trackProcessor(result.TrackList.Entry.Uri));
+                    }
                     callback(tracks);
                 });
             });
@@ -37,6 +41,7 @@ var generatePlaylist = function (device, idArray, playlistName) {
         idArrayString += (id + ' ');
     });
     var storePlaylist = function (tracks) {
+        console.log(playlistName + '.m3u')
         console.log(tracks);
     };
     upnp.soapRequest(
