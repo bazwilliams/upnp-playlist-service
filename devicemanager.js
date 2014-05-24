@@ -6,7 +6,6 @@ var EventEmitter = require('events').EventEmitter;
 var _ = require('underscore');
 var xmlParser = new xml2js.Parser({explicitArray: false});
 var url = require('url');
-var binary = require('binary');
 
 var DeviceManager = function () {
     const playlistService = 'urn:av-openhome-org:service:Playlist:1';
@@ -95,113 +94,6 @@ DeviceManager.prototype.subscribe = function (device, serviceType) {
         upnp.subscribe(urlRoot.hostname, urlRoot.port, service.eventSubURL);
     }
 };
-
-var minimServerUriToRelativeFile = function (uri) {
-    var fileTrack = uri.replace(/http:.*\/minimserver\/\*/, '');
-    var track = decodeURI(fileTrack.replace(/\*/g,'%'));
-    return track;
-}
-
-var processReadListResponse = function (device, callback) {
-    return function(res) {
-        var body = '';
-        res.setEncoding('utf8');
-        res.on('data', function (chunk) {
-            body += chunk;
-        });
-        res.on('end', function () {
-            xmlParser.parseString(body, function (err, result) {
-                xmlParser.parseString(result['s:Envelope']['s:Body']['u:ReadListResponse'].TrackList, function (err, result) {
-                    var tracks = [];
-                    _.each(result.TrackList.Entry, function (track) {
-                        tracks.push(minimServerUriToRelativeFile(track.Uri));
-                    });
-                    callback(tracks);
-                });
-            });
-        });
-    };
-};
-
-var processPlaylistResponse = function (device, playlistName) {
-    return function(res) {
-        var body = '';
-        res.setEncoding('utf8');
-        res.on('data', function (chunk) {
-            body += chunk;
-        });
-        res.on('end', function () {
-            xmlParser.parseString(body, function (err, result) {
-                var buffer = new Buffer(result['s:Envelope']['s:Body']['u:IdArrayResponse'].Array, 'base64');
-                var arrayList = [];
-                var binaryList = binary.parse(buffer);
-                _.each(_.range(buffer.length / 4), function () {
-                    arrayList.push(binaryList.word32bu('a').vars.a);
-                });
-                generatePlaylist(device, arrayList, playlistName);
-            });
-        });
-    };
-};
-
-var soapRequest = function (device, path, service, fnName, fnParams, callback) {
-    var deviceUrl = url.parse(device.urlRoot);
-    
-    var bodyString = '<?xml version="1.0"?>';
-    bodyString += '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">';
-    bodyString += '  <s:Body s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">';
-    bodyString += '    <u:' + fnName + ' xmlns:u="' + service + '">';
-    bodyString += '      ' + fnParams;
-    bodyString += '    </u:' + fnName + '>';
-    bodyString += '  </s:Body>';
-    bodyString += '</s:Envelope>';
-
-    var buffer = new Buffer(bodyString);
-
-    var req = http.request({
-        host: deviceUrl.hostname,
-        port: 80,
-        path: path,
-        method: 'POST',
-        headers: {
-            'Content-Type': 'text/xml',
-            'Accept': 'text/xml',
-            'SOAPAction': service + '#' + fnName,
-            'Content-length': buffer.length
-        }
-    }, callback);
-    req.write(buffer);
-    req.end();
-}
-
-var generatePlaylist = function (device, idArray, playlistName) {
-    var idArrayString = '';
-    _.each(idArray, function (id) {
-        idArrayString += (id + ' ');
-    });
-    var storePlaylist = function (tracks) {
-        console.log(tracks);
-    };
-    soapRequest(
-        device, 
-        'Ds/Playlist', 
-        'urn:av-openhome.org:service:Playlist:1', 
-        'ReadList', 
-        '<IdList>'+idArrayString+'</IdList>',
-        processReadListResponse(device, storePlaylist)
-    );
-}
-
-DeviceManager.prototype.savePlaylist = function (device, playlistName) {
-    soapRequest(
-        device, 
-        'Ds/Playlist', 
-        'urn:av-openhome.org:service:Playlist:1', 
-        'IdArray', 
-        '',
-        processPlaylistResponse(device, playlistName)
-    );
-}
 
 DeviceManager.prototype.changeSource = function (device, source) {
     soapRequest(
