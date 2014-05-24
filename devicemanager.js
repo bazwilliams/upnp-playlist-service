@@ -123,44 +123,6 @@ var processReadListResponse = function (device, callback) {
     };
 };
 
-var generatePlaylist = function (device, idArray, playlistName) {
-    var deviceUrl = url.parse(device.urlRoot);
-    
-    var idArrayString = '';
-    _.each(idArray, function (id) {
-        idArrayString += (id + ' ');
-    });
-    var bodyString = '<?xml version="1.0"?>';
-    bodyString += '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">';
-    bodyString += '  <s:Body s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">';
-    bodyString += '    <u:ReadList xmlns:u="urn:av-openhome.org:service:Playlist:1">';
-    bodyString += '      <IdList>'+idArrayString+'</IdList>'
-    bodyString += '    </u:ReadList>';
-    bodyString += '  </s:Body>';
-    bodyString += '</s:Envelope>';
-
-    var buffer = new Buffer(bodyString);
-
-    var storePlaylist = function (tracks) {
-        console.log(tracks);
-    };
-
-    var req = http.request({
-        host: deviceUrl.hostname,
-        port: 80,
-        path: 'Ds/Playlist',
-        method: 'POST',
-        headers: {
-            'Content-Type': 'text/xml',
-            'Accept': 'text/xml',
-            'SOAPAction': 'urn:av-openhome.org:service:Playlist:1#ReadList',
-            'Content-length': buffer.length
-        }
-    }, processReadListResponse(device, storePlaylist));
-    req.write(buffer);
-    req.end();
-}
-
 var processPlaylistResponse = function (device, playlistName) {
     return function(res) {
         var body = '';
@@ -182,14 +144,15 @@ var processPlaylistResponse = function (device, playlistName) {
     };
 };
 
-DeviceManager.prototype.savePlaylist = function (device, playlistName) {
+var soapRequest = function (device, path, service, fnName, fnParams, callback) {
     var deviceUrl = url.parse(device.urlRoot);
     
     var bodyString = '<?xml version="1.0"?>';
     bodyString += '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">';
     bodyString += '  <s:Body s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">';
-    bodyString += '    <u:IdArray xmlns:u="urn:av-openhome.org:service:Playlist:1">';
-    bodyString += '    </u:IdArray>';
+    bodyString += '    <u:' + fnName + ' xmlns:u="' + service + '">';
+    bodyString += '      ' + fnParams;
+    bodyString += '    </u:' + fnName + '>';
     bodyString += '  </s:Body>';
     bodyString += '</s:Envelope>';
 
@@ -198,45 +161,54 @@ DeviceManager.prototype.savePlaylist = function (device, playlistName) {
     var req = http.request({
         host: deviceUrl.hostname,
         port: 80,
-        path: 'Ds/Playlist',
+        path: path,
         method: 'POST',
         headers: {
             'Content-Type': 'text/xml',
             'Accept': 'text/xml',
-            'SOAPAction': 'urn:av-openhome.org:service:Playlist:1#IdArray',
+            'SOAPAction': service + '#' + fnName,
             'Content-length': buffer.length
         }
-    }, processPlaylistResponse(device, playlistName));
+    }, callback);
     req.write(buffer);
     req.end();
 }
 
-DeviceManager.prototype.changeSource = function (device, source) {
-    var deviceUrl = url.parse(device.urlRoot);
-
-    var bodyString = '<?xml version="1.0"?>';
-    bodyString += '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">';
-    bodyString += '  <s:Body s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">';
-    bodyString += '    <u:SetSourceIndex xmlns:u="urn:av-openhome.org:service:Product:1">';
-    bodyString += '      <Value>'+source+'</Value>';
-    bodyString += '    </u:SetSourceIndex>';
-    bodyString += '  </s:Body>';
-    bodyString += '</s:Envelope>';
-
-    var buffer = new Buffer(bodyString);
-
-    var req = http.request({
-        host: deviceUrl.hostname,
-        port: 80,
-        path: 'Ds/Product/control',
-        method: 'POST',
-        headers: {
-            'Content-Type': 'text/xml',
-            'Accept': 'text/xml',
-            'SOAPAction': 'urn:av-openhome.org:service:Product:1#SetSourceIndex',
-            'Content-length': buffer.length
-        }
+var generatePlaylist = function (device, idArray, playlistName) {
+    var idArrayString = '';
+    _.each(idArray, function (id) {
+        idArrayString += (id + ' ');
     });
-    req.write(buffer);
-    req.end();
+    var storePlaylist = function (tracks) {
+        console.log(tracks);
+    };
+    soapRequest(
+        device, 
+        'Ds/Playlist', 
+        'urn:av-openhome.org:service:Playlist:1', 
+        'ReadList', 
+        '<IdList>'+idArrayString+'</IdList>',
+        processReadListResponse(device, storePlaylist)
+    );
+}
+
+DeviceManager.prototype.savePlaylist = function (device, playlistName) {
+    soapRequest(
+        device, 
+        'Ds/Playlist', 
+        'urn:av-openhome.org:service:Playlist:1', 
+        'IdArray', 
+        '',
+        processPlaylistResponse(device, playlistName)
+    );
+}
+
+DeviceManager.prototype.changeSource = function (device, source) {
+    soapRequest(
+        device, 
+        'Ds/Product/control',
+        'urn:av-openhome.org:service:Product:1', 
+        'SetSourceIndex', 
+        '<Value>'+source+'</Value>'
+    );
 };
