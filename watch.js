@@ -5,13 +5,14 @@ var manager = new DeviceManager();
 manager.on('discovered', function (uuid) {
 	var device = manager.getDevice(uuid);
     console.log('Discovered: ' + device.name + ' with ' + device.serviceList.length + ' services');
-    manager.subscribe(device, 'urn:av-openhome-org:service:Playlist:1');
+    // manager.subscribe(device, 'urn:av-openhome-org:service:Playlist:1');
+    manager.savePlaylist(device);
 });
 
-manager.on('available', function (uuid) {
-    console.log('Available: ' + manager.getDevice(uuid).name);
-});
+// manager.on('available', function (uuid) {
+//     console.log('Available: ' + manager.getDevice(uuid).name);
+// });
 
-manager.on('remove', function (device) {
-    console.log('Removed: ' + device.name);
-});
+// manager.on('remove', function (device) {
+//     console.log('Removed: ' + device.name);
+// });

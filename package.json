@@ -7,7 +7,8 @@
     "node-schedule": "~0.1.13",
     "underscore": ">= 1.6.0",
     "xml2js": ">= 0.4.2",
-    "node-uuid": "~1.4.1"
+    "node-uuid": "~1.4.1",
+    "binary": "~0.3.0"
   },
   "devDependencies": {
     "rewire": "~2.0.0",
