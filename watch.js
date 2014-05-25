@@ -7,7 +7,7 @@ manager.on('discovered', function (uuid) {
 	var device = manager.getDevice(uuid);
     console.log('Discovered: ' + device.name + ' with ' + device.serviceList.length + ' services');
     // manager.subscribe(device, 'urn:av-openhome-org:service:Playlist:1');
-    playlistManager.savePlaylist(device);
+    playlistManager.savePlaylist(device, 'test');
 });
 
 // manager.on('available', function (uuid) {

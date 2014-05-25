@@ -3,12 +3,28 @@ var upnp = require("./lib/upnp.js");
 var binary = require('binary');
 var xml2js = require('xml2js');
 var xmlParser = new xml2js.Parser({explicitArray: false});
+var path = require('path');
+var fs = require('fs');
 
-var minimUriProcessor = function (uri) {
-    return decodeURI(uri.replace(/http:.*\/minimserver\/\*/, '').replace(/\*/g,'%'));
+var minimUriProcessor = function(prefix) {
+    return function (uri) {
+        return path.join(prefix, decodeURI(uri.replace(/http:.*\/minimserver\/\*\//, '').replace(/\*/g,'%')));
+    };
 }
+var trackProcessor = minimUriProcessor('/mnt/media/');
 
-var processReadListResponse = function (device, trackProcessor, callback) {
+var writeM3u = function (tracks, playlistName) {
+    var playlistLocation = path.normalize('/mnt/media/music/Playlists');
+    var data = '';
+    _.each(tracks, function(track) {
+        var relTrack = path.relative(playlistLocation, track);
+        data += relTrack + '\n';
+    });
+    var playlistFile = path.join(playlistLocation, playlistName + '.m3u');
+    fs.writeFile(playlistFile, data, {flag: 'wx'});
+};
+
+var processReadListResponse = function (device, callback) {
     return function(res) {
         var body = '';
         res.setEncoding('utf8');
@@ -39,8 +55,7 @@ var generatePlaylist = function (device, idArray, playlistName) {
         idArrayString += (id + ' ');
     });
     var storePlaylist = function (tracks) {
-        console.log(playlistName + '.m3u')
-        console.log(tracks);
+        writeM3u(tracks, playlistName);
     };
     upnp.soapRequest(
         device, 
@@ -48,7 +63,7 @@ var generatePlaylist = function (device, idArray, playlistName) {
         'urn:av-openhome.org:service:Playlist:1', 
         'ReadList', 
         '<IdList>'+idArrayString+'</IdList>',
-        processReadListResponse(device, minimUriProcessor, storePlaylist)
+        processReadListResponse(device, storePlaylist)
     );
 }
 
