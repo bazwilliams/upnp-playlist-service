@@ -5,9 +5,7 @@ var xml2js = require('xml2js');
 var xmlParser = new xml2js.Parser({explicitArray: false});
 
 var minimUriProcessor = function (uri) {
-    var fileTrack = uri.replace(/http:.*\/minimserver\/\*/, '');
-    var track = decodeURI(fileTrack.replace(/\*/g,'%'));
-    return track;
+    return decodeURI(uri.replace(/http:.*\/minimserver\/\*/, '').replace(/\*/g,'%'));
 }
 
 var processReadListResponse = function (device, trackProcessor, callback) {
