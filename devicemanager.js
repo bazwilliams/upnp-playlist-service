@@ -96,7 +96,7 @@ DeviceManager.prototype.subscribe = function (device, serviceType) {
 };
 
 DeviceManager.prototype.changeSource = function (device, source) {
-    soapRequest(
+    upnp.soapRequest(
         device, 
         'Ds/Product/control',
         'urn:av-openhome.org:service:Product:1', 
