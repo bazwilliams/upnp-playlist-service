@@ -1,73 +1,48 @@
-var _ = require('underscore');
 var express = require('express');
-var DeviceManager = require('./devicemanager.js').DeviceManager;
-var ScheduleManager = require('./schedulemanager.js').ScheduleManager;
-var playlistManager = require('./playlistmanager.js');
+var bodyParser = require('body-parser');
+var methodOverride = require('method-override');
+var morgan = require('morgan');
+var http = require('http');
+var path = require('path');
 
-var app = express();
-var manager = new DeviceManager();
-var scheduleManager = new ScheduleManager({manager : manager});
+var routes = require('./routes');
+var api = require('./routes/api');
 
-app.configure(function () {
-    app.set('views', __dirname + '/views')
-    app.set('view engine', 'jade')
-    app.use(express.bodyParser());
+var app = module.exports = express();
+
+/**
+ * Configuration
+ */
+
+// all environments
+app.set('port', process.env.PORT || 18080);
+app.set('views', __dirname + '/views');
+app.set('view engine', 'jade');
+app.use(morgan('dev'));
+app.use(bodyParser());
+app.use(methodOverride());
+app.use(express.static(path.join(__dirname, 'public')));
+app.use('/bower_components',  express.static(__dirname + '/bower_components'));
+
+/**
+ * Routes
+ */
+
+// serve index and view partials
+app.get('/', routes.index);
+app.get('/partials/:name', routes.partials);
+
+// JSON API
+app.get('/api/name', api.name);
+app.get('/api/devices', api.devices);
+app.post('/api/devices/:uuid/wake-up', api.setWakeUp);
+app.delete('/api/devices/:uuid/wake-up/:id', api.deleteWakeUp);
+app.put('/api/devices/:uuid/playlist/:playlistName', api.storePlaylist);
+
+/**
+ * Start Server
+ */
+
+http.createServer(app).listen(app.get('port'), function () {
+  console.log('Express server listening on port ' + app.get('port'));
 });
-
-app.get('/', function(req, res) {
-    var devices = _.map(manager.getDevices(), function (uuid) { 
-        var device = manager.getDevice(uuid); 
-        return {
-            uuid: uuid,
-            icon: device.icon,
-            name: device.name,
-            schedules: scheduleManager.wakeUpSchedulesFor(uuid)
-        }
-    });
-    res.render('index', { 
-        title : 'Devices',
-        devices: devices
-    } );
-});
-
-app.post('/:uuid/wake-up', function(req, res) {
-    var uuid = req.params.uuid;
-    var device = manager.getDevice(uuid);
-    if (device) {
-        var schedule = {
-            dayOfWeek: req.body.dayOfWeek,
-            hour: req.body.hour,
-            minute: req.body.minute
-        };
-        if (_.isArray(schedule.dayOfWeek) && _.isNumber(schedule.hour) && _.isNumber(schedule.minute)) {
-            var wakeUp = scheduleManager.addWakeUpScheduleFor(uuid, schedule);
-            res.location('/'+uuid+'/wake-up/'+wakeUp.id);
-            res.send(201, schedule);
-        } else {
-            res.send(400);
-        }
-    }
-    res.send(404);
-});
-
-app.delete('/:uuid/wake-up/:id', function(req, res) {
-    var uuid = req.params.uuid;
-    var id = req.params.id;
-    if (scheduleManager.deleteWakeUpSchedule(uuid, id)) {
-        res.send(204);
-    }
-    res.send(404);
-});
-
-app.put('/:uuid/playlist/:playlistName', function(req, res) {
-    var uuid = req.params.uuid;
-    var playlistName = req.params.playlistName;
-    var device = manager.getDevice(uuid);
-    if (device) {
-        playlistManager.savePlaylist(device, playlistName);
-        res.send(201);
-    }
-    res.send(404);
-});
-
-app.listen(18080);

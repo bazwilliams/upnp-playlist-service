@@ -1,17 +1,8 @@
-doctype html
-html(lang=en)
+html(ng-app="myApp")
   head
-    title #{title}
+    meta(charset='utf8')
+    base(href='/')
+    title Angular Express Seed App
+    link(rel='stylesheet', href='/css/app.css')
   body
-    header
-      h1 #{title}
-    .container
-      .main-content
-        block content
-      .sidebar
-        block sidebar
-    footer
-      p 
-        | Fork me on Github! (
-        a(href='https://github.com/bazwilliams/upnp-playlist-service') https://github.com/bazwilliams/upnp-playlist-service
-        | )
+    block body
