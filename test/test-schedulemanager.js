@@ -2,7 +2,7 @@ var rewire = require('rewire');
 var sinon = require('sinon');
 
 exports['recurrenceRuleFactory'] = function (test) {
-	var scheduleManager = rewire('../schedulemanager.js');
+	var scheduleManager = rewire('../server/schedulemanager.js');
 
 	var scheduler = {
 		RecurrenceRule: sinon.stub().returns({})
