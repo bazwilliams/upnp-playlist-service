@@ -2,7 +2,7 @@
 
 /* Filters */
 
-angular.module('upnpApp', [])
+angular.module('upnpFilters', [])
     .filter('numberFixedLen', function () {
         return function (n, len) {
             var num = parseInt(n, 10);

@@ -7,14 +7,16 @@ mixin device
         h2.media-heading {{device.name}}
           img.media-object(ng-src='{{device.icon.url}}')
   div.row
-    div.media-body.col-md-10
-      div.col-md-6
+    div.media-body.col-md-12
+      div.col-md-8
         div.panel.panel-default.schedule
           div.panel-heading
             h3.panel-title Wakeup Schedules
           div.panel-body
-            div.list-group-item(ng-repeat='schedule in device.schedules')
+            div.list-group-item(ng-repeat='schedule in device.schedules',ng-controller='DsDeleteWakeUpCtrl')
               +schedule()
+            div.list-group-item
+              +addSchedule()
       div.col-md-4
         form.form
           div.panel.panel-default.store-playlist
@@ -22,42 +24,83 @@ mixin device
               h3.panel-title Save play queue as playlist
             div.panel-body
                 div.form-group
-                  input.form-control(id='playlist-name',type='text',name='playlist',placeholder='Name of playlist')
+                  input.form-control(id='playlist-name',type='text',name='playlist',placeholder='Name of playlist',ng-model='playlistName')
             div.panel-footer.clearfix
               div.pull-right
-                button.btn.btn-success Store
+                button.btn.btn-success(ng-click='storePlaylist(playlistName)') Store
+
+mixin addSchedule
+  form.form-inline(role='form')
+    div.checkbox
+      label
+        | Mon
+        input(type='checkbox',name='mon',ng-model='mon')
+    div.checkbox
+      label
+        | Tue
+        input(type='checkbox',name='tue',ng-model='tue')
+    div.checkbox
+      label
+        | Wed
+        input(type='checkbox',name='wed',ng-model='wed')
+    div.checkbox
+      label
+        | Thu
+        input(type='checkbox',name='thu',ng-model='thu')
+    div.checkbox
+      label
+        | Fri
+        input(type='checkbox',name='fri',ng-model='fri')
+    div.checkbox
+      label
+        | Sat
+        input(type='checkbox',name='sat',ng-model='sat')
+    div.checkbox
+      label
+        | Sun
+        input(type='checkbox',name='sun',ng-model='sun')
+    div.time.form-group
+      label Wakeup
+        input.form-control(type='time',placholder='HH:mm',ng-model='time')
+    div.form-group
+      button.btn.btn-success(ng-click='addWakeUp(mon,tue,wed,thu,fri,sat,sun,time)') Add
+
 
 mixin schedule
   span.day.ng-hide.label.label-default(ng-hide='schedule.days.mon') Mon
-  span.day.ng-show.label.label-success(ng-show='schedule.days.mon') Mon
+  span.day.ng-show.label.label-primary(ng-show='schedule.days.mon') Mon
   | 
   span.day.ng-hide.label.label-default(ng-hide='schedule.days.tue') Tue
-  span.day.ng-show.label.label-success(ng-show='schedule.days.tue') Tue
+  span.day.ng-show.label.label-primary(ng-show='schedule.days.tue') Tue
   | 
   span.day.ng-hide.label.label-default(ng-hide='schedule.days.wed') Wed
-  span.day.ng-show.label.label-success(ng-show='schedule.days.wed') Wed
+  span.day.ng-show.label.label-primary(ng-show='schedule.days.wed') Wed
   | 
   span.day.ng-hide.label.label-default(ng-hide='schedule.days.thu') Thu
-  span.day.ng-show.label.label-success(ng-show='schedule.days.thu') Thu
+  span.day.ng-show.label.label-primary(ng-show='schedule.days.thu') Thu
   | 
   span.day.ng-hide.label.label-default(ng-hide='schedule.days.fri') Fri
-  span.day.ng-show.label.label-success(ng-show='schedule.days.fri') Fri
+  span.day.ng-show.label.label-primary(ng-show='schedule.days.fri') Fri
   | 
   span.day.ng-hide.label.label-default(ng-hide='schedule.days.sat') Sat
-  span.day.ng-show.label.label-success(ng-show='schedule.days.sat') Sat
+  span.day.ng-show.label.label-primary(ng-show='schedule.days.sat') Sat
   | 
   span.day.ng-hide.label.label-default(ng-hide='schedule.days.sun') Sun
-  span.day.ng-show.label.label-success(ng-show='schedule.days.sun') Sun
+  span.day.ng-show.label.label-primary(ng-show='schedule.days.sun') Sun
   | 
-  span.time.label.label-success {{schedule.hour}}:{{schedule.minute}}
+  | at 
+  | 
+  span.time.label.label-primary {{schedule.hour| numberFixedLen:2 }}:{{schedule.minute| numberFixedLen:2}}
   div.pull-right
-    button.btn.btn-xs.btn-danger Remove
+    button.btn.btn-xs.btn-danger(ng-click='delete()') Remove
+
 block body
   div(ng-controller='DsCtrl')
-    div.row(ng-repeat='device in devices')
+    div.row(ng-repeat='device in devices', ng-controller='DsStorePlaylistCtrl')
       +device()
   script(src='bower_components/angular/angular.js')
   script(src='js/app.js')
   script(src='js/services.js')
   script(src='js/controllers.js')
   script(src='js/directives.js')
+  script(src='js/filters.js')

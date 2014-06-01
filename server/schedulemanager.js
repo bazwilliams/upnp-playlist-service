@@ -43,22 +43,23 @@ var ScheduleManager = function(options) {
             .filter(function(schedule) {
                 return schedule.uuid === uuid;
             })
-            .pluck('wakeUp')
             .value();
     };
 
     this.addWakeUpScheduleFor = function (uuid, schedule) {
-        var schedules = storage.getItem('schedules.json');
-        var wakeUp = {
-            id: guid.v1(),
-            uuid: uuid,
-            source: 1,
-            wakeUp: schedule
-        };
-        schedules.push(wakeUp)
-        storage.setItem('schedules.json', schedules);
-        scheduleJobs();
-        return wakeUp;
+    	if (schedule.dayOfWeek.length > 0) {
+	        var schedules = storage.getItem('schedules.json');
+	        var wakeUp = {
+	            id: guid.v1(),
+	            uuid: uuid,
+	            source: 1,
+	            wakeUp: schedule
+	        };
+	        schedules.push(wakeUp)
+	        storage.setItem('schedules.json', schedules);
+	        scheduleJobs();
+	        return wakeUp;
+	    }
     }
 
     this.deleteWakeUpSchedule = function (uuid, id) {
