@@ -1,15 +1,41 @@
 DS Service
 ==========
 
-Node.js based system for monitoring a suite of UPNP renderers on a network. A simple wake up system exists which can be configured to wake a DS given a UUID and change it to a particular source. It is intended to run all the time so it can discover your renderers and control them. 
+Node.js based system for monitoring a suite of UPNP renderers on a network. A simple wake up system exists which can be configured to wake a DS and change it to a particular source. It is intended to run all the time so it can discover your renderers and control them. 
 
-To create an alarm, send a POST to `/{uuid}/wake-up` with Content-Type `application/json` and the following body:
+Once running click on the following URL to view your devices, view schedules, store playlists and set wake up alarms. 
+
+http://localhost:18080/
+
+API
+===
+
+GET /api/devices to see a list of all discovered devices on your network, all wake up schedules will be included under `device.schedules`. Each of which will include a link-rel to delete that wake up by sending a DELETE to it. 
+
+To store the current play queue on a DS as an M3U file, there is a large assumption that you are running minimserver on the same machine. Secondly it is assumed (for the moment) you have stored your music in `/mnt/media/music` and store playlists under `/mnt/media/music/Playlists`. 
+
+The create a playlist:
+
+PUT to `/api/devices/{uuid}/playlists/{playlistName}`
+
+No body is required, the playlistName does not need to include any file suffix (one will be added). 
+
+To create an alarm:
+
+POST to `/api/devices/{uuid}/wake-up`
 
 ```javascript
 {
-    "dayOfWeek": {array of day numbers, sunday is 0},
-    "hour": {hour},
-    "minute": {minute}
+    "days": {
+    	"mon" : false,
+    	"tue" : false,
+    	"wed" : false,
+    	"thu" : false,
+    	"fri" : false,
+    	"sat" : false,
+    	"sun" : false
+    	}
+    "time": "{hour}:{minute}"
 }
 ```
 
@@ -19,9 +45,16 @@ E.g. to wake device with UUID 4c494e4e-0026-0f21-cc9a-01320147013f at 10:00 on S
 
 ```javascript
 {
-    "dayOfWeek": [0,3],
-    "hour" : 10,
-    "minute" : 0
+    "days": {
+    	"mon" : false,
+    	"tue" : false,
+    	"wed" : true,
+    	"thu" : false,
+    	"fri" : false,
+    	"sat" : false,
+    	"sun" : true
+    	}
+    "time": "10:00"
 }
 ```
 
@@ -43,10 +76,9 @@ An upstart script has been included in `etc/init/ds-service.conf` which assumes 
 Future Plans
 ============
 
-Ability to add or edit wakeup schedules through the web application. 
+Provide feedback through the UI when a playlist is stored
+Provide feedback through the UI when an alarm is removed or added
 
 Ability to start with sources other than 1, also send signals to power on and start playing. 
 
 Easy installation on windows, mac and linux. 
-
-As the repo name suggests, the intention is to download your playlists on your renderers and store them with the ability to restore them or move them to other renderers. If I can reverse the URIs stored within the playlist back to a file (like you can with Minimserver) I'd like to be able to generate a .m3u file which your media server can serve back up allowing you to restore a playlist through your usual upnp controller. 
