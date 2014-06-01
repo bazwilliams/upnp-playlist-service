@@ -7,12 +7,24 @@ var playlistManager = require('../playlistmanager.js');
 var manager = new DeviceManager();
 var scheduleManager = new ScheduleManager({manager : manager});
 
-
 /*
  * Serve JSON to our AngularJS client
  */
 
-var convertSchedule = function(schedule) {
+var padZero = function (n, len) {
+	var num = parseInt(n, 10);
+	len = parseInt(len, 10);
+	if (isNaN(num) || isNaN(len)) {
+	    return n;
+	}
+	num = ''+num;
+	while (num.length < len) {
+	    num = '0'+num;
+	}
+	return num;
+};
+
+var convertFromSchedule = function(schedule) {
 	var days = {
 		'mon' : false,
 		'tue' : false,
@@ -28,13 +40,30 @@ var convertSchedule = function(schedule) {
 	});
 	return {
 		days: days,
-		hour: schedule.wakeUp.hour,
-		minute: schedule.wakeUp.minute,
+		time: padZero(schedule.wakeUp.hour,2) + ':' + padZero(schedule.wakeUp.minute,2),
 		links: [{
 			rel: 'delete',
 			href: '/api/devices/'+schedule.uuid+'/wake-up/'+schedule.id
 		}]
 	};
+}
+
+var convertToSchedule = function(data) {
+	var dayOfWeek = [];
+    _.each(_.keys(data.days), function (key) {
+    	var result = ['sun','mon','tue','wed','thu','fri','sat'].indexOf(key);
+    	if (result !== void 0 && data.days[key]) {
+    		dayOfWeek.push(result);
+    	}
+    });
+    if (data.time && data.time.split(':').length === 2) 
+    {
+	    return {
+		    dayOfWeek: dayOfWeek,
+		    hour: parseInt(data.time.split(':')[0],10),
+		    minute: parseInt(data.time.split(':')[1],10)
+	    };
+	}
 }
 
 exports.devices = function(req, res) {
@@ -44,7 +73,7 @@ exports.devices = function(req, res) {
             uuid: uuid,
             icon: device.icon,
             name: device.name,
-            schedules: _.map(scheduleManager.wakeUpSchedulesFor(uuid), convertSchedule),
+            schedules: _.map(scheduleManager.wakeUpSchedulesFor(uuid), convertFromSchedule),
             links: [{
             	rel: 'store-playlist',
             	href: '/api/devices/' + uuid + '/playlist/'
@@ -60,20 +89,9 @@ exports.devices = function(req, res) {
 exports.setWakeUp = function(req, res) {
     var uuid = req.params.uuid;
     var device = manager.getDevice(uuid);
-    var dayOfWeek = [];
-    _.each(_.keys(req.body.days), function (key) {
-    	var result = ['sun','mon','tue','wed','thu','fri','sat'].indexOf(key);
-    	if (result !== void 0 && req.body.days[key]) {
-    		dayOfWeek.push(result);
-    	}
-    });
     if (device) {
-        var schedule = {
-            dayOfWeek: dayOfWeek,
-            hour: parseInt(req.body.hour,10),
-            minute: parseInt(req.body.minute,10)
-        };
-        if (_.isArray(schedule.dayOfWeek) && _.isNumber(schedule.hour) && _.isNumber(schedule.minute)) {
+    	var schedule = convertToSchedule(req.body);
+        if (schedule && _.isArray(schedule.dayOfWeek) && _.isNumber(schedule.hour) && _.isNumber(schedule.minute)) {
             var wakeUp = scheduleManager.addWakeUpScheduleFor(uuid, schedule);
             if (wakeUp) {
 	            res.location('/device/'+uuid+'/wake-up/'+wakeUp.id);
