@@ -1,8 +1,12 @@
-html(ng-app="myApp")
+html(ng-app="upnpApp")
   head
     meta(charset='utf8')
+    meta(name="viewport",content="width=device-width, initial-scale=1")
     base(href='/')
-    title Angular Express Seed App
+    title Renderers
     link(rel='stylesheet', href='/css/app.css')
-  body
+    link(rel='stylesheet', href='/bower_components/bootstrap/dist/css/bootstrap.min.css')
+    script(src='/bower_components/jquery/dist/jquery.min.js')
+    script(src='/bower_components/bootstrap/dist/js/bootstrap.min.js')
+  body.container
     block body

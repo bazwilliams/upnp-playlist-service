@@ -12,11 +12,26 @@ var scheduleManager = new ScheduleManager({manager : manager});
  * Serve JSON to our AngularJS client
  */
 
-exports.name = function (req, res) {
-  res.json({
-    name: 'Bob'
-  });
-};
+var convertSchedule = function(schedule) {
+	var days = {
+		mon: false,
+		tue: false,
+		wed: false,
+		thu: false,
+		fri: false,
+		sat: false,
+		sun: false
+	};
+	_.each(schedule.dayOfWeek, function (day) {
+		var key = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'][day];
+		days[key] = true;
+	});
+	return {
+		days: days,
+		hour: schedule.hour,
+		minute: schedule.minute
+	};
+}
 
 exports.devices = function(req, res) {
     var devices = _.map(manager.getDevices(), function (uuid) { 
@@ -25,7 +40,7 @@ exports.devices = function(req, res) {
             uuid: uuid,
             icon: device.icon,
             name: device.name,
-            schedules: scheduleManager.wakeUpSchedulesFor(uuid)
+            schedules: _.map(scheduleManager.wakeUpSchedulesFor(uuid), convertSchedule)
         }
     });
     res.json(devices);

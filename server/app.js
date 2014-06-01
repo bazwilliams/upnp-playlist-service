@@ -5,7 +5,6 @@ var morgan = require('morgan');
 var http = require('http');
 var path = require('path');
 
-var routes = require('./routes');
 var api = require('./routes/api');
 
 var app = module.exports = express();
@@ -21,19 +20,19 @@ app.set('view engine', 'jade');
 app.use(morgan('dev'));
 app.use(bodyParser());
 app.use(methodOverride());
-app.use(express.static(path.join(__dirname, 'public')));
-app.use('/bower_components',  express.static(__dirname + '/bower_components'));
+app.use('/', express.static(__dirname +  '/../public'));
+app.use('/bower_components',  express.static(__dirname + '/../bower_components'));
 
 /**
  * Routes
  */
 
 // serve index and view partials
-app.get('/', routes.index);
-app.get('/partials/:name', routes.partials);
+app.get('/', function (req, res) {
+	res.render('index');
+});
 
 // JSON API
-app.get('/api/name', api.name);
 app.get('/api/devices', api.devices);
 app.post('/api/devices/:uuid/wake-up', api.setWakeUp);
 app.delete('/api/devices/:uuid/wake-up/:id', api.deleteWakeUp);
