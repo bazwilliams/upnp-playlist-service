@@ -84,8 +84,7 @@ Future Plans
 ============
 
 Provide feedback through the UI when a playlist is stored
-Provide feedback through the UI when an alarm is removed or added
 
 Ability to start with sources other than 1, also send signals to power on and start playing. 
 
-Easy installation on windows, mac and linux. 
+Easy installation on windows, mac, linux and nas drives. 
