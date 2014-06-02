@@ -6,18 +6,23 @@ var xmlParser = new xml2js.Parser({explicitArray: false});
 var path = require('path');
 var fs = require('fs');
 
+var config = require('../config.js');
+
 var minimUriProcessor = function(prefix) {
     return function (uri) {
-        return path.join(prefix, decodeURI(uri.replace(/http:.*\/minimserver\/\*\//, '').replace(/\*/g,'%')));
+        return path.join(prefix, decodeURI(uri.replace(/http:.*\/minimserver\/\*\/[^\/.]*\//, '').replace(/\*/g,'%')));
     };
 }
-var trackProcessor = minimUriProcessor('/mnt/media/');
+var trackProcessor = minimUriProcessor(config.musicRoot);
 
 var writeM3u = function (tracks, playlistName) {
-    var playlistLocation = path.normalize('/mnt/media/music/Playlists');
+    var playlistLocation = path.normalize(config.playlistPath);
     var data = '';
     _.each(tracks, function(track) {
+        console.log(track);
         var relTrack = path.relative(playlistLocation, track);
+        console.log(playlistLocation);
+        console.log(relTrack);
         data += relTrack + '\n';
     });
     var playlistFile = path.join(playlistLocation, playlistName + '.m3u');
