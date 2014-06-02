@@ -1,7 +1,11 @@
 DS Service
 ==========
 
-Node.js based system for monitoring a suite of UPNP renderers on a network. A simple wake up system exists which can be configured to wake a DS and change it to a particular source. It is intended to run all the time so it can discover your renderers and control them. 
+Node.js based system for monitoring a suite of UPNP renderers on a network. A simple wake up system exists which can be configured to wake a DS and change it to a particular source. 
+
+It is intended to run all the time so it can discover your renderers and control them. 
+
+A capability exists to convert a play queue which exists already on a DS which you may have spent a long time preparing to be saved as an m3u file. This only works for Minimserver and requires both this service and minimserver to be running on the same computer. By storing your playlist as an m3u file, you are free to edit metadata and album art without loss. If you store the raw playlist from a Upnp renderer, the metadata is included in the playlist which means it can become out of sync to your original files. 
 
 Installation
 ============
