@@ -95,7 +95,7 @@ mixin schedule
 
 block body
   div(ng-controller='AppCtrl')
-    div.row(ng-repeat='device in devices', ng-controller='DeviceCtrl')
+    div.row(ng-repeat='device in devices | orderBy: "name"', ng-controller='DeviceCtrl')
       +device()
   script(src='bower_components/angular/angular.js')
   script(src='js/app.js')
