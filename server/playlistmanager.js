@@ -19,10 +19,7 @@ var writeM3u = function (tracks, playlistName) {
     var playlistLocation = path.normalize(config.playlistPath);
     var data = '';
     _.each(tracks, function(track) {
-        console.log(track);
         var relTrack = path.relative(playlistLocation, track);
-        console.log(playlistLocation);
-        console.log(relTrack);
         data += relTrack + '\n';
     });
     var playlistFile = path.join(playlistLocation, playlistName + '.m3u');
