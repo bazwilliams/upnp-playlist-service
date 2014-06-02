@@ -40,7 +40,9 @@ var processReadListResponse = function (device, callback) {
                             tracks.push(trackProcessor(track.Uri));
                         });
                     } else {
-                        tracks.push(trackProcessor(result.TrackList.Entry.Uri));
+                        if (result.TrackList.Entry) {
+                            tracks.push(trackProcessor(result.TrackList.Entry.Uri));
+                        }
                     }
                     callback(tracks);
                 });

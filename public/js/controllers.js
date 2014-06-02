@@ -2,18 +2,24 @@
 
 /* Controllers */
 
+var getRefresh = function (scope, http) {
+    return function () {
+        http({
+          method: 'GET',
+          url: '/api/devices'
+        }).
+        success(function (data, status, headers, config) {
+          scope.devices = data;
+        });
+    }
+};
+
+var refreshAll;
+
 angular.module('upnpControllers', [])
 	.controller('AppCtrl', ['$scope', '$http', function ($scope, $http) {
-	    $http({
-	      method: 'GET',
-	      url: '/api/devices'
-	    }).
-	    success(function (data, status, headers, config) {
-	      $scope.devices = data;
-	    }).
-	    error(function (data, status, headers, config) {
-	      $scope.name = 'Error!';
-	    });
+        refreshAll = getRefresh($scope, $http);
+        refreshAll();
 	}])
 	.controller('DeviceCtrl', ['$scope', '$http', function ($scope, $http) {
 		var dsStorePlaylist = _.findWhere($scope.device.links, { 'rel' : 'store-playlist' });
@@ -52,7 +58,10 @@ angular.module('upnpControllers', [])
 				method: 'POST',
 				url: result.href,
 				data: body
-			});
+			})
+            .success(function () {
+                refreshAll();
+            });
 		};
 		$scope['deleteWakeUp'] = function (schedule) {
 			var result = _.findWhere(schedule.links, { 'rel' : 'delete' });
@@ -60,7 +69,10 @@ angular.module('upnpControllers', [])
 				$http({
 					method: 'DELETE',
 					url: result.href
-				});
+				})
+                .success(function () {
+                    refreshAll();
+                });
 			}
 		};
 	}]);
