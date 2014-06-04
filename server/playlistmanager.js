@@ -10,7 +10,7 @@ var config = require('../config.js');
 
 var minimUriProcessor = function(prefix) {
     return function (uri) {
-        return path.join(prefix, decodeURI(uri.replace(/http:.*\/minimserver\/\*\/[^\/.]*\//, '').replace(/\*/g,'%')));
+        return path.join(prefix, decodeURIComponent(uri.replace(/http:.*\/minimserver\/\*\/[^\/.]*\//, '').replace(/\*/g,'%')));
     };
 }
 var trackProcessor = minimUriProcessor(config.musicRoot);
