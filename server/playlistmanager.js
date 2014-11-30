@@ -173,8 +173,4 @@ var replacePlaylist = function(device, playlistName) {
         readM3u(playlistName, enqueueItemAtStart(device));
     });
 }
-<<<<<<< HEAD
 exports.replacePlaylist = replacePlaylist;
-=======
-exports.savePlaylist = savePlaylist;
->>>>>>> 1bf5160e5d0516723485c201abed24793a75b06b
