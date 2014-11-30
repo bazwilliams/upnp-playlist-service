@@ -65,6 +65,7 @@ DeviceManager.prototype.parseUuid = function (usn, st) {
 };
 
 DeviceManager.prototype.processDevice = function (location, callback) {
+    console.log(location);
     http.get(location, function (res) {
         var body = '';
         res.setEncoding('utf8');

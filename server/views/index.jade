@@ -27,6 +27,7 @@ mixin device
                   input.form-control(id='playlist-name',type='text',name='playlist',placeholder='Name of playlist',ng-model='playlistName')
             div.panel-footer.clearfix
               div.pull-right
+                button.btn.btn-primary(ng-click='replacePlaylist(playlistName)',ng-model='playlistName') Replace
                 button.btn.btn-success(ng-click='storePlaylist(playlistName)',ng-model='playlistName') Store
 
 mixin addSchedule
@@ -63,7 +64,6 @@ mixin addSchedule
       input.form-control(type='time',placholder='HH:mm',ng-model='newSchedule.time')
     div.pull-right
       button.btn.btn-success(ng-click='addWakeUp(newSchedule)',ng-key-select='addWakeUp(newSchedule)') Add
-
 
 mixin schedule
   span.day.ng-hide.label.label-default(ng-hide='schedule.days.mon') Mon

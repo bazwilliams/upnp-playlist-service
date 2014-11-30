@@ -78,6 +78,9 @@ exports.devices = function(req, res) {
             	rel: 'store-playlist',
             	href: '/api/devices/' + uuid + '/playlist/'
             },{
+                rel: 'replace-playlist',
+                href: '/api/devices/' + uuid + '/playlist/replace'
+            },{
             	rel: 'add-wakeup',
             	href: '/api/devices/' + uuid + '/wake-up'
             }]
@@ -127,3 +130,15 @@ exports.storePlaylist = function(req, res) {
     	res.send(404);
 	}
 };
+
+exports.replacePlaylist = function(req, res) {
+    var uuid = req.params.uuid;
+    var playlistName = req.body.playlistName;
+    var device = manager.getDevice(uuid);
+    if (device) {
+        playlistManager.replacePlaylist(device, playlistName);
+        res.send(200);
+    } else {
+        res.send(404);
+    }
+}

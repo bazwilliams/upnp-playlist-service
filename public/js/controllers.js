@@ -23,6 +23,7 @@ angular.module('upnpControllers', [])
 	}])
 	.controller('DeviceCtrl', ['$scope', '$http', function ($scope, $http) {
 		var dsStorePlaylist = _.findWhere($scope.device.links, { 'rel' : 'store-playlist' });
+		var dsReplacePlaylist = _.findWhere($scope.device.links, { 'rel' : 'replace-playlist' });
 		$scope['storePlaylist'] = function (playlistName) {
 			if (dsStorePlaylist) {
 				$http({
@@ -31,6 +32,15 @@ angular.module('upnpControllers', [])
 				});
 			}
 		};
+		$scope['replacePlaylist'] = function(playlistName) {
+			if (dsReplacePlaylist) {
+				$http({
+					method: 'POST',
+					url: dsReplacePlaylist.href,
+					data: { playlistName: playlistName }
+				});
+			}
+		}
 		$scope['newSchedule'] = {
 			days: {
 				'mon' : false,

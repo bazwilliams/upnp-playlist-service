@@ -8,23 +8,49 @@ var fs = require('fs');
 
 var config = require('../config.js');
 
-var minimUriProcessor = function(prefix) {
+var uriTrackProcessor = function(prefix) {
     return function (uri) {
-        return path.join(prefix, decodeURI(uri.replace(/http:.*\/minimserver\/\*\/[^\/.]*\//, '').replace(/\*/g,'%')));
+        if (uri.indexOf('http:') === 0) {
+            return path.join(prefix, decodeURI(uri.replace(/http:.*\/minimserver\/\*\/[^\/.]*\//, '').replace(/\*/g,'%')));
+        } else {
+            return uri;
+        }
     };
 }
-var trackProcessor = minimUriProcessor(config.musicRoot);
+var trackProcessor = uriTrackProcessor(config.musicRoot);
 
 var writeM3u = function (tracks, playlistName) {
     var playlistLocation = path.normalize(config.playlistPath);
     var data = '';
     _.each(tracks, function(track) {
-        var relTrack = path.relative(playlistLocation, track);
-        data += relTrack + '\n';
+        if (fs.exists(track.track)) {
+            var relTrack = path.relative(playlistLocation, track.track);
+            data += '#' + track.metadata + '\n';
+            data += relTrack + '\n';
+        } else {
+            data += '#' + track.metadata + '\n';
+        }
     });
     var playlistFile = path.join(playlistLocation, playlistName + '.m3u');
-    fs.writeFile(playlistFile, data, {flag: 'wx'});
+    fs.writeFile(playlistFile, data, {flag: 'wx', encoding: 'utf8'});
 };
+
+var readM3u = function(playlistName, trackCallback) {
+    var playlistLocation = path.normalize(config.playlistPath);
+    var playlistFile = path.join(playlistLocation, playlistName + '.m3u');
+    fs.readFile(playlistFile, {encoding: 'utf8'}, function(err, data) {
+        var tracksInReverse = _.chain(data.split(/\n/))
+            .compact()
+            .reverse()
+            .map(function (line) {
+                return line.slice(1);
+            })
+            .value();
+        _.each(tracksInReverse, function(line) {
+            trackCallback(line);
+        });
+    });
+}
 
 var processReadListResponse = function (device, callback) {
     return function(res) {
@@ -39,11 +65,17 @@ var processReadListResponse = function (device, callback) {
                     var tracks = [];
                     if (_.isArray(result.TrackList.Entry)) {
                         _.each(result.TrackList.Entry, function (track) {
-                            tracks.push(trackProcessor(track.Uri));
+                            tracks.push({
+                                track: trackProcessor(track.Uri),
+                                metadata: track.Metadata
+                            });
                         });
                     } else {
                         if (result.TrackList.Entry) {
-                            tracks.push(trackProcessor(result.TrackList.Entry.Uri));
+                            tracks.push({
+                                track: trackProcessor(result.TrackList.Entry.Uri),
+                                metadata: track.Metadata
+                            });
                         }
                     }
                     callback(tracks);
@@ -92,7 +124,7 @@ var processPlaylistResponse = function (device, playlistName) {
     };
 };
 
-var savePlaylist = function (device, playlistName) {
+var savePlaylist = function(device, playlistName) {
     upnp.soapRequest(
         device, 
         'Ds/Playlist', 
@@ -101,5 +133,44 @@ var savePlaylist = function (device, playlistName) {
         '',
         processPlaylistResponse(device, playlistName)
     );
-}
+};
 exports.savePlaylist = savePlaylist;
+
+var deleteAll = function(device, callback) {
+        upnp.soapRequest(
+            device, 
+            'Ds/Playlist',
+            'urn:av-openhome.org:service:Playlist:1', 
+            'DeleteAll', 
+            '',
+            callback
+        );
+}
+
+var enqueueItemAtStart = function(device) {
+    return function(trackDetailsXml) {
+        xmlParser.parseString(trackDetailsXml, function (err, result) {
+            var trackUri = result['DIDL-Lite']['item']['res']
+                .replace(/&/g, "&amp;");
+            var metadata = trackDetailsXml
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;");
+            upnp.soapRequest(
+                device, 
+                'Ds/Playlist',
+                'urn:av-openhome.org:service:Playlist:1', 
+                'Insert', 
+                '<AfterId>0</AfterId><Uri>'+trackUri+'</Uri><Metadata>'+metadata+'</Metadata>'
+            );
+        });
+    };
+}
+
+var replacePlaylist = function(device, playlistName) {
+    deleteAll(device, function() {
+        readM3u(playlistName, enqueueItemAtStart(device));
+    });
+}
+exports.replacePlaylist = replacePlaylist;
