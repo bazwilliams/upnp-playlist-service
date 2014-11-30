@@ -11,7 +11,7 @@ var config = require('../config.js');
 var uriTrackProcessor = function(prefix) {
     return function (uri) {
         if (uri.indexOf('http:') === 0) {
-            return path.join(prefix, decodeURI(uri.replace(/http:.*\/minimserver\/\*\/[^\/.]*\//, '').replace(/\*/g,'%')));
+            return path.join(prefix, decodeURIComponent(uri.replace(/http:.*\/minimserver\/\*\/[^\/.]*\//, '').replace(/\*/g,'%')));
         } else {
             return uri;
         }
@@ -173,4 +173,8 @@ var replacePlaylist = function(device, playlistName) {
         readM3u(playlistName, enqueueItemAtStart(device));
     });
 }
+<<<<<<< HEAD
 exports.replacePlaylist = replacePlaylist;
+=======
+exports.savePlaylist = savePlaylist;
+>>>>>>> 1bf5160e5d0516723485c201abed24793a75b06b
