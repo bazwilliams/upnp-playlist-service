@@ -5,7 +5,7 @@ var config = {};
 //config.playlistPath = '/mnt/media/music/Playlists';
 
 // Windows locations
-config.musicRoot = 'C:\\Users\\barry\\Music';
-config.playlistPath = 'C:\\Users\\barry\\Music\\Playlists\\';
+config.musicRoot = 'C:\\Users\\barryw\\Dropbox';
+config.playlistPath = 'C:\\Users\\barryw\\Dropbox\\Playlists\\';
 
 module.exports = config;

@@ -5,6 +5,8 @@ var xml2js = require('xml2js');
 var xmlParser = new xml2js.Parser({explicitArray: false});
 var path = require('path');
 var fs = require('fs');
+var util = require('util');
+var EventEmitter = require('events').EventEmitter;
 
 var config = require('../config.js');
 
@@ -124,18 +126,6 @@ var processPlaylistResponse = function (device, playlistName) {
     };
 };
 
-var savePlaylist = function(device, playlistName) {
-    upnp.soapRequest(
-        device, 
-        'Ds/Playlist', 
-        'urn:av-openhome.org:service:Playlist:1', 
-        'IdArray', 
-        '',
-        processPlaylistResponse(device, playlistName)
-    );
-};
-exports.savePlaylist = savePlaylist;
-
 var deleteAll = function(device, callback) {
         upnp.soapRequest(
             device, 
@@ -168,9 +158,20 @@ var enqueueItemAtStart = function(device) {
     };
 }
 
-var replacePlaylist = function(device, playlistName) {
-    deleteAll(device, function() {
-        readM3u(playlistName, enqueueItemAtStart(device));
-    });
-}
-exports.replacePlaylist = replacePlaylist;
+exports.PlaylistManager = function(device) {
+    this.replacePlaylist = function (playlistName) {
+        deleteAll(device, function () {
+            readM3u(playlistName, enqueueItemAtStart(device));
+        });
+    };
+    this.savePlaylist = function (playlistName) {
+        upnp.soapRequest(
+            device, 
+        'Ds/Playlist', 
+        'urn:av-openhome.org:service:Playlist:1', 
+        'IdArray', 
+        '',
+        processPlaylistResponse(device, playlistName)
+        );
+    };
+};

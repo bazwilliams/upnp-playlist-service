@@ -1,0 +1,315 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{7096e4ff-4605-43af-906c-36f199601c24}</ProjectGuid>
+    <ProjectHome />
+    <ProjectView>ShowAllFiles</ProjectView>
+    <StartupFile>server\app.js</StartupFile>
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <ProjectTypeGuids>{3AF33F2E-1136-4D97-BBB7-1795711AC8B8};{349c5851-65df-11da-9384-00065b846f21};{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}</ProjectTypeGuids>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
+  <ItemGroup>
+    <Content Include="bower.json" />
+    <Content Include="package.json" />
+    <Content Include="README.md" />
+    <Compile Include="config.js" />
+    <Compile Include="Gruntfile.js" />
+    <Content Include="persist\schedules.json" />
+    <Compile Include="server\app.js" />
+    <Compile Include="server\devicemanager.js" />
+    <Compile Include="server\playlistmanager.js" />
+    <Compile Include="server\schedulemanager.js" />
+    <Compile Include="server\watch.js" />
+    <Compile Include="test\test-schedulemanager.js">
+      <TestFramework>ExportRunner</TestFramework>
+    </Compile>
+    <Content Include="bower_components\angular\angular-csp.css" />
+    <Content Include="bower_components\angular\.bower.json" />
+    <Content Include="bower_components\angular\bower.json" />
+    <Content Include="bower_components\angular\README.md" />
+    <Compile Include="bower_components\angular\angular.js" />
+    <Compile Include="bower_components\angular\angular.min.js" />
+    <Content Include="bower_components\angular-loader\.bower.json" />
+    <Content Include="bower_components\angular-loader\bower.json" />
+    <Content Include="bower_components\angular-loader\README.md" />
+    <Compile Include="bower_components\angular-loader\angular-loader.js" />
+    <Compile Include="bower_components\angular-loader\angular-loader.min.js" />
+    <Content Include="bower_components\angular-mocks\.bower.json" />
+    <Content Include="bower_components\angular-mocks\bower.json" />
+    <Content Include="bower_components\angular-mocks\README.md" />
+    <Compile Include="bower_components\angular-mocks\angular-mocks.js" />
+    <Content Include="bower_components\angular-route\.bower.json" />
+    <Content Include="bower_components\angular-route\bower.json" />
+    <Content Include="bower_components\angular-route\README.md" />
+    <Compile Include="bower_components\angular-route\angular-route.js" />
+    <Compile Include="bower_components\angular-route\angular-route.min.js" />
+    <Content Include="bower_components\bootstrap\.bower.json" />
+    <Content Include="bower_components\bootstrap\bower.json" />
+    <Content Include="bower_components\bootstrap\package.json" />
+    <Content Include="bower_components\bootstrap\README.md" />
+    <Compile Include="bower_components\bootstrap\Gruntfile.js" />
+    <Content Include="bower_components\html5-boilerplate\humans.txt" />
+    <Content Include="bower_components\html5-boilerplate\robots.txt" />
+    <Content Include="bower_components\html5-boilerplate\404.html" />
+    <Content Include="bower_components\html5-boilerplate\index.html" />
+    <Content Include="bower_components\html5-boilerplate\apple-touch-icon-precomposed.png" />
+    <Content Include="bower_components\html5-boilerplate\favicon.ico" />
+    <Content Include="bower_components\html5-boilerplate\.bower.json" />
+    <Content Include="bower_components\html5-boilerplate\CHANGELOG.md" />
+    <Content Include="bower_components\html5-boilerplate\CONTRIBUTING.md" />
+    <Content Include="bower_components\html5-boilerplate\LICENSE.md" />
+    <Content Include="bower_components\html5-boilerplate\README.md" />
+    <Content Include="bower_components\html5-boilerplate\crossdomain.xml" />
+    <Content Include="bower_components\jquery\MIT-LICENSE.txt" />
+    <Content Include="bower_components\jquery\.bower.json" />
+    <Content Include="bower_components\jquery\bower.json" />
+    <Content Include="bower_components\underscore\.bower.json" />
+    <Content Include="bower_components\underscore\bower.json" />
+    <Content Include="bower_components\underscore\component.json" />
+    <Content Include="bower_components\underscore\package.json" />
+    <Content Include="bower_components\underscore\README.md" />
+    <Compile Include="bower_components\underscore\underscore.js" />
+    <Content Include="bower_components\bootstrap\fonts\glyphicons-halflings-regular.svg" />
+    <Compile Include="bower_components\bootstrap\grunt\bs-glyphicons-data-generator.js" />
+    <Compile Include="bower_components\bootstrap\grunt\bs-lessdoc-parser.js" />
+    <Compile Include="bower_components\bootstrap\grunt\bs-raw-files-generator.js" />
+    <Compile Include="bower_components\bootstrap\grunt\shrinkwrap.js" />
+    <Compile Include="bower_components\bootstrap\js\affix.js" />
+    <Compile Include="bower_components\bootstrap\js\alert.js" />
+    <Compile Include="bower_components\bootstrap\js\button.js" />
+    <Compile Include="bower_components\bootstrap\js\carousel.js" />
+    <Compile Include="bower_components\bootstrap\js\collapse.js" />
+    <Compile Include="bower_components\bootstrap\js\dropdown.js" />
+    <Compile Include="bower_components\bootstrap\js\modal.js" />
+    <Compile Include="bower_components\bootstrap\js\popover.js" />
+    <Compile Include="bower_components\bootstrap\js\scrollspy.js" />
+    <Compile Include="bower_components\bootstrap\js\tab.js" />
+    <Compile Include="bower_components\bootstrap\js\tooltip.js" />
+    <Compile Include="bower_components\bootstrap\js\transition.js" />
+    <Content Include="bower_components\bootstrap\test-infra\requirements.txt" />
+    <Content Include="bower_components\bootstrap\test-infra\npm-shrinkwrap.canonical.json" />
+    <Content Include="bower_components\bootstrap\test-infra\README.md" />
+    <Content Include="bower_components\bootstrap\dist\css\bootstrap-theme.css" />
+    <Content Include="bower_components\bootstrap\dist\css\bootstrap-theme.min.css" />
+    <Content Include="bower_components\bootstrap\dist\css\bootstrap.css" />
+    <Content Include="bower_components\bootstrap\dist\css\bootstrap.min.css" />
+    <Content Include="bower_components\bootstrap\dist\fonts\glyphicons-halflings-regular.svg" />
+    <Compile Include="bower_components\bootstrap\dist\js\bootstrap.js" />
+    <Compile Include="bower_components\bootstrap\dist\js\bootstrap.min.js" />
+    <Content Include="bower_components\html5-boilerplate\css\main.css" />
+    <Content Include="bower_components\html5-boilerplate\css\normalize.css" />
+    <Content Include="bower_components\html5-boilerplate\doc\crossdomain.md" />
+    <Content Include="bower_components\html5-boilerplate\doc\css.md" />
+    <Content Include="bower_components\html5-boilerplate\doc\extend.md" />
+    <Content Include="bower_components\html5-boilerplate\doc\faq.md" />
+    <Content Include="bower_components\html5-boilerplate\doc\html.md" />
+    <Content Include="bower_components\html5-boilerplate\doc\js.md" />
+    <Content Include="bower_components\html5-boilerplate\doc\misc.md" />
+    <Content Include="bower_components\html5-boilerplate\doc\TOC.md" />
+    <Content Include="bower_components\html5-boilerplate\doc\usage.md" />
+    <Compile Include="bower_components\html5-boilerplate\js\main.js" />
+    <Compile Include="bower_components\html5-boilerplate\js\plugins.js" />
+    <Compile Include="bower_components\html5-boilerplate\js\vendor\jquery-1.10.2.min.js" />
+    <Compile Include="bower_components\html5-boilerplate\js\vendor\modernizr-2.6.2.min.js" />
+    <Compile Include="bower_components\jquery\dist\jquery.js" />
+    <Compile Include="bower_components\jquery\dist\jquery.min.js" />
+    <Compile Include="bower_components\jquery\src\ajax.js" />
+    <Compile Include="bower_components\jquery\src\attributes.js" />
+    <Compile Include="bower_components\jquery\src\callbacks.js" />
+    <Compile Include="bower_components\jquery\src\core.js" />
+    <Compile Include="bower_components\jquery\src\css.js" />
+    <Compile Include="bower_components\jquery\src\data.js" />
+    <Compile Include="bower_components\jquery\src\deferred.js" />
+    <Compile Include="bower_components\jquery\src\deprecated.js" />
+    <Compile Include="bower_components\jquery\src\dimensions.js" />
+    <Compile Include="bower_components\jquery\src\effects.js" />
+    <Compile Include="bower_components\jquery\src\event.js" />
+    <Compile Include="bower_components\jquery\src\intro.js" />
+    <Compile Include="bower_components\jquery\src\jquery.js" />
+    <Compile Include="bower_components\jquery\src\manipulation.js" />
+    <Compile Include="bower_components\jquery\src\offset.js" />
+    <Compile Include="bower_components\jquery\src\outro.js" />
+    <Compile Include="bower_components\jquery\src\queue.js" />
+    <Compile Include="bower_components\jquery\src\selector-native.js" />
+    <Compile Include="bower_components\jquery\src\selector-sizzle.js" />
+    <Compile Include="bower_components\jquery\src\selector.js" />
+    <Compile Include="bower_components\jquery\src\serialize.js" />
+    <Compile Include="bower_components\jquery\src\traversing.js" />
+    <Compile Include="bower_components\jquery\src\wrap.js" />
+    <Compile Include="bower_components\jquery\src\ajax\jsonp.js" />
+    <Compile Include="bower_components\jquery\src\ajax\load.js" />
+    <Compile Include="bower_components\jquery\src\ajax\parseJSON.js" />
+    <Compile Include="bower_components\jquery\src\ajax\parseXML.js" />
+    <Compile Include="bower_components\jquery\src\ajax\script.js" />
+    <Compile Include="bower_components\jquery\src\ajax\xhr.js" />
+    <Compile Include="bower_components\jquery\src\attributes\attr.js" />
+    <Compile Include="bower_components\jquery\src\attributes\classes.js" />
+    <Compile Include="bower_components\jquery\src\attributes\prop.js" />
+    <Compile Include="bower_components\jquery\src\attributes\support.js" />
+    <Compile Include="bower_components\jquery\src\attributes\val.js" />
+    <Compile Include="bower_components\jquery\src\core\access.js" />
+    <Compile Include="bower_components\jquery\src\core\init.js" />
+    <Compile Include="bower_components\jquery\src\core\parseHTML.js" />
+    <Compile Include="bower_components\jquery\src\core\ready.js" />
+    <Compile Include="bower_components\jquery\src\css\addGetHookIf.js" />
+    <Compile Include="bower_components\jquery\src\css\curCSS.js" />
+    <Compile Include="bower_components\jquery\src\css\defaultDisplay.js" />
+    <Compile Include="bower_components\jquery\src\css\hiddenVisibleSelectors.js" />
+    <Compile Include="bower_components\jquery\src\css\support.js" />
+    <Compile Include="bower_components\jquery\src\css\swap.js" />
+    <Compile Include="bower_components\jquery\src\data\accepts.js" />
+    <Compile Include="bower_components\jquery\src\data\Data.js" />
+    <Compile Include="bower_components\jquery\src\effects\animatedSelector.js" />
+    <Compile Include="bower_components\jquery\src\effects\Tween.js" />
+    <Compile Include="bower_components\jquery\src\event\alias.js" />
+    <Compile Include="bower_components\jquery\src\event\support.js" />
+    <Compile Include="bower_components\jquery\src\exports\amd.js" />
+    <Compile Include="bower_components\jquery\src\exports\global.js" />
+    <Compile Include="bower_components\jquery\src\manipulation\support.js" />
+    <Compile Include="bower_components\jquery\src\manipulation\_evalUrl.js" />
+    <Compile Include="bower_components\jquery\src\queue\delay.js" />
+    <Compile Include="bower_components\jquery\src\traversing\findFilter.js" />
+    <Compile Include="bower_components\jquery\src\var\arr.js" />
+    <Compile Include="bower_components\jquery\src\var\class2type.js" />
+    <Compile Include="bower_components\jquery\src\var\concat.js" />
+    <Compile Include="bower_components\jquery\src\var\hasOwn.js" />
+    <Compile Include="bower_components\jquery\src\var\indexOf.js" />
+    <Compile Include="bower_components\jquery\src\var\pnum.js" />
+    <Compile Include="bower_components\jquery\src\var\push.js" />
+    <Compile Include="bower_components\jquery\src\var\rnotwhite.js" />
+    <Compile Include="bower_components\jquery\src\var\slice.js" />
+    <Compile Include="bower_components\jquery\src\var\strundefined.js" />
+    <Compile Include="bower_components\jquery\src\var\support.js" />
+    <Compile Include="bower_components\jquery\src\var\toString.js" />
+    <Compile Include="bower_components\jquery\src\ajax\var\nonce.js" />
+    <Compile Include="bower_components\jquery\src\ajax\var\rquery.js" />
+    <Compile Include="bower_components\jquery\src\core\var\rsingleTag.js" />
+    <Compile Include="bower_components\jquery\src\css\var\cssExpand.js" />
+    <Compile Include="bower_components\jquery\src\css\var\getStyles.js" />
+    <Compile Include="bower_components\jquery\src\css\var\isHidden.js" />
+    <Compile Include="bower_components\jquery\src\css\var\rmargin.js" />
+    <Compile Include="bower_components\jquery\src\css\var\rnumnonpx.js" />
+    <Compile Include="bower_components\jquery\src\data\var\data_priv.js" />
+    <Compile Include="bower_components\jquery\src\data\var\data_user.js" />
+    <Compile Include="bower_components\jquery\src\manipulation\var\rcheckableType.js" />
+    <Compile Include="bower_components\jquery\src\sizzle\dist\sizzle.js" />
+    <Compile Include="bower_components\jquery\src\sizzle\dist\sizzle.min.js" />
+    <Compile Include="bower_components\jquery\src\traversing\var\rneedsContext.js" />
+    <Content Include="public\css\app.css" />
+    <Compile Include="public\js\app.js" />
+    <Compile Include="public\js\controllers.js" />
+    <Compile Include="public\js\directives.js" />
+    <Compile Include="public\js\filters.js" />
+    <Compile Include="public\js\services.js" />
+    <Compile Include="server\lib\upnp.js" />
+    <Compile Include="server\routes\api.js" />
+    <Compile Include="server\routes\routes.js" />
+    <Content Include="server\views\index.jade" />
+    <Content Include="server\views\layout.jade" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="bower_components" />
+    <Folder Include="bower_components\angular" />
+    <Folder Include="bower_components\angular-loader" />
+    <Folder Include="bower_components\angular-mocks" />
+    <Folder Include="bower_components\angular-route" />
+    <Folder Include="bower_components\bootstrap" />
+    <Folder Include="bower_components\bootstrap\dist" />
+    <Folder Include="bower_components\bootstrap\dist\css" />
+    <Folder Include="bower_components\bootstrap\dist\fonts" />
+    <Folder Include="bower_components\bootstrap\dist\js" />
+    <Folder Include="bower_components\bootstrap\fonts" />
+    <Folder Include="bower_components\bootstrap\grunt" />
+    <Folder Include="bower_components\bootstrap\js" />
+    <Folder Include="bower_components\bootstrap\less" />
+    <Folder Include="bower_components\bootstrap\test-infra" />
+    <Folder Include="bower_components\html5-boilerplate" />
+    <Folder Include="bower_components\html5-boilerplate\css" />
+    <Folder Include="bower_components\html5-boilerplate\doc" />
+    <Folder Include="bower_components\html5-boilerplate\img" />
+    <Folder Include="bower_components\html5-boilerplate\js" />
+    <Folder Include="bower_components\html5-boilerplate\js\vendor" />
+    <Folder Include="bower_components\jquery" />
+    <Folder Include="bower_components\jquery\dist" />
+    <Folder Include="bower_components\jquery\src" />
+    <Folder Include="bower_components\jquery\src\ajax" />
+    <Folder Include="bower_components\jquery\src\ajax\var" />
+    <Folder Include="bower_components\jquery\src\attributes" />
+    <Folder Include="bower_components\jquery\src\core" />
+    <Folder Include="bower_components\jquery\src\core\var" />
+    <Folder Include="bower_components\jquery\src\css" />
+    <Folder Include="bower_components\jquery\src\css\var" />
+    <Folder Include="bower_components\jquery\src\data" />
+    <Folder Include="bower_components\jquery\src\data\var" />
+    <Folder Include="bower_components\jquery\src\effects" />
+    <Folder Include="bower_components\jquery\src\event" />
+    <Folder Include="bower_components\jquery\src\exports" />
+    <Folder Include="bower_components\jquery\src\manipulation" />
+    <Folder Include="bower_components\jquery\src\manipulation\var" />
+    <Folder Include="bower_components\jquery\src\queue" />
+    <Folder Include="bower_components\jquery\src\sizzle" />
+    <Folder Include="bower_components\jquery\src\sizzle\dist" />
+    <Folder Include="bower_components\jquery\src\traversing" />
+    <Folder Include="bower_components\jquery\src\traversing\var" />
+    <Folder Include="bower_components\jquery\src\var" />
+    <Folder Include="bower_components\underscore" />
+    <Folder Include="etc" />
+    <Folder Include="etc\init" />
+    <Folder Include="persist" />
+    <Folder Include="public" />
+    <Folder Include="public\css" />
+    <Folder Include="public\js" />
+    <Folder Include="server" />
+    <Folder Include="server\lib" />
+    <Folder Include="server\routes" />
+    <Folder Include="server\views" />
+    <Folder Include="test" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsTools.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>0</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:48022/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>True</UseCustomServer>
+          <CustomServerUrl>http://localhost:1337</CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}" User="">
+        <WebProjectProperties>
+          <StartPageUrl>
+          </StartPageUrl>
+          <StartAction>CurrentPage</StartAction>
+          <AspNetDebugging>True</AspNetDebugging>
+          <SilverlightDebugging>False</SilverlightDebugging>
+          <NativeDebugging>False</NativeDebugging>
+          <SQLDebugging>False</SQLDebugging>
+          <ExternalProgram>
+          </ExternalProgram>
+          <StartExternalURL>
+          </StartExternalURL>
+          <StartCmdLineArguments>
+          </StartCmdLineArguments>
+          <StartWorkingDirectory>
+          </StartWorkingDirectory>
+          <EnableENC>False</EnableENC>
+          <AlwaysStartWebServerOnDebug>False</AlwaysStartWebServerOnDebug>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>
