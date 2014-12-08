@@ -30,7 +30,7 @@ API
 
 GET /api/devices to see a list of all discovered devices on your network, all wake up schedules will be included under `device.schedules`. Each of which will include a link-rel to delete that wake up by sending a DELETE to it. 
 
-PLAYLISTS
+Playlists
 =========
 
 Storing the current play queue on a DS as an M3U file is optimised if you are serving your music from a Minimserver media server running on the same machine. Otherwise, the DIDL-LITE metadata will be stored as an M3U comment. 
@@ -51,7 +51,7 @@ POST to `/api/devices/{uuid}/playlists/replace` with Content-Type `application/j
 }
 ```
 
-ALARM CLOCK FUNCTION
+Alarm Clock Function
 ====================
 
 To create an alarm:
