@@ -8,13 +8,12 @@ var fs = require('fs');
 var util = require('util');
 var async = require('async');
 var EventEmitter = require('events').EventEmitter;
-
 var config = require('../config.js');
 
 var uriTrackProcessor = function(prefix) {
     return function (uri) {
         if (uri.indexOf('http:') === 0) {
-            return path.join(prefix, decodeURIComponent(uri.replace(/http:.*\/minimserver\/\*\/[^\/.]*\//, '').replace(/\*/g,'%')));
+            return path.join(prefix, decodeURIComponent(uri.replace(/http:.*\/minimserver\/\*\/[^\/.]*\//, '').replace(/\*/g, '%')));
         } else {
             return uri;
         }
@@ -138,19 +137,8 @@ var processPlaylistResponse = function (device, playlistName) {
     };
 };
 
-var deleteAll = function(device, callback) {
-        upnp.soapRequest(
-            device,
-            'Ds/Playlist',
-            'urn:av-openhome.org:service:Playlist:1',
-            'DeleteAll',
-            '',
-            callback
-        );
-};
-
 var enqueueItemAtStart = function(device) {
-    return function(trackDetailsXml, callback) {
+    return function (trackDetailsXml, callback) {
         xmlParser.parseString(trackDetailsXml, function (err, result) {
             var trackUri = result['DIDL-Lite']['item']['res']
                 .replace(/&/g, "&amp;");
@@ -165,7 +153,7 @@ var enqueueItemAtStart = function(device) {
                 'urn:av-openhome.org:service:Playlist:1',
                 'Insert',
                 '<AfterId>0</AfterId><Uri>'+trackUri+'</Uri><Metadata>'+metadata+'</Metadata>',
-                function() {
+                function(res) {
                     callback();
                 }
             );
@@ -174,10 +162,26 @@ var enqueueItemAtStart = function(device) {
 };
 
 exports.PlaylistManager = function(device) {
+    function deleteAll(callback) {
+        upnp.soapRequest(
+            device,
+            'Ds/Playlist',
+            'urn:av-openhome.org:service:Playlist:1',
+            'DeleteAll',
+            '',
+            function (res) {
+                if (res.statusCode === 200) {
+                    callback();
+                }
+                callback("Delete failed with " + res.statusCode);
+            }
+        );
+    }; 
     this.replacePlaylist = function (playlistName) {
-        deleteAll(device, function () {
-            readM3u(playlistName, enqueueItemAtStart(device));
-        });
+        async.series([
+            function (callback) { deleteAll(callback); },
+            function (callback) { readM3u(playlistName, enqueueItemAtStart(device), callback); }
+        ]);
     };
     this.savePlaylist = function (playlistName) {
         upnp.soapRequest(
