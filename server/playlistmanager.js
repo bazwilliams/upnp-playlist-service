@@ -18,20 +18,23 @@ var uriTrackProcessor = function(prefix) {
             return uri;
         }
     };
-}
+};
+
 var trackProcessor = uriTrackProcessor(config.musicRoot);
 
 var writeM3u = function (tracks, playlistName) {
     var playlistLocation = path.normalize(config.playlistPath);
     var data = '';
     _.each(tracks, function(track) {
-        if (fs.exists(track.track)) {
-            var relTrack = path.relative(playlistLocation, track.track);
-            data += '#' + track.metadata + '\n';
-            data += relTrack + '\n';
-        } else {
-            data += '#' + track.metadata + '\n';
-        }
+        fs.exists(track.track, function(exists) {
+            if (exists) {
+                var relTrack = path.relative(playlistLocation, track.track);
+                data += '#' + track.metadata + '\n';
+                data += relTrack + '\n';
+            } else {
+                data += '#' + track.metadata + '\n';
+            }
+        });
     });
     var playlistFile = path.join(playlistLocation, playlistName + '.m3u');
     fs.writeFile(playlistFile, data, {flag: 'wx', encoding: 'utf8'});
@@ -40,19 +43,24 @@ var writeM3u = function (tracks, playlistName) {
 var readM3u = function(playlistName, trackCallback) {
     var playlistLocation = path.normalize(config.playlistPath);
     var playlistFile = path.join(playlistLocation, playlistName + '.m3u');
-    fs.readFile(playlistFile, {encoding: 'utf8'}, function(err, data) {
-        var tracksInReverse = _.chain(data.split(/\n/))
-            .compact()
-            .reverse()
-            .map(function (line) {
-                return line.slice(1);
-            })
-            .value();
-        _.each(tracksInReverse, function(line) {
-            trackCallback(line);
-        });
+    console.log("Attempting to read " + playlistFile);
+    fs.exists(playlistFile, function (exists) {
+        if (exists) {
+            fs.readFile(playlistFile, {encoding: 'utf8'}, function(err, data) {
+                var tracksInReverse = _.chain(data.split(/\n/))
+                    .compact()
+                    .reverse()
+                    .map(function (line) {
+                        return line.slice(1);
+                    })
+                    .value();
+                _.each(tracksInReverse, function(line) {
+                    trackCallback(line);
+                });
+            });
+        }
     });
-}
+};
 
 var processReadListResponse = function (device, callback) {
     return function(res) {
@@ -96,14 +104,14 @@ var generatePlaylist = function (device, idArray, playlistName) {
         writeM3u(tracks, playlistName);
     };
     upnp.soapRequest(
-        device, 
-        'Ds/Playlist', 
-        'urn:av-openhome.org:service:Playlist:1', 
-        'ReadList', 
+        device,
+        'Ds/Playlist',
+        'urn:av-openhome.org:service:Playlist:1',
+        'ReadList',
         '<IdList>'+idArrayString+'</IdList>',
         processReadListResponse(device, storePlaylist)
     );
-}
+};
 
 var processPlaylistResponse = function (device, playlistName) {
     return function(res) {
@@ -128,14 +136,14 @@ var processPlaylistResponse = function (device, playlistName) {
 
 var deleteAll = function(device, callback) {
         upnp.soapRequest(
-            device, 
+            device,
             'Ds/Playlist',
-            'urn:av-openhome.org:service:Playlist:1', 
-            'DeleteAll', 
+            'urn:av-openhome.org:service:Playlist:1',
+            'DeleteAll',
             '',
             callback
         );
-}
+};
 
 var enqueueItemAtStart = function(device) {
     return function(trackDetailsXml) {
@@ -148,15 +156,15 @@ var enqueueItemAtStart = function(device) {
                 .replace(/>/g, "&gt;")
                 .replace(/"/g, "&quot;");
             upnp.soapRequest(
-                device, 
+                device,
                 'Ds/Playlist',
-                'urn:av-openhome.org:service:Playlist:1', 
-                'Insert', 
+                'urn:av-openhome.org:service:Playlist:1',
+                'Insert',
                 '<AfterId>0</AfterId><Uri>'+trackUri+'</Uri><Metadata>'+metadata+'</Metadata>'
             );
         });
     };
-}
+};
 
 exports.PlaylistManager = function(device) {
     this.replacePlaylist = function (playlistName) {
@@ -166,12 +174,12 @@ exports.PlaylistManager = function(device) {
     };
     this.savePlaylist = function (playlistName) {
         upnp.soapRequest(
-            device, 
-        'Ds/Playlist', 
-        'urn:av-openhome.org:service:Playlist:1', 
-        'IdArray', 
-        '',
-        processPlaylistResponse(device, playlistName)
+            device,
+            'Ds/Playlist',
+            'urn:av-openhome.org:service:Playlist:1',
+            'IdArray',
+            '',
+            processPlaylistResponse(device, playlistName)
         );
     };
 };

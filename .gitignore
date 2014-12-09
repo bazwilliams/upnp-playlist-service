@@ -30,4 +30,10 @@ bower_components
 
 # node-persist data
 persist
+
+# Node tools stuff
 .ntvs_analysis.dat
+
+# Configuration Data
+config.js
+
