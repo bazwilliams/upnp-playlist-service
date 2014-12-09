@@ -6,6 +6,7 @@ var xmlParser = new xml2js.Parser({explicitArray: false});
 var path = require('path');
 var fs = require('fs');
 var util = require('util');
+var async = require('async');
 var EventEmitter = require('events').EventEmitter;
 
 var config = require('../config.js');
@@ -25,39 +26,42 @@ var trackProcessor = uriTrackProcessor(config.musicRoot);
 var writeM3u = function (tracks, playlistName) {
     var playlistLocation = path.normalize(config.playlistPath);
     var data = '';
-    _.each(tracks, function(track) {
-        fs.exists(track.track, function(exists) {
-            if (exists) {
+    async.eachSeries(tracks, function(track, callback) {
+        fs.stat(track.track, function(err, stats) {
+            if (stats && stats.isFile()) {
                 var relTrack = path.relative(playlistLocation, track.track);
-                data += '#' + track.metadata + '\n';
                 data += relTrack + '\n';
-            } else {
-                data += '#' + track.metadata + '\n';
             }
+            data += '#' + track.metadata + '\n';
+            callback();
         });
+    }, function () {
+        var playlistFile = path.join(playlistLocation, playlistName + '.m3u');
+        fs.writeFile(playlistFile, data, {flag: 'wx', encoding: 'utf8'});
     });
-    var playlistFile = path.join(playlistLocation, playlistName + '.m3u');
-    fs.writeFile(playlistFile, data, {flag: 'wx', encoding: 'utf8'});
 };
 
 var readM3u = function(playlistName, trackCallback) {
     var playlistLocation = path.normalize(config.playlistPath);
     var playlistFile = path.join(playlistLocation, playlistName + '.m3u');
     console.log("Attempting to read " + playlistFile);
-    fs.exists(playlistFile, function (exists) {
-        if (exists) {
-            fs.readFile(playlistFile, {encoding: 'utf8'}, function(err, data) {
-                var tracksInReverse = _.chain(data.split(/\n/))
-                    .compact()
-                    .reverse()
-                    .map(function (line) {
+    fs.readFile(playlistFile, {encoding: 'utf8'}, function(err, data) {
+        if (data) {
+            var tracksInReverse = _.chain(data.split(/\n/))
+                .compact()
+                .map(function (line) {
+                    if (line[0] === '#') {
                         return line.slice(1);
-                    })
-                    .value();
-                _.each(tracksInReverse, function(line) {
-                    trackCallback(line);
-                });
+                    }
+                })
+                .compact()
+                .reverse()
+                .value();
+            async.eachSeries(tracksInReverse, function(line, callback) {
+                trackCallback(line, callback);
             });
+        } else {
+            console.log(err);
         }
     });
 };
@@ -146,7 +150,7 @@ var deleteAll = function(device, callback) {
 };
 
 var enqueueItemAtStart = function(device) {
-    return function(trackDetailsXml) {
+    return function(trackDetailsXml, callback) {
         xmlParser.parseString(trackDetailsXml, function (err, result) {
             var trackUri = result['DIDL-Lite']['item']['res']
                 .replace(/&/g, "&amp;");
@@ -160,7 +164,10 @@ var enqueueItemAtStart = function(device) {
                 'Ds/Playlist',
                 'urn:av-openhome.org:service:Playlist:1',
                 'Insert',
-                '<AfterId>0</AfterId><Uri>'+trackUri+'</Uri><Metadata>'+metadata+'</Metadata>'
+                '<AfterId>0</AfterId><Uri>'+trackUri+'</Uri><Metadata>'+metadata+'</Metadata>',
+                function() {
+                    callback();
+                }
             );
         });
     };
