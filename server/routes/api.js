@@ -120,8 +120,13 @@ exports.storePlaylist = function(req, res) {
     var playlistName = req.params.playlistName;
     var device = manager.getDevice(uuid);
     if (device) {
-        new PlaylistManager(device).savePlaylist(playlistName);
-        res.send(201);
+        new PlaylistManager(device).savePlaylist(playlistName, function (err, results) {
+            if (err) {
+                res.status(400).send(err);
+            } else {
+                res.send(201);
+            }
+        });
     } else {
         res.send(404);
     }

@@ -23,21 +23,21 @@ var uriTrackProcessor = function(prefix) {
 
 var trackProcessor = uriTrackProcessor(config.musicRoot);
 
-var writeM3u = function (tracks, playlistName) {
+var writeM3u = function (tracks, playlistName, callback) {
     var playlistLocation = path.normalize(config.playlistPath);
     var data = '';
-    async.eachSeries(tracks, function(track, callback) {
+    async.eachSeries(tracks, function(track, iterCallback) {
         fs.stat(track.track, function(err, stats) {
             if (stats && stats.isFile()) {
                 var relTrack = path.relative(playlistLocation, track.track);
                 data += relTrack + '\n';
             }
             data += '#' + track.metadata + '\n';
-            callback();
+            iterCallback();
         });
     }, function () {
         var playlistFile = path.join(playlistLocation, playlistName + '.m3u');
-        fs.writeFile(playlistFile, data, {flag: 'wx', encoding: 'utf8'});
+        fs.writeFile(playlistFile, data, { flag: 'wx', encoding: 'utf8' }, callback);
     });
 };
 
@@ -74,13 +74,13 @@ var processReadListResponse = function (device, callback) {
     };
 };
 
-var generatePlaylist = function (device, idArray, playlistName) {
+var generatePlaylist = function (device, idArray, playlistName, callback) {
     var idArrayString = '';
     _.each(idArray, function (id) {
         idArrayString += (id + ' ');
     });
     var storePlaylist = function (tracks) {
-        writeM3u(tracks, playlistName);
+        writeM3u(tracks, playlistName, callback);
     };
     upnp.soapRequest(
         device,
@@ -92,7 +92,7 @@ var generatePlaylist = function (device, idArray, playlistName) {
     );
 };
 
-var processPlaylistResponse = function (device, playlistName) {
+var processPlaylistResponse = function (device, playlistName, callback) {
     return function(res) {
         var body = '';
         res.setEncoding('utf8');
@@ -107,7 +107,7 @@ var processPlaylistResponse = function (device, playlistName) {
                 _.each(_.range(buffer.length / 4), function () {
                     arrayList.push(binaryList.word32bu('a').vars.a);
                 });
-                generatePlaylist(device, arrayList, playlistName);
+                generatePlaylist(device, arrayList, playlistName, callback);
             });
         });
     };
@@ -168,14 +168,14 @@ exports.PlaylistManager = function(device) {
             });
         });
     };
-    this.savePlaylist = function (playlistName) {
+    this.savePlaylist = function (playlistName, callback) {
         upnp.soapRequest(
             device,
             'Ds/Playlist',
             'urn:av-openhome.org:service:Playlist:1',
             'IdArray',
             '',
-            processPlaylistResponse(device, playlistName)
+            processPlaylistResponse(device, playlistName, callback)
         );
     };
 };
