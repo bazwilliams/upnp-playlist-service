@@ -165,17 +165,17 @@ exports.PlaylistManager = function(device) {
         async.waterfall([
             getTrackIds,
             retrieveTrackDetails
-        ], function (err, tracks) {
+        ], function (err, trackDetails) {
             if (err) {
                 callback(err);
             } else {
-                var transformedTracks = _.map(tracks, function(track) {
+                var transformedTracks = _.map(trackDetails, function(track) {
                     return {
                         track: trackProcessor.translate(track.track),
                         metadata: track.metadata
                     }
                 });
-                m3u.write(transformedTracks, playlistName, callback)
+                m3u.write(transformedTracks, playlistName, callback);
             }
         });
     };
