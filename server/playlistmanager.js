@@ -123,10 +123,11 @@ exports.PlaylistManager = function(device) {
                 'Insert',
                 '<AfterId>' + afterId + '</AfterId><Uri>' + trackUri + '</Uri><Metadata>' + metadata + '</Metadata>',
                 function (res) {
-                    if (res.statusCode === 200) {
+                    if (res.statusCode == 200) {
                         callback();
+                    } else {
+                        callback(new Error("Queue failed with " + res.statusCode));
                     }
-                    callback(new Error("Queue failed with " + res.statusCode));
                 }
             );
         });

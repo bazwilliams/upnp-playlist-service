@@ -2,6 +2,7 @@
 var fs = require('fs');
 var config = require('../config.js');
 var path = require('path');
+var async = require('async');
 
 exports.read = function (playlistName, callback) {
     var playlistLocation = path.normalize(config.playlistPath);
