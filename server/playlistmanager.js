@@ -63,7 +63,7 @@ var processReadListResponse = function (device, callback) {
                         if (result.TrackList.Entry) {
                             tracks.push({
                                 track: trackProcessor(result.TrackList.Entry.Uri),
-                                metadata: track.Metadata
+                                metadata: result.TrackList.Entry.Metadata
                             });
                         }
                     }

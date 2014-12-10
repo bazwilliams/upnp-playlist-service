@@ -24,6 +24,7 @@
     <Content Include="persist\schedules.json" />
     <Compile Include="server\app.js" />
     <Compile Include="server\devicemanager.js" />
+    <Compile Include="server\m3u.js" />
     <Compile Include="server\playlistmanager.js" />
     <Compile Include="server\schedulemanager.js" />
     <Compile Include="server\watch.js" />
@@ -210,7 +211,6 @@
     <Compile Include="public\js\services.js" />
     <Compile Include="server\lib\upnp.js" />
     <Compile Include="server\routes\api.js" />
-    <Compile Include="server\routes\routes.js" />
     <Content Include="server\views\index.jade" />
     <Content Include="server\views\layout.jade" />
   </ItemGroup>
