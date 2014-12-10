@@ -3,11 +3,7 @@ var upnp = require("./lib/upnp.js");
 var binary = require('binary');
 var xml2js = require('xml2js');
 var xmlParser = new xml2js.Parser({explicitArray: false});
-var path = require('path');
-var fs = require('fs');
-var util = require('util');
 var async = require('async');
-var EventEmitter = require('events').EventEmitter;
 var config = require('../config.js');
 var m3u = require('./m3u.js');
 
@@ -21,27 +17,8 @@ var uriTrackProcessor = function(prefix) {
     };
 };
 
-var trackProcessor = uriTrackProcessor(config.musicRoot);
-
-var writeM3u = function (tracks, playlistName, callback) {
-    var playlistLocation = path.normalize(config.playlistPath);
-    var data = '';
-    async.eachSeries(tracks, function(track, iterCallback) {
-        fs.stat(track.track, function(err, stats) {
-            if (stats && stats.isFile()) {
-                var relTrack = path.relative(playlistLocation, track.track);
-                data += relTrack + '\n';
-            }
-            data += '#' + track.metadata + '\n';
-            iterCallback();
-        });
-    }, function () {
-        var playlistFile = path.join(playlistLocation, playlistName + '.m3u');
-        fs.writeFile(playlistFile, data, { flag: 'wx', encoding: 'utf8' }, callback);
-    });
-};
-
 var processReadListResponse = function (device, callback) {
+    var trackProcessor = uriTrackProcessor(config.musicRoot);
     return function(res) {
         var body = '';
         res.setEncoding('utf8');
@@ -80,7 +57,7 @@ var generatePlaylist = function (device, idArray, playlistName, callback) {
         idArrayString += (id + ' ');
     });
     var storePlaylist = function (tracks) {
-        writeM3u(tracks, playlistName, callback);
+        m3u.write(tracks, playlistName, callback);
     };
     upnp.soapRequest(
         device,
@@ -149,23 +126,27 @@ exports.PlaylistManager = function(device) {
                     if (res.statusCode === 200) {
                         callback();
                     }
-                    callback("Queue failed with " + res.statusCode);
+                    callback(new Error("Queue failed with " + res.statusCode));
                 }
             );
         });
     };
-    this.replacePlaylist = function (playlistName) {
+    this.replacePlaylist = function (playlistName, callback) {
         async.series({
-            "delete": function (callback) {
-                deleteAll(callback);
+            "delete": function (iterCallback) {
+                deleteAll(iterCallback);
             },
-            "tracks": function (callback) {
-                m3u.read(playlistName, callback);
+            "tracks": function (iterCallback) {
+                m3u.read(playlistName, iterCallback);
             }
         }, function (err, results) {
-            async.mapSeries(results.tracks, function (trackXml, callback) {
-                queueTrack(trackXml, 0, callback);
-            });
+            if (err) {
+                callback(err);
+            } else {
+                async.mapSeries(results.tracks, function (trackXml, iterCallback) {
+                    queueTrack(trackXml, 0, iterCallback);
+                }, callback);
+            }
         });
     };
     this.savePlaylist = function (playlistName, callback) {

@@ -137,8 +137,13 @@ exports.replacePlaylist = function(req, res) {
     var playlistName = req.body.playlistName;
     var device = manager.getDevice(uuid);
     if (device) {
-        new PlaylistManager(device).replacePlaylist(playlistName);
-        res.send(200);
+        new PlaylistManager(device).replacePlaylist(playlistName, function (err, results) {
+            if (err) {
+                res.status(400).send(err);
+            } else {
+                res.send(200);
+            }
+        });
     } else {
         res.send(404);
     }

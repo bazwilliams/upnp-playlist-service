@@ -21,7 +21,25 @@ exports.read = function (playlistName, callback) {
                 .value();
             callback(null, tracksInReverse);
         } else {
-            console.log(err);
+            callback(err);
         }
+    });
+};
+
+exports.write = function (tracks, playlistName, callback) {
+    var playlistLocation = path.normalize(config.playlistPath);
+    var data = '';
+    async.eachSeries(tracks, function(track, iterCallback) {
+        fs.stat(track.track, function(err, stats) {
+            if (stats && stats.isFile()) {
+                var relTrack = path.relative(playlistLocation, track.track);
+                data += relTrack + '\n';
+            }
+            data += '#' + track.metadata + '\n';
+            iterCallback();
+        });
+    }, function () {
+        var playlistFile = path.join(playlistLocation, playlistName + '.m3u');
+        fs.writeFile(playlistFile, data, { flag: 'wx', encoding: 'utf8' }, callback);
     });
 };
