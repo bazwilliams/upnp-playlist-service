@@ -6,56 +6,10 @@ var xmlParser = new xml2js.Parser({explicitArray: false});
 var async = require('async');
 var config = require('../config.js');
 var m3u = require('./m3u.js');
-
-var uriTrackProcessor = function(prefix) {
-    return function (uri) {
-        if (uri.indexOf('http:') === 0) {
-            return path.join(prefix, decodeURIComponent(uri.replace(/http:.*\/minimserver\/\*\/[^\/.]*\//, '').replace(/\*/g, '%')));
-        } else {
-            return uri;
-        }
-    };
-};
+var trackProcessor = require('./trackprocessor.js');
 
 exports.PlaylistManager = function(device) {
-    function processReadListResponse(device, callback) {
-        var trackProcessor = uriTrackProcessor(config.musicRoot);
-        return function(res) {
-            var body = '';
-            res.setEncoding('utf8');
-            res.on('data', function (chunk) {
-                body += chunk;
-            });
-            res.once('end', function () {
-                xmlParser.parseString(body, function (err, result) {
-                    xmlParser.parseString(result['s:Envelope']['s:Body']['u:ReadListResponse'].TrackList, function (err, result) {
-                        if (err) {
-                            callback(err);
-                        } else {
-                            var tracks = [];
-                            if (_.isArray(result.TrackList.Entry)) {
-                                _.each(result.TrackList.Entry, function (track) {
-                                    tracks.push({
-                                        track: trackProcessor(track.Uri),
-                                        metadata: track.Metadata
-                                    });
-                                });
-                            } else {
-                                if (result.TrackList.Entry) {
-                                    tracks.push({
-                                        track: trackProcessor(result.TrackList.Entry.Uri),
-                                        metadata: result.TrackList.Entry.Metadata
-                                    });
-                                }
-                            }
-                            callback(null, tracks);
-                        }
-                    });
-                });
-            });
-        };
-    };
-    function generatePlaylist(idArray, callback) {
+    function retrieveTracks(idArray, callback) {
         var idArrayString = '';
         _.each(idArray, function (id) {
             idArrayString += (id + ' ');
@@ -66,7 +20,40 @@ exports.PlaylistManager = function(device) {
             'urn:av-openhome.org:service:Playlist:1',
             'ReadList',
             '<IdList>'+idArrayString+'</IdList>',
-            processReadListResponse(device, callback)
+            function(res) {
+                var body = '';
+                res.setEncoding('utf8');
+                res.on('data', function (chunk) {
+                    body += chunk;
+                });
+                res.once('end', function () {
+                    xmlParser.parseString(body, function (err, result) {
+                        xmlParser.parseString(result['s:Envelope']['s:Body']['u:ReadListResponse'].TrackList, function (err, result) {
+                            if (err) {
+                                callback(err);
+                            } else {
+                                var tracks = [];
+                                if (_.isArray(result.TrackList.Entry)) {
+                                    _.each(result.TrackList.Entry, function (track) {
+                                        tracks.push({
+                                            track: track.Uri,
+                                            metadata: track.Metadata
+                                        });
+                                    });
+                                } else {
+                                    if (result.TrackList.Entry) {
+                                        tracks.push({
+                                            track: result.TrackList.Entry.Uri,
+                                            metadata: result.TrackList.Entry.Metadata
+                                        });
+                                    }
+                                }
+                                callback(null, tracks);
+                            }
+                        });
+                    });
+                });
+            }
         );
     };
     function trackIds(callback) {
@@ -168,12 +155,18 @@ exports.PlaylistManager = function(device) {
                 callback(err);
             }
             if (trackids) {
-                generatePlaylist(trackids, function(err, tracks) {
+                retrieveTracks(trackids, function(err, tracks) {
                     if (err) {
                         callback(err);
                     }
                     if (tracks) {
-                        m3u.write(tracks, playlistName, callback)
+                        var transformedTracks = _.map(tracks, function(track) {
+                            return {
+                                track: trackProcessor.translate(track.track),
+                                metadata: track.metadata
+                            }
+                        });
+                        m3u.write(transformedTracks, playlistName, callback)
                     }
                 });
             }
