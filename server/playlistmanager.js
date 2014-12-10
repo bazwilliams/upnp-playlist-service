@@ -19,7 +19,7 @@ exports.PlaylistManager = function(device) {
             'Ds/Playlist',
             'urn:av-openhome.org:service:Playlist:1',
             'ReadList',
-            '<IdList>'+idArrayString+'</IdList>',
+            '<IdList>' + idArrayString + '</IdList>',
             function(res) {
                 var body = '';
                 res.setEncoding('utf8');
@@ -28,29 +28,33 @@ exports.PlaylistManager = function(device) {
                 });
                 res.once('end', function () {
                     xmlParser.parseString(body, function (err, result) {
-                        xmlParser.parseString(result['s:Envelope']['s:Body']['u:ReadListResponse'].TrackList, function (err, result) {
-                            if (err) {
-                                callback(err);
-                            } else {
-                                var tracks = [];
-                                if (_.isArray(result.TrackList.Entry)) {
-                                    _.each(result.TrackList.Entry, function (track) {
-                                        tracks.push({
-                                            track: track.Uri,
-                                            metadata: track.Metadata
-                                        });
-                                    });
+                        if (err) {
+                            callback(err);
+                        } else {
+                            xmlParser.parseString(result['s:Envelope']['s:Body']['u:ReadListResponse'].TrackList, function (err, result) {
+                                if (err) {
+                                    callback(err);
                                 } else {
-                                    if (result.TrackList.Entry) {
-                                        tracks.push({
-                                            track: result.TrackList.Entry.Uri,
-                                            metadata: result.TrackList.Entry.Metadata
+                                    var tracks = [];
+                                    if (_.isArray(result.TrackList.Entry)) {
+                                        _.each(result.TrackList.Entry, function (track) {
+                                            tracks.push({
+                                                track: track.Uri,
+                                                metadata: track.Metadata
+                                            });
                                         });
+                                    } else {
+                                        if (result.TrackList.Entry) {
+                                            tracks.push({
+                                                track: result.TrackList.Entry.Uri,
+                                                metadata: result.TrackList.Entry.Metadata
+                                            });
+                                        }
                                     }
+                                    callback(null, tracks);
                                 }
-                                callback(null, tracks);
-                            }
-                        });
+                            });
+                        }
                     });
                 });
             }
@@ -71,13 +75,17 @@ exports.PlaylistManager = function(device) {
                 });
                 res.once('end', function () {
                     xmlParser.parseString(body, function (err, result) {
-                        var buffer = new Buffer(result['s:Envelope']['s:Body']['u:IdArrayResponse'].Array, 'base64');
-                        var arrayList = [];
-                        var binaryList = binary.parse(buffer);
-                        _.each(_.range(buffer.length / 4), function () {
-                            arrayList.push(binaryList.word32bu('a').vars.a);
-                        });
-                        callback(null, arrayList);
+                        if (err) {
+                            callback(err);
+                        } else {
+                            var buffer = new Buffer(result['s:Envelope']['s:Body']['u:IdArrayResponse'].Array, 'base64');
+                            var arrayList = [];
+                            var binaryList = binary.parse(buffer);
+                            _.each(_.range(buffer.length / 4), function () {
+                                arrayList.push(binaryList.word32bu('a').vars.a);
+                            });
+                            callback(null, arrayList);
+                        }
                     });
                 });
             }
@@ -101,27 +109,31 @@ exports.PlaylistManager = function(device) {
     };
     function queueTrack(trackDetailsXml, afterId, callback) {
         xmlParser.parseString(trackDetailsXml, function (err, result) {
-            var trackUri = result['DIDL-Lite']['item']['res']
-                .replace(/&/g, "&amp;");
-            var metadata = trackDetailsXml
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;");
-            upnp.soapRequest(
-                device,
-                'Ds/Playlist',
-                'urn:av-openhome.org:service:Playlist:1',
-                'Insert',
-                '<AfterId>' + afterId + '</AfterId><Uri>' + trackUri + '</Uri><Metadata>' + metadata + '</Metadata>',
-                function (res) {
-                    if (res.statusCode == 200) {
-                        callback();
-                    } else {
-                        callback(new Error("Queue failed with " + res.statusCode));
+            if (err) {
+                callback(err);
+            } else {
+                var trackUri = result['DIDL-Lite']['item']['res']
+                    .replace(/&/g, "&amp;");
+                var metadata = trackDetailsXml
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;");
+                upnp.soapRequest(
+                    device,
+                    'Ds/Playlist',
+                    'urn:av-openhome.org:service:Playlist:1',
+                    'Insert',
+                    '<AfterId>' + afterId + '</AfterId><Uri>' + trackUri + '</Uri><Metadata>' + metadata + '</Metadata>',
+                    function (res) {
+                        if (res.statusCode == 200) {
+                            callback();
+                        } else {
+                            callback(new Error("Queue failed with " + res.statusCode));
+                        }
                     }
-                }
-            );
+                );
+            }
         });
     };
     function queueAllTracks(tracks, callback) {
