@@ -166,13 +166,17 @@ exports.PlaylistManager = function(device) {
             getTrackIds,
             retrieveTrackDetails
         ], function (err, tracks) {
-            var transformedTracks = _.map(tracks, function(track) {
-                return {
-                    track: trackProcessor.translate(track.track),
-                    metadata: track.metadata
-                }
-            });
-            m3u.write(transformedTracks, playlistName, callback)
+            if (err) {
+                callback(err);
+            } else {
+                var transformedTracks = _.map(tracks, function(track) {
+                    return {
+                        track: trackProcessor.translate(track.track),
+                        metadata: track.metadata
+                    }
+                });
+                m3u.write(transformedTracks, playlistName, callback)
+            }
         });
     };
 };
