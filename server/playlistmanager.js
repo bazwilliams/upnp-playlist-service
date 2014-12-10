@@ -9,7 +9,7 @@ var m3u = require('./m3u.js');
 var trackProcessor = require('./trackprocessor.js');
 
 exports.PlaylistManager = function(device) {
-    function retrieveTracks(idArray, callback) {
+    function retrieveTrackDetails(idArray, callback) {
         var idArrayString = '';
         _.each(idArray, function (id) {
             idArrayString += (id + ' ');
@@ -60,7 +60,7 @@ exports.PlaylistManager = function(device) {
             }
         );
     };
-    function trackIds(callback) {
+    function getTrackIds(callback) {
         upnp.soapRequest(
             device,
             'Ds/Playlist',
@@ -162,26 +162,17 @@ exports.PlaylistManager = function(device) {
         });
     };
     this.savePlaylist = function (playlistName, callback) {
-        trackIds(function(err, trackids) {
-            if (err) {
-                callback(err);
-            }
-            if (trackids) {
-                retrieveTracks(trackids, function(err, tracks) {
-                    if (err) {
-                        callback(err);
-                    }
-                    if (tracks) {
-                        var transformedTracks = _.map(tracks, function(track) {
-                            return {
-                                track: trackProcessor.translate(track.track),
-                                metadata: track.metadata
-                            }
-                        });
-                        m3u.write(transformedTracks, playlistName, callback)
-                    }
-                });
-            }
+        async.waterfall([
+            getTrackIds,
+            retrieveTrackDetails
+        ], function (err, tracks) {
+            var transformedTracks = _.map(tracks, function(track) {
+                return {
+                    track: trackProcessor.translate(track.track),
+                    metadata: track.metadata
+                }
+            });
+            m3u.write(transformedTracks, playlistName, callback)
         });
     };
 };
