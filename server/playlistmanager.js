@@ -17,80 +17,85 @@ var uriTrackProcessor = function(prefix) {
     };
 };
 
-var processReadListResponse = function (device, callback) {
-    var trackProcessor = uriTrackProcessor(config.musicRoot);
-    return function(res) {
-        var body = '';
-        res.setEncoding('utf8');
-        res.on('data', function (chunk) {
-            body += chunk;
-        });
-        res.on('end', function () {
-            xmlParser.parseString(body, function (err, result) {
-                xmlParser.parseString(result['s:Envelope']['s:Body']['u:ReadListResponse'].TrackList, function (err, result) {
-                    var tracks = [];
-                    if (_.isArray(result.TrackList.Entry)) {
-                        _.each(result.TrackList.Entry, function (track) {
-                            tracks.push({
-                                track: trackProcessor(track.Uri),
-                                metadata: track.Metadata
-                            });
-                        });
-                    } else {
-                        if (result.TrackList.Entry) {
-                            tracks.push({
-                                track: trackProcessor(result.TrackList.Entry.Uri),
-                                metadata: result.TrackList.Entry.Metadata
-                            });
-                        }
-                    }
-                    callback(tracks);
-                });
-            });
-        });
-    };
-};
-
-var generatePlaylist = function (device, idArray, playlistName, callback) {
-    var idArrayString = '';
-    _.each(idArray, function (id) {
-        idArrayString += (id + ' ');
-    });
-    var storePlaylist = function (tracks) {
-        m3u.write(tracks, playlistName, callback);
-    };
-    upnp.soapRequest(
-        device,
-        'Ds/Playlist',
-        'urn:av-openhome.org:service:Playlist:1',
-        'ReadList',
-        '<IdList>'+idArrayString+'</IdList>',
-        processReadListResponse(device, storePlaylist)
-    );
-};
-
-var processPlaylistResponse = function (device, playlistName, callback) {
-    return function(res) {
-        var body = '';
-        res.setEncoding('utf8');
-        res.on('data', function (chunk) {
-            body += chunk;
-        });
-        res.on('end', function () {
-            xmlParser.parseString(body, function (err, result) {
-                var buffer = new Buffer(result['s:Envelope']['s:Body']['u:IdArrayResponse'].Array, 'base64');
-                var arrayList = [];
-                var binaryList = binary.parse(buffer);
-                _.each(_.range(buffer.length / 4), function () {
-                    arrayList.push(binaryList.word32bu('a').vars.a);
-                });
-                generatePlaylist(device, arrayList, playlistName, callback);
-            });
-        });
-    };
-};
-
 exports.PlaylistManager = function(device) {
+    function processReadListResponse(device, callback) {
+        var trackProcessor = uriTrackProcessor(config.musicRoot);
+        return function(res) {
+            var body = '';
+            res.setEncoding('utf8');
+            res.on('data', function (chunk) {
+                body += chunk;
+            });
+            res.once('end', function () {
+                xmlParser.parseString(body, function (err, result) {
+                    xmlParser.parseString(result['s:Envelope']['s:Body']['u:ReadListResponse'].TrackList, function (err, result) {
+                        if (err) {
+                            callback(err);
+                        } else {
+                            var tracks = [];
+                            if (_.isArray(result.TrackList.Entry)) {
+                                _.each(result.TrackList.Entry, function (track) {
+                                    tracks.push({
+                                        track: trackProcessor(track.Uri),
+                                        metadata: track.Metadata
+                                    });
+                                });
+                            } else {
+                                if (result.TrackList.Entry) {
+                                    tracks.push({
+                                        track: trackProcessor(result.TrackList.Entry.Uri),
+                                        metadata: result.TrackList.Entry.Metadata
+                                    });
+                                }
+                            }
+                            callback(null, tracks);
+                        }
+                    });
+                });
+            });
+        };
+    };
+    function generatePlaylist(idArray, callback) {
+        var idArrayString = '';
+        _.each(idArray, function (id) {
+            idArrayString += (id + ' ');
+        });
+        upnp.soapRequest(
+            device,
+            'Ds/Playlist',
+            'urn:av-openhome.org:service:Playlist:1',
+            'ReadList',
+            '<IdList>'+idArrayString+'</IdList>',
+            processReadListResponse(device, callback)
+        );
+    };
+    function trackIds(callback) {
+        upnp.soapRequest(
+            device,
+            'Ds/Playlist',
+            'urn:av-openhome.org:service:Playlist:1',
+            'IdArray',
+            '',
+            function (res) {
+                var body = '';
+                res.setEncoding('utf8');
+                res.on('data', function (chunk) {
+                    body += chunk;
+                });
+                res.once('end', function () {
+                    xmlParser.parseString(body, function (err, result) {
+                        var buffer = new Buffer(result['s:Envelope']['s:Body']['u:IdArrayResponse'].Array, 'base64');
+                        var arrayList = [];
+                        var binaryList = binary.parse(buffer);
+                        _.each(_.range(buffer.length / 4), function () {
+                            arrayList.push(binaryList.word32bu('a').vars.a);
+                        });
+                        callback(null, arrayList);
+                    });
+                });
+            }
+        );
+    };
     function deleteAll(callback) {
         upnp.soapRequest(
             device,
@@ -132,6 +137,14 @@ exports.PlaylistManager = function(device) {
             );
         });
     };
+    function queueAllTracks(tracks, callback) {
+        async.mapSeries(
+            tracks, 
+            function (trackXml, iterCallback) {
+                queueTrack(trackXml, 0, iterCallback);
+            }, 
+            callback);
+    };
     this.replacePlaylist = function (playlistName, callback) {
         async.series({
             "delete": function (iterCallback) {
@@ -143,21 +156,27 @@ exports.PlaylistManager = function(device) {
         }, function (err, results) {
             if (err) {
                 callback(err);
-            } else {
-                async.mapSeries(results.tracks, function (trackXml, iterCallback) {
-                    queueTrack(trackXml, 0, iterCallback);
-                }, callback);
+            }
+            if (results && results.tracks) {
+                queueAllTracks(results.tracks, callback);
             }
         });
     };
     this.savePlaylist = function (playlistName, callback) {
-        upnp.soapRequest(
-            device,
-            'Ds/Playlist',
-            'urn:av-openhome.org:service:Playlist:1',
-            'IdArray',
-            '',
-            processPlaylistResponse(device, playlistName, callback)
-        );
+        trackIds(function(err, trackids) {
+            if (err) {
+                callback(err);
+            }
+            if (trackids) {
+                generatePlaylist(trackids, function(err, tracks) {
+                    if (err) {
+                        callback(err);
+                    }
+                    if (tracks) {
+                        m3u.write(tracks, playlistName, callback)
+                    }
+                });
+            }
+        });
     };
 };
