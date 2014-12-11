@@ -13,10 +13,10 @@ exports.read = function (playlistName, callback) {
             var tracksInReverse = _.chain(data.split(/\n/))
                 .compact()
                 .map(function (line) {
-                if (line[0] === '#') {
-                    return line.slice(1);
-                }
-            })
+                    if (line[0] === '#') {
+                        return line.slice(1);
+                    }
+                })
                 .compact()
                 .reverse()
                 .value();
