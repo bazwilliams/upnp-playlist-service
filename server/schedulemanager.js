@@ -5,6 +5,7 @@ var EventEmitter = require('events').EventEmitter;
 var _ = require('underscore');
 var guid = require('node-uuid');
 var Ds = require('./ds.js').Ds;
+var async = require('async');
 
 var recurrenceRuleFactory = function (schedule) {
     var recurrence = new scheduler.RecurrenceRule();
@@ -21,25 +22,35 @@ var ScheduleManager = function(options) {
         storage.setItem('schedules.json', []);
     }
 
-    function changeSource(uuid, sourceId) {
+    function actionFactory(uuid, sourceId, callback) {
         return function () {
             var device = options.manager.getDevice(uuid);
             if (device) {
-                new Ds(device).changeSource(sourceId, function(err) {
-                    if (err) {
-                        console.log(err);
-                    }
-                });
+                var ds = new Ds(device);
+                async.series([
+                    ds.powerOn,
+                    function(iterCallback) {
+                        ds.changeSource(sourceId, iterCallback);
+                    },
+                    ds.playRadio
+                ], callback);
+            } else {
+                callback(new Error("Device with UUID (" + uuid + ") not found"));
             }
         }
     };
 
     function scheduleJobs() {
+        function callback(err) {
+            if (err) {
+                console.log(err);
+            }
+        };
         _.each(jobs, function (job) {
             job.cancel();
         });
         jobs = _.map(storage.getItem('schedules.json'), function (schedule) {
-            return scheduler.scheduleJob(recurrenceRuleFactory(schedule.wakeUp), changeSource(schedule.uuid, schedule.source));
+            return scheduler.scheduleJob(recurrenceRuleFactory(schedule.wakeUp), actionFactory(schedule.uuid, schedule.source, callback));
         });
     };
 
@@ -57,7 +68,7 @@ var ScheduleManager = function(options) {
 	        var wakeUp = {
 	            id: guid.v1(),
 	            uuid: uuid,
-	            source: 1,
+	            source: 1, //defaults to DS radio
 	            wakeUp: schedule
 	        };
 	        schedules.push(wakeUp)

@@ -148,4 +148,36 @@ exports.Ds = function(device) {
             }
         );
     };
+    this.powerOn = function (callback) {
+        upnp.soapRequest(
+            device, 
+            'Ds/Product/control',
+            'urn:av-openhome.org:service:Product:1', 
+            'SetStandby', 
+            '<Value>1</Value>',
+            function (res) {
+                if (res.statusCode === 200) {
+                    callback();
+                } else {
+                    callback(new Error("Power On failed with status " + res.statusCode));
+                }
+            }
+        );
+    };
+    this.playRadio = function (callback) {
+        upnp.soapRequest(
+            device, 
+            'Ds/Radio/control',
+            'urn:av-openhome.org:service:Radio:1', 
+            'Play', 
+            '',
+            function (res) {
+                if (res.statusCode === 200) {
+                    callback();
+                } else {
+                    callback(new Error("Power On failed with status " + res.statusCode));
+                }
+            }
+        );
+    };
 }
