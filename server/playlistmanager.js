@@ -1,7 +1,6 @@
 
 var _ = require('underscore');
 var async = require('async');
-var config = require('../config.js');
 var m3u = require('./m3u.js');
 var trackProcessor = require('./trackprocessor.js');
 var Ds = require('./ds.js').Ds;
