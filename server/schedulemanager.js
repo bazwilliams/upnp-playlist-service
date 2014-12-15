@@ -4,6 +4,7 @@ var util = require('util');
 var EventEmitter = require('events').EventEmitter;
 var _ = require('underscore');
 var guid = require('node-uuid');
+var Ds = require('./ds.js').Ds;
 
 var recurrenceRuleFactory = function (schedule) {
     var recurrence = new scheduler.RecurrenceRule();
@@ -24,7 +25,11 @@ var ScheduleManager = function(options) {
         return function () {
             var device = options.manager.getDevice(uuid);
             if (device) {
-                options.manager.changeSource(device, sourceId);
+                new Ds(device).changeSource(sourceId, function(err) {
+                    if (err) {
+                        console.log(err);
+                    }
+                });
             }
         }
     };

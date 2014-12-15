@@ -95,7 +95,7 @@ exports.Ds = function(device) {
             'DeleteAll',
             '',
             function (res) {
-                if (res.statusCode == 200) {
+                if (res.statusCode === 200) {
                     callback();
                 } else {
                     callback(new Error("Delete failed with status " + res.statusCode));
@@ -122,7 +122,7 @@ exports.Ds = function(device) {
                     'Insert',
                     '<AfterId>' + afterId + '</AfterId><Uri>' + trackUri + '</Uri><Metadata>' + metadata + '</Metadata>',
                     function (res) {
-                        if (res.statusCode == 200) {
+                        if (res.statusCode === 200) {
                             callback();
                         } else {
                             callback(new Error("Queue failed with " + res.statusCode));
@@ -131,5 +131,21 @@ exports.Ds = function(device) {
                 );
             }
         });
+    };
+    this.changeSource = function (source, callback) {
+        upnp.soapRequest(
+            device, 
+            'Ds/Product/control',
+            'urn:av-openhome.org:service:Product:1', 
+            'SetSourceIndex', 
+            '<Value>'+source+'</Value>',
+            function (res) {
+                if (res.statusCode === 200) {
+                    callback();
+                } else {
+                    callback(new Error("Change Source failed with status " + res.statusCode));
+                }
+            }
+        );
     };
 }
