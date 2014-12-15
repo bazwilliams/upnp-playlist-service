@@ -21,7 +21,7 @@ var ScheduleManager = function(options) {
         storage.setItem('schedules.json', []);
     }
 
-    var changeSource = function (uuid, sourceId) {
+    function changeSource(uuid, sourceId) {
         return function () {
             var device = options.manager.getDevice(uuid);
             if (device) {
@@ -34,7 +34,7 @@ var ScheduleManager = function(options) {
         }
     };
 
-    var scheduleJobs = function () {
+    function scheduleJobs() {
         _.each(jobs, function (job) {
             job.cancel();
         });
@@ -51,7 +51,7 @@ var ScheduleManager = function(options) {
             .value();
     };
 
-    this.addWakeUpScheduleFor = function (uuid, schedule) {
+    this.addWakeUpScheduleFor = function (uuid, schedule, callback) {
     	if (schedule.dayOfWeek.length > 0) {
 	        var schedules = storage.getItem('schedules.json');
 	        var wakeUp = {
@@ -63,11 +63,13 @@ var ScheduleManager = function(options) {
 	        schedules.push(wakeUp)
 	        storage.setItem('schedules.json', schedules);
 	        scheduleJobs();
-	        return wakeUp;
-	    }
+	        callback(null, wakeUp);
+	    } else {
+            callback(new Error("No days of week set"));
+        }
     }
 
-    this.deleteWakeUpSchedule = function (uuid, id) {
+    this.deleteWakeUpSchedule = function (uuid, id, callback) {
         var schedules = storage.getItem('schedules.json');
         var newSchedules = _.reject(schedules, function (wakeUpSchedule) {
             return wakeUpSchedule.uuid === uuid && wakeUpSchedule.id == id;
@@ -75,9 +77,10 @@ var ScheduleManager = function(options) {
         if (newSchedules.length < schedules.length) {
             storage.setItem('schedules.json', newSchedules);
             scheduleJobs();
-            return true;
+            callback();
+        } else {
+            callback(new Error("No schedule found"));
         }
-        return false;
     }
 
     scheduleJobs();
