@@ -135,10 +135,10 @@ exports.Ds = function(device) {
     };
     this.changeSource = function (source, callback) {
         upnp.soapRequest(
-            device, 
+            device,
             'Ds/Product/control',
-            'urn:av-openhome.org:service:Product:1', 
-            'SetSourceIndex', 
+            'urn:av-openhome.org:service:Product:1',
+            'SetSourceIndex',
             '<Value>'+source+'</Value>',
             function (res) {
                 if (res.statusCode === 200) {
@@ -151,10 +151,10 @@ exports.Ds = function(device) {
     };
     this.powerOn = function (callback) {
         upnp.soapRequest(
-            device, 
+            device,
             'Ds/Product/control',
-            'urn:av-openhome.org:service:Product:1', 
-            'SetStandby', 
+            'urn:av-openhome.org:service:Product:1',
+            'SetStandby',
             '<Value>1</Value>',
             function (res) {
                 if (res.statusCode === 200) {
@@ -167,10 +167,10 @@ exports.Ds = function(device) {
     };
     this.playRadio = function (callback) {
         upnp.soapRequest(
-            device, 
+            device,
             'Ds/Radio/control',
-            'urn:av-openhome.org:service:Radio:1', 
-            'Play', 
+            'urn:av-openhome.org:service:Radio:1',
+            'Play',
             '',
             function (res) {
                 if (res.statusCode === 200) {
@@ -181,4 +181,4 @@ exports.Ds = function(device) {
             }
         );
     };
-}
+};

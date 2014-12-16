@@ -18,20 +18,18 @@ exports.PlaylistManager = function(device) {
                 m3u.write(transformedTracks, playlistName, callback);
             }
         });
-    };
+    }
     function queueAllTracks(tracks, callback) {
         async.mapSeries(
-            tracks, 
+            tracks,
             function (trackXml, iterCallback) {
                 ds.queueTrack(trackXml, 0, iterCallback);
-            }, 
+            },
             callback);
-    };
+    }
     this.replacePlaylist = function (playlistName, callback) {
         async.series({
-            "delete": function (iterCallback) {
-                ds.deleteAll(iterCallback);
-            },
+            "delete": ds.deleteAll,
             "tracks": function (iterCallback) {
                 m3u.read(playlistName, iterCallback);
             }
