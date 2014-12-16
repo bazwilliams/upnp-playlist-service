@@ -91,13 +91,14 @@ exports.setWakeUp = function(req, res) {
     if (device) {
         var schedule = convertToSchedule(req.body);
         if (schedule && _.isArray(schedule.dayOfWeek) && _.isNumber(schedule.hour) && _.isNumber(schedule.minute)) {
-            var wakeUp = scheduleManager.addWakeUpScheduleFor(uuid, schedule);
-            if (wakeUp) {
-                res.location('/device/'+uuid+'/wake-up/'+wakeUp.id);
-                res.send(201, schedule);
-            } else {
-                res.send(400);
-            }
+            scheduleManager.addWakeUpScheduleFor(uuid, schedule, function(err, wakeUp) {
+                if (err) {
+                    res.status(400).send(err);
+                } else {
+                    res.location('/device/' + uuid + '/wake-up/' + wakeUp.id);
+                    res.status(201).send(schedule);
+                }
+            });
         } else {
             res.send(400);
         }
@@ -108,11 +109,13 @@ exports.setWakeUp = function(req, res) {
 exports.deleteWakeUp = function(req, res) {
     var uuid = req.params.uuid;
     var id = req.params.id;
-    if (scheduleManager.deleteWakeUpSchedule(uuid, id)) {
-        res.send(204);
-    } else {
-        res.send(404);
-    }
+    scheduleManager.deleteWakeUpSchedule(uuid, id, function(err) {
+        if (err) {
+            res.status(404).send(err);
+        } else {
+            res.send(204);
+        }
+    });
 };
 
 exports.storePlaylist = function(req, res) {
