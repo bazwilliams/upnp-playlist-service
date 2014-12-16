@@ -108,7 +108,8 @@ exports.Ds = function(device) {
             if (err) {
                 callback(err);
             } else {
-                var trackUri = result['DIDL-Lite']['item']['res']
+                var res = _.isObject(result['DIDL-Lite']['item']['res']) ? result['DIDL-Lite']['item']['res']._ : result['DIDL-Lite']['item']['res'];
+                var trackUri = res
                     .replace(/&/g, "&amp;");
                 var metadata = trackDetailsXml
                     .replace(/&/g, "&amp;")

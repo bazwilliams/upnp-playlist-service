@@ -1,4 +1,5 @@
 var config = require('../config.js');
+var path = require('path');
 
 exports.translate = function(uri) {
     if (uri.indexOf('http:') === 0) {

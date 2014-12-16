@@ -1,5 +1,3 @@
-
-var _ = require('underscore');
 var async = require('async');
 var m3u = require('./m3u.js');
 var trackProcessor = require('./trackprocessor.js');
@@ -7,6 +5,20 @@ var Ds = require('./ds.js').Ds;
 
 exports.PlaylistManager = function(device) {
     var ds = new Ds(device);
+    function storePlaylist(tracks, playlistName, callback) {
+        async.mapSeries(tracks, function (track, iterCallback) {
+            iterCallback(null, {
+                track: trackProcessor.translate(track.track),
+                metadata: track.metadata
+            });
+        }, function(err, transformedTracks) {
+            if (err) {
+                callback(err);
+            } else {
+                m3u.write(transformedTracks, playlistName, callback);
+            }
+        });
+    };
     function queueAllTracks(tracks, callback) {
         async.mapSeries(
             tracks, 
@@ -36,17 +48,12 @@ exports.PlaylistManager = function(device) {
         async.waterfall([
             ds.getTrackIds,
             ds.retrieveTrackDetails
-        ], function (err, trackDetails) {
+        ], function (err, results) {
             if (err) {
                 callback(err);
-            } else {
-                var transformedTracks = _.map(trackDetails, function(track) {
-                    return {
-                        track: trackProcessor.translate(track.track),
-                        metadata: track.metadata
-                    }
-                });
-                m3u.write(transformedTracks, playlistName, callback);
+            }
+            if (results) {
+                storePlaylist(results, playlistName, callback);
             }
         });
     };
