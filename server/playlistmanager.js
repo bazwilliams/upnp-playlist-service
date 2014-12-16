@@ -28,19 +28,13 @@ exports.PlaylistManager = function(device) {
             callback);
     }
     this.replacePlaylist = function (playlistName, callback) {
-        async.series({
-            "delete": ds.deleteAll,
-            "tracks": function (iterCallback) {
+        async.waterfall([
+            ds.deleteAll,
+            function (iterCallback) {
                 m3u.read(playlistName, iterCallback);
-            }
-        }, function (err, results) {
-            if (err) {
-                callback(err);
-            }
-            if (results && results.tracks) {
-                queueAllTracks(results.tracks, callback);
-            }
-        });
+            },
+            queueAllTracks
+        ], callback);
     };
     this.savePlaylist = function (playlistName, callback) {
         async.waterfall([
