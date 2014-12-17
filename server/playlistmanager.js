@@ -6,12 +6,12 @@ var Ds = require('./ds.js').Ds;
 exports.PlaylistManager = function(device) {
     var ds = new Ds(device);
     function storePlaylist(tracks, playlistName, callback) {
-        async.mapSeries(tracks, function (track, iterCallback) {
+        async.mapSeries(tracks, function processTrack(track, iterCallback) {
             iterCallback(null, {
                 track: trackProcessor.translate(track.track),
                 metadata: track.metadata
             });
-        }, function(err, transformedTracks) {
+        }, function writeM3u(err, transformedTracks) {
             if (err) {
                 callback(err);
             } else {
@@ -19,18 +19,16 @@ exports.PlaylistManager = function(device) {
             }
         });
     }
+    function queueTrackAtFront(trackXml, callback) {
+        ds.queueTrack(trackXml, 0, callback);
+    }
     function queueAllTracks(tracks, callback) {
-        async.mapSeries(
-            tracks,
-            function (trackXml, iterCallback) {
-                ds.queueTrack(trackXml, 0, iterCallback);
-            },
-            callback);
+        async.mapSeries(tracks, queueTrackAtFront, callback);
     }
     this.replacePlaylist = function (playlistName, callback) {
         async.waterfall([
             ds.deleteAll,
-            function (iterCallback) {
+            function readM3u(iterCallback) {
                 m3u.read(playlistName, iterCallback);
             },
             queueAllTracks
@@ -40,7 +38,7 @@ exports.PlaylistManager = function(device) {
         async.waterfall([
             ds.getTrackIds,
             ds.retrieveTrackDetails
-        ], function (err, results) {
+        ], function storeTrackDetails(err, results) {
             if (err) {
                 callback(err);
             }

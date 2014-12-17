@@ -63,7 +63,7 @@ var convertToSchedule = function(data) {
 };
 
 exports.devices = function(req, res) {
-    var devices = _.map(manager.getDevices(), function (uuid) {
+    var devices = _.map(manager.getDevices(), function deviceToResource(uuid) {
         var device = manager.getDevice(uuid);
         return {
             uuid: uuid,
@@ -91,7 +91,7 @@ exports.setWakeUp = function(req, res) {
     if (device) {
         var schedule = convertToSchedule(req.body);
         if (schedule && _.isArray(schedule.dayOfWeek) && _.isNumber(schedule.hour) && _.isNumber(schedule.minute)) {
-            scheduleManager.addWakeUpScheduleFor(uuid, schedule, function(err, wakeUp) {
+            scheduleManager.addWakeUpScheduleFor(uuid, schedule, function responseHandler(err, wakeUp) {
                 if (err) {
                     res.status(400).send(err);
                 } else {
@@ -107,10 +107,10 @@ exports.setWakeUp = function(req, res) {
     }
 };
 
-exports.deleteWakeUp = function(req, res) {
+exports.deleteWakeUp = function (req, res) {
     var uuid = req.params.uuid;
     var id = req.params.id;
-    scheduleManager.deleteWakeUpSchedule(uuid, id, function(err) {
+    scheduleManager.deleteWakeUpSchedule(uuid, id, function responseHandler(err, results) {
         if (err) {
             res.status(404).send(err);
         } else {
@@ -119,12 +119,12 @@ exports.deleteWakeUp = function(req, res) {
     });
 };
 
-exports.storePlaylist = function(req, res) {
+exports.storePlaylist = function (req, res) {
     var uuid = req.params.uuid;
     var playlistName = req.params.playlistName;
     var device = manager.getDevice(uuid);
     if (device) {
-        new PlaylistManager(device).savePlaylist(playlistName, function (err, results) {
+        new PlaylistManager(device).savePlaylist(playlistName, function responseHandler(err, results) {
             if (err) {
                 res.status(400).send(err);
             } else {
@@ -136,12 +136,12 @@ exports.storePlaylist = function(req, res) {
     }
 };
 
-exports.replacePlaylist = function(req, res) {
+exports.replacePlaylist = function (req, res) {
     var uuid = req.params.uuid;
     var playlistName = req.body.playlistName;
     var device = manager.getDevice(uuid);
     if (device) {
-        new PlaylistManager(device).replacePlaylist(playlistName, function (err, results) {
+        new PlaylistManager(device).replacePlaylist(playlistName, function responseHandler(err, results) {
             if (err) {
                 res.status(400).send(err);
             } else {
