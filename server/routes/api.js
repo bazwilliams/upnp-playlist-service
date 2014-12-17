@@ -100,10 +100,11 @@ exports.setWakeUp = function(req, res) {
                 }
             });
         } else {
-            res.send(400);
+            res.sendStatus(400);
         }
+    } else {
+        res.sendStatus(404);
     }
-    res.send(404);
 };
 
 exports.deleteWakeUp = function(req, res) {
@@ -113,7 +114,7 @@ exports.deleteWakeUp = function(req, res) {
         if (err) {
             res.status(404).send(err);
         } else {
-            res.send(204);
+            res.sendStatus(204);
         }
     });
 };
@@ -127,11 +128,11 @@ exports.storePlaylist = function(req, res) {
             if (err) {
                 res.status(400).send(err);
             } else {
-                res.send(201);
+                res.sendStatus(201);
             }
         });
     } else {
-        res.send(404);
+        res.sendStatus(404);
     }
 };
 
@@ -144,10 +145,10 @@ exports.replacePlaylist = function(req, res) {
             if (err) {
                 res.status(400).send(err);
             } else {
-                res.send(200);
+                res.sendStatus(200);
             }
         });
     } else {
-        res.send(404);
+        res.sendStatus(404);
     }
 };
