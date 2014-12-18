@@ -2,25 +2,14 @@ var _ = require('underscore');
 
 var DeviceManager = require('../devicemanager.js').DeviceManager;
 var ScheduleManager = require('../schedulemanager.js').ScheduleManager;
-var PlaylistManager = require('../playlistmanager.js').PlaylistManager;
+var Ds = require('../ds.js').Ds;
+var playlists = require('../playlists.js');
 
 var manager = new DeviceManager();
 var scheduleManager = new ScheduleManager({manager : manager});
+var zpad = require('zpad');
 
-var padZero = function (n, len) {
-    var num = parseInt(n, 10);
-    len = parseInt(len, 10);
-    if (isNaN(num) || isNaN(len)) {
-        return n;
-    }
-    num = ''+num;
-    while (num.length < len) {
-        num = '0'+num;
-    }
-    return num;
-};
-
-var convertFromSchedule = function(schedule) {
+function convertFromSchedule(schedule) {
     var days = {
         'mon' : false,
         'tue' : false,
@@ -36,15 +25,14 @@ var convertFromSchedule = function(schedule) {
     });
     return {
         days: days,
-        time: padZero(schedule.wakeUp.hour,2) + ':' + padZero(schedule.wakeUp.minute,2),
+        time: zpad(schedule.wakeUp.hour) + ':' + zpad(schedule.wakeUp.minute),
         links: [{
             rel: 'delete',
             href: '/api/devices/'+schedule.uuid+'/wake-up/'+schedule.id
         }]
     };
-};
-
-var convertToSchedule = function(data) {
+}
+function convertToSchedule(data) {
     var dayOfWeek = [];
     _.each(_.keys(data.days), function (key) {
         var result = ['sun','mon','tue','wed','thu','fri','sat'].indexOf(key);
@@ -60,8 +48,7 @@ var convertToSchedule = function(data) {
             minute: parseInt(data.time.split(':')[1],10)
         };
     }
-};
-
+}
 exports.devices = function(req, res) {
     var devices = _.map(manager.getDevices(), function deviceToResource(uuid) {
         var device = manager.getDevice(uuid);
@@ -84,7 +71,6 @@ exports.devices = function(req, res) {
     });
     res.json(devices);
 };
-
 exports.setWakeUp = function(req, res) {
     var uuid = req.params.uuid;
     var device = manager.getDevice(uuid);
@@ -106,7 +92,6 @@ exports.setWakeUp = function(req, res) {
         res.sendStatus(404);
     }
 };
-
 exports.deleteWakeUp = function (req, res) {
     var uuid = req.params.uuid;
     var id = req.params.id;
@@ -118,13 +103,12 @@ exports.deleteWakeUp = function (req, res) {
         }
     });
 };
-
 exports.storePlaylist = function (req, res) {
     var uuid = req.params.uuid;
     var playlistName = req.params.playlistName;
     var device = manager.getDevice(uuid);
     if (device) {
-        new PlaylistManager(device).savePlaylist(playlistName, function responseHandler(err, results) {
+        playlists.savePlaylist(new Ds(device), playlistName, function responseHandler(err, results) {
             if (err) {
                 res.status(400).send(err);
             } else {
@@ -135,13 +119,12 @@ exports.storePlaylist = function (req, res) {
         res.sendStatus(404);
     }
 };
-
 exports.replacePlaylist = function (req, res) {
     var uuid = req.params.uuid;
     var playlistName = req.body.playlistName;
     var device = manager.getDevice(uuid);
     if (device) {
-        new PlaylistManager(device).replacePlaylist(playlistName, function responseHandler(err, results) {
+        playlists.replacePlaylist(new Ds(device), playlistName, function responseHandler(err, results) {
             if (err) {
                 res.status(400).send(err);
             } else {
