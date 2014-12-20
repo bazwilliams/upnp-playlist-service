@@ -4,14 +4,14 @@ var binary = require('binary');
 var xml2js = require('xml2js');
 var xmlParser = new xml2js.Parser({explicitArray: false});
 
-exports.Ds = function(device) {
+exports.Ds = function(deviceUrlRoot) {
     this.retrieveTrackDetails = function(idArray, callback) {
         var idArrayString = '';
         _.each(idArray, function (id) {
             idArrayString += (id + ' ');
         });
         upnp.soapRequest(
-            device,
+            deviceUrlRoot,
             'Ds/Playlist',
             'urn:av-openhome.org:service:Playlist:1',
             'ReadList',
@@ -58,7 +58,7 @@ exports.Ds = function(device) {
     };
     this.getTrackIds = function(callback) {
         upnp.soapRequest(
-            device,
+            deviceUrlRoot,
             'Ds/Playlist',
             'urn:av-openhome.org:service:Playlist:1',
             'IdArray',
@@ -89,7 +89,7 @@ exports.Ds = function(device) {
     };
     this.deleteAll = function(callback) {
         upnp.soapRequest(
-            device,
+            deviceUrlRoot,
             'Ds/Playlist',
             'urn:av-openhome.org:service:Playlist:1',
             'DeleteAll',
@@ -117,7 +117,7 @@ exports.Ds = function(device) {
                     .replace(/>/g, "&gt;")
                     .replace(/"/g, "&quot;");
                 upnp.soapRequest(
-                    device,
+                    deviceUrlRoot,
                     'Ds/Playlist',
                     'urn:av-openhome.org:service:Playlist:1',
                     'Insert',
@@ -135,7 +135,7 @@ exports.Ds = function(device) {
     };
     this.changeSource = function (source, callback) {
         upnp.soapRequest(
-            device,
+            deviceUrlRoot,
             'Ds/Product/control',
             'urn:av-openhome.org:service:Product:1',
             'SetSourceIndex',
@@ -151,7 +151,7 @@ exports.Ds = function(device) {
     };
     this.powerOn = function (callback) {
         upnp.soapRequest(
-            device,
+            deviceUrlRoot,
             'Ds/Product/control',
             'urn:av-openhome.org:service:Product:1',
             'SetStandby',
@@ -167,7 +167,7 @@ exports.Ds = function(device) {
     };
     this.playRadio = function (callback) {
         upnp.soapRequest(
-            device,
+            deviceUrlRoot,
             'Ds/Radio/control',
             'urn:av-openhome.org:service:Radio:1',
             'Play',

@@ -138,8 +138,8 @@ ControlPoint.prototype.search = function(st) {
 }
 
 
-var soapRequest = function (device, path, service, fnName, fnParams, callback) {
-    var deviceUrl = url.parse(device.urlRoot);
+var soapRequest = function (deviceUrlRoot, path, service, fnName, fnParams, callback) {
+    var deviceUrl = url.parse(deviceUrlRoot);
     
     var bodyString = '<?xml version="1.0"?>';
     bodyString += '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">';

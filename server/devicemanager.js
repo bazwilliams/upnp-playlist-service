@@ -6,6 +6,7 @@ var EventEmitter = require('events').EventEmitter;
 var _ = require('underscore');
 var xmlParser = new xml2js.Parser({explicitArray: false});
 var url = require('url');
+var Ds = require('./ds.js').Ds;
 
 var DeviceManager = function () {
     const playlistService = 'urn:av-openhome-org:service:Playlist:1';
@@ -77,7 +78,8 @@ DeviceManager.prototype.processDevice = function (location, callback) {
                 device = {
                     name: result.root.device.friendlyName,
                     urlRoot: result.root.URLBase,
-                    serviceList: result.root.device.serviceList.service
+                    serviceList: result.root.device.serviceList.service,
+                    ds: new Ds(result.root.URLBase)
                 };
                 if (result.root.device.iconList) {
                     device['icon'] = result.root.device.iconList.icon;

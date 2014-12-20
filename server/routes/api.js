@@ -2,7 +2,6 @@ var _ = require('underscore');
 
 var DeviceManager = require('../devicemanager.js').DeviceManager;
 var ScheduleManager = require('../schedulemanager.js').ScheduleManager;
-var Ds = require('../ds.js').Ds;
 var playlists = require('../playlists.js');
 
 var manager = new DeviceManager();
@@ -108,7 +107,7 @@ exports.storePlaylist = function (req, res) {
     var playlistName = req.params.playlistName;
     var device = manager.getDevice(uuid);
     if (device) {
-        playlists.savePlaylist(new Ds(device), playlistName, function responseHandler(err, results) {
+        playlists.savePlaylist(device.ds, playlistName, function responseHandler(err, results) {
             if (err) {
                 res.status(400).send(err);
             } else {
@@ -124,7 +123,7 @@ exports.replacePlaylist = function (req, res) {
     var playlistName = req.body.playlistName;
     var device = manager.getDevice(uuid);
     if (device) {
-        playlists.replacePlaylist(new Ds(device), playlistName, function responseHandler(err, results) {
+        playlists.replacePlaylist(device.ds, playlistName, function responseHandler(err, results) {
             if (err) {
                 res.status(400).send(err);
             } else {

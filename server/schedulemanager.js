@@ -2,7 +2,6 @@ var storage = require('node-persist');
 var scheduler = require('node-schedule');
 var _ = require('underscore');
 var guid = require('node-uuid');
-var Ds = require('./ds.js').Ds;
 var async = require('async');
 
 storage.initSync();
@@ -21,13 +20,12 @@ exports.ScheduleManager = function(options) {
         return function () {
             var device = options.manager.getDevice(uuid);
             if (device) {
-                var ds = new Ds(device);
                 async.series([
-                    ds.powerOn,
+                    device.ds.powerOn,
                     function(iterCallback) {
-                        ds.changeSource(sourceId, iterCallback);
+                        device.ds.changeSource(sourceId, iterCallback);
                     },
-                    ds.playRadio
+                    device.ds.playRadio
                 ], callback);
             } else {
                 callback(new Error("Device with UUID (" + uuid + ") not found"));
