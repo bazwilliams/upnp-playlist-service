@@ -176,7 +176,7 @@ exports.Ds = function(deviceUrlRoot) {
                 if (res.statusCode === 200) {
                     callback();
                 } else {
-                    callback(new Error("Power On failed with status " + res.statusCode));
+                    callback(new Error("Play Radio failed with status " + res.statusCode));
                 }
             }
         );
