@@ -1,9 +1,9 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var app = module.exports = express();
-var api = require('./routes/api');
 var port = process.env.PORT || 18080;
 var morgan = require('morgan');
+var api = require('./routes');
 /**
  * Configuration
  */
@@ -27,11 +27,11 @@ app.get('/', function (req, res) {
 });
 
 // JSON API
-app.get('/api/devices', api.devices);
-app.post('/api/devices/:uuid/wake-up', api.setWakeUp);
-app.delete('/api/devices/:uuid/wake-up/:id', api.deleteWakeUp);
-app.put('/api/devices/:uuid/playlist/:playlistName', api.storePlaylist);
-app.post('/api/devices/:uuid/playlist/replace', api.replacePlaylist);
+app.get('/api/devices', api.device.list);
+app.post('/api/devices/:uuid/wake-up', api.schedule.setWakeUp);
+app.delete('/api/devices/:uuid/wake-up/:id', api.schedule.deleteWakeUp);
+app.put('/api/devices/:uuid/playlist/:playlistName', api.playlist.storePlaylist);
+app.post('/api/devices/:uuid/playlist/replace', api.playlist.replacePlaylist);
 
 /**
  * Start Server
