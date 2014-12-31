@@ -18,10 +18,10 @@ function combine(lines, callback) {
     }, callback);
 }
 
-exports.read = function (playlistName, callback) {
+exports.read = function read(playlistName, callback) {
     fs.readFile(playlistFile(playlistName), { encoding: 'utf8' }, function (err, data) {
         if (data) {
-            var tracksInReverse = _.chain(data.split(/\n/))
+            var tracks = _.chain(data.split(/\n/))
                 .compact()
                 .map(function (line) {
                     if (line[0] === '#') {
@@ -29,16 +29,15 @@ exports.read = function (playlistName, callback) {
                     }
                 })
                 .compact()
-                .reverse()
                 .value();
-            callback(null, tracksInReverse);
+            callback(null, tracks);
         } else {
             callback(err);
         }
     });
 };
 
-exports.write = function (tracks, playlistName, callback) {
+exports.write = function write(tracks, playlistName, callback) {
     async.mapSeries(tracks, function(track, iterCallback) {
         fs.stat(track.track, function(err, stats) {
             if (stats && stats.isFile()) {
