@@ -41,17 +41,29 @@ function scheduleJobs() {
     _.each(jobs, function (job) {
         job.cancel();
     });
-    jobs = _.map(storage.getItem('schedules.json'), function (schedule) {
-        return scheduler.scheduleJob(recurrenceRuleFactory(schedule.wakeUp), actionFactory(schedule.uuid, schedule.source, callback));
+    storage.getItem('schedules.json', function loadPersistedJobs(err, schedules) {
+        if (err) {
+            callback(err);
+        } else {
+            jobs = _.map(schedules, function (schedule) {
+                return scheduler.scheduleJob(recurrenceRuleFactory(schedule.wakeUp), actionFactory(schedule.uuid, schedule.source, callback));
+            });
+        }
     });
 }
 
-exports.wakeUpSchedulesFor = function wakeUpSchedulesFor(uuid) {
-    return _.chain(storage.getItem('schedules.json'))
-        .filter(function(schedule) {
-            return schedule.uuid === uuid;
-        })
-        .value();
+function uuidMatcher(schedule) {
+    return schedule.uuid === uuid;
+}
+
+exports.wakeUpSchedules = function wakeUpSchedules(uuid, callback) {
+    storage.getItem('schedules.json', function loadPersistedJobs(err, schedules) {
+        if (err) {
+            callback(err);
+        } else {
+            callback(null, _.filter(schedules, uuidMatcher));
+        }
+    });
 };
 
 exports.addWakeUpScheduleFor = function addWakeUpScheduleFor(uuid, schedule, callback) {

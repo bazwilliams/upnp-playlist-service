@@ -2,6 +2,7 @@ var manager = require('../devicemanager.js');
 var scheduleManager = require('../schedulemanager.js');
 var _ = require('underscore');
 var zpad = require('zpad');
+var async = require('async');
 
 function convertFromSchedule(schedule) {
     var days = {
@@ -27,24 +28,47 @@ function convertFromSchedule(schedule) {
     };
 }
 exports.list = function list(req, res) {
-    var devices = _.map(manager.getDevices(), function deviceToResource(uuid) {
-        var device = manager.getDevice(uuid);
-        return {
-            uuid: uuid,
-            icon: device.icon,
-            name: device.name,
-            schedules: _.map(scheduleManager.wakeUpSchedulesFor(uuid), convertFromSchedule),
-            links: [{
-                rel: 'store-playlist',
-                href: '/api/devices/' + uuid + '/playlist/'
-            },{
-                rel: 'replace-playlist',
-                href: '/api/devices/' + uuid + '/playlist/replace'
-            },{
-                rel: 'add-wakeup',
-                href: '/api/devices/' + uuid + '/wake-up'
-            }]
-        };
+    async.waterfall([
+        function getDevices(iterCallback) {
+            iterCallback(null, manager.getDevices());
+        },
+        function getSchedules(iterCallback, devices) {
+            async.map(devices, function getDeviceSchedule(device, jterCallback) {
+                scheduleManager.wakeUpSchedules(device.uuid, function(err, schedules) {
+                    if (err) {
+                        jterCallback(err);
+                    } else {
+                        jterCallback(null, {
+                            device: device,
+                            schedules: schedules
+                        });
+                    }
+                });
+            }, iterCallback);
+        },
+        function toResource(iterCallback, results) {
+            iterCallback(null, {
+                uuid: uuid,
+                icon: results.device.icon,
+                name: results.device.name,
+                schedules: convertFromSchedule(results.schedule),
+                links: [{
+                    rel: 'store-playlist',
+                    href: '/api/devices/' + uuid + '/playlist/'
+                },{
+                    rel: 'replace-playlist',
+                    href: '/api/devices/' + uuid + '/playlist/replace'
+                },{
+                    rel: 'add-wakeup',
+                    href: '/api/devices/' + uuid + '/wake-up'
+                }]
+            });
+        }
+    ], function (err, results) {
+        if (err) {
+            res.status(400).send(err);
+        } else {
+            res.status(200).json(devices);
+        }
     });
-    res.json(devices);
 };
