@@ -19,14 +19,16 @@
     <Content Include="bower.json" />
     <Content Include="package.json" />
     <Content Include="README.md" />
-    <Compile Include="config.js" />
     <Compile Include="Gruntfile.js" />
     <Content Include="persist\schedules.json" />
+    <Compile Include="config.js" />
     <Compile Include="server\app.js" />
     <Compile Include="server\devicemanager.js" />
+    <Compile Include="server\ds.js" />
     <Compile Include="server\m3u.js" />
     <Compile Include="server\playlistmanager.js" />
     <Compile Include="server\schedulemanager.js" />
+    <Compile Include="server\trackprocessor.js" />
     <Compile Include="server\watch.js" />
     <Compile Include="test\test-schedulemanager.js">
       <TestFramework>ExportRunner</TestFramework>

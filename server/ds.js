@@ -4,14 +4,14 @@ var binary = require('binary');
 var xml2js = require('xml2js');
 var xmlParser = new xml2js.Parser({explicitArray: false});
 
-exports.Ds = function(device) {
+exports.Ds = function(deviceUrlRoot) {
     this.retrieveTrackDetails = function(idArray, callback) {
         var idArrayString = '';
         _.each(idArray, function (id) {
             idArrayString += (id + ' ');
         });
         upnp.soapRequest(
-            device,
+            deviceUrlRoot,
             'Ds/Playlist',
             'urn:av-openhome.org:service:Playlist:1',
             'ReadList',
@@ -58,7 +58,7 @@ exports.Ds = function(device) {
     };
     this.getTrackIds = function(callback) {
         upnp.soapRequest(
-            device,
+            deviceUrlRoot,
             'Ds/Playlist',
             'urn:av-openhome.org:service:Playlist:1',
             'IdArray',
@@ -89,7 +89,7 @@ exports.Ds = function(device) {
     };
     this.deleteAll = function(callback) {
         upnp.soapRequest(
-            device,
+            deviceUrlRoot,
             'Ds/Playlist',
             'urn:av-openhome.org:service:Playlist:1',
             'DeleteAll',
@@ -108,7 +108,8 @@ exports.Ds = function(device) {
             if (err) {
                 callback(err);
             } else {
-                var trackUri = result['DIDL-Lite']['item']['res']
+                var res = _.isObject(result['DIDL-Lite']['item']['res']) ? result['DIDL-Lite']['item']['res']._ : result['DIDL-Lite']['item']['res'];
+                var trackUri = res
                     .replace(/&/g, "&amp;");
                 var metadata = trackDetailsXml
                     .replace(/&/g, "&amp;")
@@ -116,7 +117,7 @@ exports.Ds = function(device) {
                     .replace(/>/g, "&gt;")
                     .replace(/"/g, "&quot;");
                 upnp.soapRequest(
-                    device,
+                    deviceUrlRoot,
                     'Ds/Playlist',
                     'urn:av-openhome.org:service:Playlist:1',
                     'Insert',
@@ -134,10 +135,10 @@ exports.Ds = function(device) {
     };
     this.changeSource = function (source, callback) {
         upnp.soapRequest(
-            device, 
+            deviceUrlRoot,
             'Ds/Product/control',
-            'urn:av-openhome.org:service:Product:1', 
-            'SetSourceIndex', 
+            'urn:av-openhome.org:service:Product:1',
+            'SetSourceIndex',
             '<Value>'+source+'</Value>',
             function (res) {
                 if (res.statusCode === 200) {
@@ -150,10 +151,10 @@ exports.Ds = function(device) {
     };
     this.powerOn = function (callback) {
         upnp.soapRequest(
-            device, 
+            deviceUrlRoot,
             'Ds/Product/control',
-            'urn:av-openhome.org:service:Product:1', 
-            'SetStandby', 
+            'urn:av-openhome.org:service:Product:1',
+            'SetStandby',
             '<Value>1</Value>',
             function (res) {
                 if (res.statusCode === 200) {
@@ -166,18 +167,18 @@ exports.Ds = function(device) {
     };
     this.playRadio = function (callback) {
         upnp.soapRequest(
-            device, 
+            deviceUrlRoot,
             'Ds/Radio/control',
-            'urn:av-openhome.org:service:Radio:1', 
-            'Play', 
+            'urn:av-openhome.org:service:Radio:1',
+            'Play',
             '',
             function (res) {
                 if (res.statusCode === 200) {
                     callback();
                 } else {
-                    callback(new Error("Power On failed with status " + res.statusCode));
+                    callback(new Error("Play Radio failed with status " + res.statusCode));
                 }
             }
         );
     };
-}
+};

@@ -32,7 +32,7 @@ bower_components
 persist
 
 # Node tools stuff
-.ntvs_analysis.dat
+.ntvs_analysis.dat*
 
 # Configuration Data
 config.js
