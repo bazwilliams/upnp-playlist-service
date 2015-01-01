@@ -25,7 +25,7 @@ exports.setWakeUp = function(req, res) {
     if (device) {
         var schedule = convertToSchedule(req.body);
         if (schedule && _.isArray(schedule.dayOfWeek) && _.isNumber(schedule.hour) && _.isNumber(schedule.minute)) {
-            scheduleManager.addWakeUpScheduleFor(uuid, schedule, function responseHandler(err, wakeUp) {
+            scheduleManager.addWakeUpSchedule(uuid, schedule, function responseHandler(err, wakeUp) {
                 if (err) {
                     res.status(400).send(err);
                 } else {

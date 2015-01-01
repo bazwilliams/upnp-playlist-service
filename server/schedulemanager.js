@@ -1,4 +1,4 @@
-var storage = require('node-persist');
+var storage = require('./lib/node-persist.js');
 var scheduler = require('node-schedule');
 var _ = require('underscore');
 var guid = require('node-uuid');
@@ -41,20 +41,28 @@ function scheduleJobs() {
     _.each(jobs, function (job) {
         job.cancel();
     });
-    jobs = _.map(storage.getItem('schedules.json'), function (schedule) {
-        return scheduler.scheduleJob(recurrenceRuleFactory(schedule.wakeUp), actionFactory(schedule.uuid, schedule.source, callback));
+    storage.getItem('schedules.json', function loadPersistedJobs(err, schedules) {
+        if (err) {
+            callback(err);
+        } else {
+            jobs = _.map(schedules, function (schedule) {
+                return scheduler.scheduleJob(recurrenceRuleFactory(schedule.wakeUp), actionFactory(schedule.uuid, schedule.source, callback));
+            });
+        }
     });
 }
 
-exports.wakeUpSchedulesFor = function wakeUpSchedulesFor(uuid) {
-    return _.chain(storage.getItem('schedules.json'))
-        .filter(function(schedule) {
-            return schedule.uuid === uuid;
-        })
-        .value();
+exports.wakeUpSchedules = function wakeUpSchedules(uuid, callback) {
+    storage.getItem('schedules.json', function loadPersistedJobs(err, schedules) {
+        if (err) {
+            callback(err);
+        } else {
+            callback(null, _.where(schedules, { uuid: uuid }));
+        }
+    });
 };
 
-exports.addWakeUpScheduleFor = function addWakeUpScheduleFor(uuid, schedule, callback) {
+exports.addWakeUpSchedule = function addWakeUpSchedule(uuid, schedule, callback) {
     if (schedule.dayOfWeek.length > 0) {
         var schedules = storage.getItem('schedules.json');
         var wakeUp = {
@@ -64,9 +72,14 @@ exports.addWakeUpScheduleFor = function addWakeUpScheduleFor(uuid, schedule, cal
             wakeUp: schedule
         };
         schedules.push(wakeUp);
-        storage.setItem('schedules.json', schedules);
-        scheduleJobs();
-        callback(null, wakeUp);
+        storage.setItem('schedules.json', schedules, function saveNewJob(err) {
+            if (err) {
+                callback(err);
+            } else {
+                scheduleJobs();
+                callback(null, wakeUp);
+            }
+        });
     } else {
         callback(new Error("No days of week set"));
     }
