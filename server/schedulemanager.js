@@ -52,6 +52,17 @@ function scheduleJobs() {
     });
 }
 
+function scheduleAndReturnCallback(callback, returnVal) {
+    return function scheduleAndReturn(err) {
+        if (err) {
+            callback(err);
+        } else {
+            scheduleJobs();
+            callback(null, returnVal);
+        }
+    }
+}
+
 exports.wakeUpSchedules = function wakeUpSchedules(uuid, callback) {
     storage.getItem('schedules.json', function findMatchingJobs(err, schedules) {
         if (err) {
@@ -76,14 +87,7 @@ exports.addWakeUpSchedule = function addWakeUpSchedule(uuid, schedule, callback)
                 };
                 var newSchedules = _.clone(schedules);
                 newSchedules.push(wakeUp);
-                storage.setItem('schedules.json', newSchedules, function scheduleAndReturn(err) {
-                    if (err) {
-                        callback(err);
-                    } else {
-                        scheduleJobs();
-                        callback(null, wakeUp);
-                    }
-                });
+                storage.setItem('schedules.json', newSchedules, scheduleAndReturnCallback(callback, wakeUp));
             }
         });
     } else {
@@ -100,14 +104,7 @@ exports.deleteWakeUpSchedule = function deleteWakeUpSchedule(uuid, id, callback)
                 return wakeUpSchedule.uuid === uuid && wakeUpSchedule.id == id;
             });
             if (newSchedules.length < schedules.length) {
-                storage.setItem('schedules.json', newSchedules, function scheduleAndNoReturnVal(err) {
-                    if (err) {
-                        callback(err);
-                    } else {
-                        scheduleJobs();
-                        callback();
-                    }
-                });
+                storage.setItem('schedules.json', newSchedules, scheduleAndReturnCallback(callback));
             } else {
                 callback(new Error("No schedule found"));
             }
