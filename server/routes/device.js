@@ -4,33 +4,32 @@ var _ = require('underscore');
 var zpad = require('zpad');
 var async = require('async');
 
-function convertFromSchedules(schedules) {
-    return _.map(schedules, function convertFromSchedule(schedule) {
-        if (schedule) {
-            var days = {
-                'mon' : false,
-                'tue' : false,
-                'wed' : false,
-                'thu' : false,
-                'fri' : false,
-                'sat' : false,
-                'sun' : false
-            };
-            _.each(schedule.wakeUp.dayOfWeek, function (day) {
-                var key = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'][day];
-                days[key] = true;
-            });
-            return {
-                days: days,
-                time: zpad(schedule.wakeUp.hour) + ':' + zpad(schedule.wakeUp.minute),
-                links: [{
-                    rel: 'delete',
-                    href: '/api/devices/'+schedule.uuid+'/wake-up/'+schedule.id
-                }]
-            };
-        }
-    });
+function toScheduleResource(schedule) {
+    if (schedule) {
+        var days = {
+            'mon' : false,
+            'tue' : false,
+            'wed' : false,
+            'thu' : false,
+            'fri' : false,
+            'sat' : false,
+            'sun' : false
+        };
+        _.each(schedule.wakeUp.dayOfWeek, function (day) {
+            var key = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'][day];
+            days[key] = true;
+        });
+        return {
+            days: days,
+            time: zpad(schedule.wakeUp.hour) + ':' + zpad(schedule.wakeUp.minute),
+            links: [{
+                rel: 'delete',
+                href: '/api/devices/'+schedule.uuid+'/wake-up/'+schedule.id
+            }]
+        };
+    }
 }
+
 exports.list = function list(req, res) {
     async.waterfall([
         function getDevices(iterCallback) {
@@ -38,7 +37,7 @@ exports.list = function list(req, res) {
         },
         function getSchedules(uuids, iterCallback) {
             async.map(uuids, function getDeviceSchedule(uuid, jterCallback) {
-                scheduleManager.wakeUpSchedules(uuid, function(err, schedules) {
+                scheduleManager.wakeUpSchedules(uuid, function createDeviceModel(err, schedules) {
                     if (err) {
                         jterCallback(err);
                     } else {
@@ -57,7 +56,7 @@ exports.list = function list(req, res) {
                     uuid: deviceModel.uuid,
                     icon: deviceModel.device.icon,
                     name: deviceModel.device.name,
-                    schedules: convertFromSchedules(deviceModel.schedules),
+                    schedules: _.map(deviceModel.schedules, toScheduleResource),
                     links: [{
                         rel: 'store-playlist',
                         href: '/api/devices/' + deviceModel.uuid + '/playlist/'
