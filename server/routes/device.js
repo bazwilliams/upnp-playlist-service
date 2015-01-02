@@ -22,9 +22,10 @@ function toScheduleResource(schedule) {
         return {
             days: days,
             time: zpad(schedule.wakeUp.hour) + ':' + zpad(schedule.wakeUp.minute),
+            action: 'wake',
             links: [{
                 rel: 'delete',
-                href: '/api/devices/'+schedule.uuid+'/wake-up/'+schedule.id
+                href: '/api/devices/'+schedule.uuid+'/schedules/'+schedule.id
             }]
         };
     }
@@ -37,7 +38,7 @@ exports.list = function list(req, res) {
         },
         function getSchedules(uuids, iterCallback) {
             async.map(uuids, function getDeviceSchedule(uuid, jterCallback) {
-                scheduleManager.wakeUpSchedules(uuid, function createDeviceModel(err, schedules) {
+                scheduleManager.list(uuid, function createDeviceModel(err, schedules) {
                     if (err) {
                         jterCallback(err);
                     } else {
@@ -64,8 +65,8 @@ exports.list = function list(req, res) {
                         rel: 'replace-playlist',
                         href: '/api/devices/' + deviceModel.uuid + '/playlist/replace'
                     },{
-                        rel: 'add-wakeup',
-                        href: '/api/devices/' + deviceModel.uuid + '/wake-up'
+                        rel: 'add-schedule',
+                        href: '/api/devices/' + deviceModel.uuid + '/schedules'
                     }]
                 });
             }, iterCallback)

@@ -15,22 +15,23 @@ function convertToSchedule(data) {
         return {
             dayOfWeek: dayOfWeek,
             hour: parseInt(data.time.split(':')[0],10),
-            minute: parseInt(data.time.split(':')[1],10)
+            minute: parseInt(data.time.split(':')[1],10),
+            isAwake: data.action !== 'sleep'
         };
     }
 }
-exports.setWakeUp = function(req, res) {
+exports.addSchedule = function(req, res) {
     var uuid = req.params.uuid;
     var device = manager.getDevice(uuid);
     if (device) {
         var schedule = convertToSchedule(req.body);
         if (schedule && _.isArray(schedule.dayOfWeek) && _.isNumber(schedule.hour) && _.isNumber(schedule.minute)) {
-            scheduleManager.addWakeUpSchedule(uuid, schedule, function responseHandler(err, wakeUp) {
+            scheduleManager.addSchedule(uuid, schedule, function responseHandler(err, result) {
                 if (err) {
                     res.status(400).send(err);
                 } else {
-                    res.location('/device/' + uuid + '/wake-up/' + wakeUp.id);
-                    res.status(201).send(schedule);
+                    res.location('/device/' + uuid + '/schedules/' + result.id);
+                    res.status(201).send(result);
                 }
             });
         } else {
@@ -40,10 +41,10 @@ exports.setWakeUp = function(req, res) {
         res.sendStatus(404);
     }
 };
-exports.deleteWakeUp = function (req, res) {
+exports.deleteSchedule = function (req, res) {
     var uuid = req.params.uuid;
     var id = req.params.id;
-    scheduleManager.deleteWakeUpSchedule(uuid, id, function responseHandler(err, results) {
+    scheduleManager.deleteSchedule(uuid, id, function responseHandler(err, result) {
         if (err) {
             res.status(404).send(err);
         } else {

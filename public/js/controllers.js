@@ -51,6 +51,7 @@ angular.module('upnpControllers', [])
 				'sat' : false,
 				'sun' : false
 			},
+			action: 'wake',
 			time: ''
 		};
 		$scope['toggleDay'] = function (dayOfWeek) {
@@ -59,10 +60,11 @@ angular.module('upnpControllers', [])
 			}
 		};
 		$scope['addWakeUp'] = function (newSchedule) {
-			var result = _.findWhere($scope.device.links, { 'rel' : 'add-wakeup' });
+			var result = _.findWhere($scope.device.links, { 'rel' : 'add-schedule' });
 			var body = {
 				days : newSchedule.days,
-				time: newSchedule.time
+				time: newSchedule.time,
+				action: newSchedule.action
 			};
 			$http({
 				method: 'POST',

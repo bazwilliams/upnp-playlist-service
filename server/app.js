@@ -28,8 +28,8 @@ app.get('/', function (req, res) {
 
 // JSON API
 app.get('/api/devices', api.device.list);
-app.post('/api/devices/:uuid/wake-up', api.schedule.setWakeUp);
-app.delete('/api/devices/:uuid/wake-up/:id', api.schedule.deleteWakeUp);
+app.post('/api/devices/:uuid/schedules', api.schedule.addSchedule);
+app.delete('/api/devices/:uuid/schedules/:id', api.schedule.deleteSchedule);
 app.put('/api/devices/:uuid/playlist/:playlistName', api.playlist.storePlaylist);
 app.post('/api/devices/:uuid/playlist/replace', api.playlist.replacePlaylist);
 

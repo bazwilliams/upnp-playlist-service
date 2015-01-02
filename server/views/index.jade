@@ -11,11 +11,11 @@ mixin device
       div.col-md-8
         div.panel.panel-default.schedule
           div.panel-heading
-            h3.panel-title Wakeup Schedules
+            h3.panel-title Schedules
           div.panel-body
-            div.list-group-item(ng-repeat='schedule in device.schedules')
+            div.list-group-item.clearfix(ng-repeat='schedule in device.schedules')
               +schedule()
-            div.list-group-item
+            div.list-group-item.clearfix
               +addSchedule()
       div.col-md-4
         form.form
@@ -33,64 +33,72 @@ mixin device
 
 mixin addSchedule
   form.form-inline.add-schedule
-    a(href='',ng-click='toggleDay("mon")',ng-key-select='toggleDay("mon")')
-      span.day.ng-hide.label.label-default(ng-hide='newSchedule.days.mon') Mon
-      span.day.ng-show.label.label-primary(ng-show='newSchedule.days.mon') Mon
-    | 
-    a(href='',ng-click='toggleDay("tue")',ng-key-select='toggleDay("tue")')
-      span.day.ng-hide.label.label-default(ng-hide='newSchedule.days.tue') Tue
-      span.day.ng-show.label.label-primary(ng-show='newSchedule.days.tue') Tue
-    | 
-    a(href='',ng-click='toggleDay("wed")',ng-key-select='toggleDay("wed")')
-      span.day.ng-hide.label.label-default(ng-hide='newSchedule.days.wed') Wed
-      span.day.ng-show.label.label-primary(ng-show='newSchedule.days.wed') Wed
-    | 
-    a(href='',ng-click='toggleDay("thu")',ng-key-select='toggleDay("thu")')
-      span.day.ng-hide.label.label-default(ng-hide='newSchedule.days.thu') Thu
-      span.day.ng-show.label.label-primary(ng-show='newSchedule.days.thu') Thu
-    | 
-    a(href='',ng-click='toggleDay("fri")',ng-key-select='toggleDay("fri")')
-      span.day.ng-hide.label.label-default(ng-hide='newSchedule.days.fri') Fri
-      span.day.ng-show.label.label-primary(ng-show='newSchedule.days.fri') Fri
-    | 
-    a(href='',ng-click='toggleDay("sat")',ng-key-select='toggleDay("sat")')
-      span.day.ng-hide.label.label-default(ng-hide='newSchedule.days.sat') Sat
-      span.day.ng-show.label.label-primary(ng-show='newSchedule.days.sat') Sat
-    | 
-    a(href='',ng-click='toggleDay("sun")',ng-key-select='toggleDay("sun")')
-      span.day.ng-hide.label.label-default(ng-hide='newSchedule.days.sun') Sun
-      span.day.ng-show.label.label-primary(ng-show='newSchedule.days.sun') Sun
-    | 
-    div.form-group
+    div.col-sm-2
+      select.form-control(ng-model='newSchedule.action')
+        option wake
+        option sleep
+    div.col-sm-5
+      a(href='',ng-click='toggleDay("mon")',ng-key-select='toggleDay("mon")')
+        span.day.ng-hide.label.label-default(ng-hide='newSchedule.days.mon') Mon
+        span.day.ng-show.label.label-primary(ng-show='newSchedule.days.mon') Mon
+      | 
+      a(href='',ng-click='toggleDay("tue")',ng-key-select='toggleDay("tue")')
+        span.day.ng-hide.label.label-default(ng-hide='newSchedule.days.tue') Tue
+        span.day.ng-show.label.label-primary(ng-show='newSchedule.days.tue') Tue
+      | 
+      a(href='',ng-click='toggleDay("wed")',ng-key-select='toggleDay("wed")')
+        span.day.ng-hide.label.label-default(ng-hide='newSchedule.days.wed') Wed
+        span.day.ng-show.label.label-primary(ng-show='newSchedule.days.wed') Wed
+      | 
+      a(href='',ng-click='toggleDay("thu")',ng-key-select='toggleDay("thu")')
+        span.day.ng-hide.label.label-default(ng-hide='newSchedule.days.thu') Thu
+        span.day.ng-show.label.label-primary(ng-show='newSchedule.days.thu') Thu
+      | 
+      a(href='',ng-click='toggleDay("fri")',ng-key-select='toggleDay("fri")')
+        span.day.ng-hide.label.label-default(ng-hide='newSchedule.days.fri') Fri
+        span.day.ng-show.label.label-primary(ng-show='newSchedule.days.fri') Fri
+      | 
+      a(href='',ng-click='toggleDay("sat")',ng-key-select='toggleDay("sat")')
+        span.day.ng-hide.label.label-default(ng-hide='newSchedule.days.sat') Sat
+        span.day.ng-show.label.label-primary(ng-show='newSchedule.days.sat') Sat
+      | 
+      a(href='',ng-click='toggleDay("sun")',ng-key-select='toggleDay("sun")')
+        span.day.ng-hide.label.label-default(ng-hide='newSchedule.days.sun') Sun
+        span.day.ng-show.label.label-primary(ng-show='newSchedule.days.sun') Sun
+      | 
+    div.col-sm-2
       input.form-control(type='time',placholder='HH:mm',ng-model='newSchedule.time')
     div.pull-right
       button.btn.btn-success(ng-click='addWakeUp(newSchedule)',ng-key-select='addWakeUp(newSchedule)') Add
 
 mixin schedule
-  span.day.ng-hide.label.label-default(ng-hide='schedule.days.mon') Mon
-  span.day.ng-show.label.label-info(ng-show='schedule.days.mon') Mon
-  | 
-  span.day.ng-hide.label.label-default(ng-hide='schedule.days.tue') Tue
-  span.day.ng-show.label.label-info(ng-show='schedule.days.tue') Tue
-  | 
-  span.day.ng-hide.label.label-default(ng-hide='schedule.days.wed') Wed
-  span.day.ng-show.label.label-info(ng-show='schedule.days.wed') Wed
-  | 
-  span.day.ng-hide.label.label-default(ng-hide='schedule.days.thu') Thu
-  span.day.ng-show.label.label-info(ng-show='schedule.days.thu') Thu
-  | 
-  span.day.ng-hide.label.label-default(ng-hide='schedule.days.fri') Fri
-  span.day.ng-show.label.label-info(ng-show='schedule.days.fri') Fri
-  | 
-  span.day.ng-hide.label.label-default(ng-hide='schedule.days.sat') Sat
-  span.day.ng-show.label.label-info(ng-show='schedule.days.sat') Sat
-  | 
-  span.day.ng-hide.label.label-default(ng-hide='schedule.days.sun') Sun
-  span.day.ng-show.label.label-info(ng-show='schedule.days.sun') Sun
-  | 
-  | at 
-  | 
-  span.time.label.label-info {{schedule.time}}
+  span.col-sm-2 {{schedule.action}}
+  div.col-sm-5
+    span.day.ng-hide.label.label-default(ng-hide='schedule.days.mon') Mon
+    span.day.ng-show.label.label-info(ng-show='schedule.days.mon') Mon
+    | 
+    span.day.ng-hide.label.label-default(ng-hide='schedule.days.tue') Tue
+    span.day.ng-show.label.label-info(ng-show='schedule.days.tue') Tue
+    | 
+    span.day.ng-hide.label.label-default(ng-hide='schedule.days.wed') Wed
+    span.day.ng-show.label.label-info(ng-show='schedule.days.wed') Wed
+    | 
+    span.day.ng-hide.label.label-default(ng-hide='schedule.days.thu') Thu
+    span.day.ng-show.label.label-info(ng-show='schedule.days.thu') Thu
+    | 
+    span.day.ng-hide.label.label-default(ng-hide='schedule.days.fri') Fri
+    span.day.ng-show.label.label-info(ng-show='schedule.days.fri') Fri
+    | 
+    span.day.ng-hide.label.label-default(ng-hide='schedule.days.sat') Sat
+    span.day.ng-show.label.label-info(ng-show='schedule.days.sat') Sat
+    | 
+    span.day.ng-hide.label.label-default(ng-hide='schedule.days.sun') Sun
+    span.day.ng-show.label.label-info(ng-show='schedule.days.sun') Sun
+  div.col-sm-2
+    | 
+    | at 
+    | 
+    span.time.label.label-info {{schedule.time}}
   div.pull-right
     button.btn.btn-xs.btn-danger(ng-click='deleteWakeUp(schedule)',ng-key-select='deleteWakeUp(schedule)') Remove
 
