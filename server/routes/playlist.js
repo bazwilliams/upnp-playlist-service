@@ -1,5 +1,16 @@
 var manager = require('../devicemanager.js');
 var playlists = require('../playlists.js');
+var m3u = require('../m3u.js');
+
+exports.listPlaylists = function (req, res) {
+    m3u.list(function (err, results) {
+        if (err) {
+            res.status(400).send(err);
+        } else {
+            res.status(200).send(results);
+        }
+    });
+}
 
 exports.storePlaylist = function (req, res) {
     var uuid = req.params.uuid;

@@ -18,6 +18,21 @@ function combine(lines, callback) {
     }, callback);
 }
 
+exports.list = function list(callback) {
+    fs.readdir(path.normalize(config.playlistPath), function processPlaylistFiles(err, files) {
+        if (err) {
+            callback(err);
+        } else {
+            callback(null, 
+                _.chain(files)
+                    .filter(function (filename) { return filename.match(/\.m3u$/); })
+                    .map(function (filename) { return filename.slice(0,-4); })
+                    .compact()
+                    .value());
+        }
+    });
+}
+
 exports.read = function read(playlistName, callback) {
     fs.readFile(playlistFile(playlistName), { encoding: 'utf8' }, function (err, data) {
         if (data) {

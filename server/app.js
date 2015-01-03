@@ -28,6 +28,7 @@ app.get('/', function (req, res) {
 
 // JSON API
 app.get('/api/devices', api.device.list);
+app.get('/api/playlists', api.playlist.listPlaylists);
 app.post('/api/devices/:uuid/schedules', api.schedule.addSchedule);
 app.delete('/api/devices/:uuid/schedules/:id', api.schedule.deleteSchedule);
 app.put('/api/devices/:uuid/playlist/:playlistName', api.playlist.storePlaylist);
