@@ -73,8 +73,8 @@ mixin addSchedule
 
 mixin schedule
   div.col-sm-1
-    span.glyphicon.glyphicon-stop(ng-show='schedule.action=="sleep"')
-    span.glyphicon.glyphicon-music(ng-show='schedule.action=="wake"')
+    img(width=24,src='./images/1420303821_27-128.png',ng-show='schedule.action=="sleep"')
+    img(width=24,src='./images/1420302796_45-128.png',ng-show='schedule.action=="wake"')
   div.col-sm-5
     span.day.ng-hide.label.label-default(ng-hide='schedule.days.mon') Mon
     span.day.ng-show.label.label-info(ng-show='schedule.days.mon') Mon

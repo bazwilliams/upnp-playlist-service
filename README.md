@@ -105,8 +105,22 @@ You can have multiple schedules for a single UUID or multiple UUIDs.
 Future Plans
 ============
 
-Provide feedback through the UI when a playlist is stored
+Skip standby mode if 
 
-Ability to start non radio sources; ability to decide which radio station or perhaps preload a playlist. 
+Provide feedback through the UI when a playlist is stored.
+Permit replacing existing playlist. 
+Suggest playlists or provide a list of known playlists. 
+
+Ability to start non radio sources; ability to decide which radio station or preload a named playlist. 
 
 Easy installation on windows, mac, linux and nas drives. 
+
+Credits
+=======
+
+Radio Icon: https://www.iconfinder.com/icons/111101/radio_icon
+Playlist Icon: https://www.iconfinder.com/icons/111102/music_nodes_icon
+Standby Icon: https://www.iconfinder.com/icons/111007/cable_icon
+
+Icons licenced as Creative Commons (Attribution-Share Alike 3.0 Unported) 
+http://creativecommons.org/licenses/by-sa/3.0/    
