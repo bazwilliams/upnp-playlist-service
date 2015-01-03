@@ -23,6 +23,7 @@ function toScheduleResource(schedule) {
             days: days,
             time: zpad(schedule.schedule.hour) + ':' + zpad(schedule.schedule.minute),
             action: schedule.actions.setStandby ? 'sleep' : 'wake',
+            playlistName: schedule.actions.playlistName,
             links: [{
                 rel: 'delete',
                 href: '/api/devices/'+schedule.uuid+'/schedules/'+schedule.id

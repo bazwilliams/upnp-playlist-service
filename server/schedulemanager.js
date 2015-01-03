@@ -4,6 +4,7 @@ var _ = require('underscore');
 var guid = require('node-uuid');
 var async = require('async');
 var devices = require('./devicemanager.js');
+var playlists = require('./playlists.js');
 
 var jobs = [];
 
@@ -15,7 +16,13 @@ function recurrenceRuleFactory(schedule) {
     return recurrence;
 }
 
-function actionFactory(uuid, actions, callback) {
+function delay(milliseconds) {
+    return function (callback) {
+        setTimeout(callback, milliseconds);
+    };
+}
+
+function actionsTasks(uuid, actions, callback) {
     return function () {
         var device = devices.getDevice(uuid);
         if (device) {
@@ -23,12 +30,22 @@ function actionFactory(uuid, actions, callback) {
                 async.series([
                     device.ds.powerOff
                 ], callback);
+            } else if (actions.playlistName) {
+                async.series([
+                    device.ds.powerOn,
+                    function(iterCallback) {
+                        playlists.replacePlaylist(device.ds, actions.playlistName, iterCallback);
+                    },
+                    delay(1000),
+                    device.ds.playPlaylistFromStart
+                ], callback);
             } else {
                 async.series([
                     device.ds.powerOn,
                     function(iterCallback) {
                         device.ds.changeSource(actions.sourceId, iterCallback);
                     },
+                    delay(1000),
                     device.ds.playRadio
                 ], callback);
             }
@@ -52,7 +69,7 @@ function scheduleJobs() {
             callback(err);
         } else {
             jobs = _.map(schedules, function (schedule) {
-                return scheduler.scheduleJob(recurrenceRuleFactory(schedule.schedule), actionFactory(schedule.uuid, schedule.actions, callback));
+                return scheduler.scheduleJob(recurrenceRuleFactory(schedule.schedule), actionsTasks(schedule.uuid, schedule.actions, callback));
             });
         }
     });
@@ -90,7 +107,8 @@ exports.addSchedule = function addSchedule(uuid, schedule, callback) {
                     uuid: uuid,
                     actions: {
                         setStandby: schedule.isStandby,
-                        sourceId: 1 //defaults to DS radio
+                        sourceId: schedule.playlistName ? 0 : 1,
+                        playlistName: schedule.playlistName
                     },
                     schedule: {            
                         dayOfWeek: schedule.dayOfWeek,

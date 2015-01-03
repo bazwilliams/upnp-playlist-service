@@ -3,7 +3,7 @@ DS Service
 
 Node.js based system for monitoring a suite of UPNP renderers on a network. It is intended to run all the time so it can discover your renderers and control them. 
 
-A wake up and sleep system exists which can be configured to wake, change the source to radio and start playing; or put to sleep a specific DS.  
+A wake up and sleep system exists which can be configured to wake, change the source to radio and start playing; play a named saved playlist; or put to sleep a specific DS.  
 
 A capability exists to convert a play queue which exists already on a DS which you may have spent a long time preparing to be saved as an m3u file. This only works for Minimserver and requires both this service and minimserver to be running on the same computer. By storing your playlist as an m3u file, you are free to edit metadata and album art without loss. If you store the raw playlist from a Upnp renderer, the metadata is included in the playlist which means it can become out of sync to your original files. 
 
@@ -70,7 +70,8 @@ POST to `/api/devices/{uuid}/schedules`
     	"sun" : false
     	},
     "time": "{hour}:{minute}",
-    "action": "(sleep|wake)"
+    "action": "(sleep|wake)",
+    "playlistName": "{playlist}"
 }
 ```
 
@@ -90,7 +91,8 @@ E.g. to wake device with UUID 4c494e4e-0026-0f21-cc9a-01320147013f at 10:00 on S
     	"sun" : true
     	},
     "time": "10:00",
-    "action": "wake"
+    "action": "wake",
+    "playlistName": ""
 }
 ```
 
@@ -102,16 +104,18 @@ The response body will contain the schedule you posted.
 
 You can have multiple schedules for a single UUID or multiple UUIDs. 
 
+If you include a value within the playlistName attribute of the javascript object, then this playlist will be loaded into the DS and started from the beginning. If it is empty, the radio is assumed. 
+
 Future Plans
 ============
 
-Skip standby mode if 
+Skip standby mode if the source has changed (i.e. someone interacted between wakeup and sleep)
 
 Provide feedback through the UI when a playlist is stored.
 Permit replacing existing playlist. 
 Suggest playlists or provide a list of known playlists. 
 
-Ability to start non radio sources; ability to decide which radio station or preload a named playlist. 
+Ability to decide which radio station. 
 
 Easy installation on windows, mac, linux and nas drives. 
 

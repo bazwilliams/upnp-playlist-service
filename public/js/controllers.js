@@ -51,6 +51,7 @@ angular.module('upnpControllers', [])
 				'sat' : false,
 				'sun' : false
 			},
+			playlistName: '',
 			action: 'wake',
 			time: ''
 		};
@@ -64,7 +65,8 @@ angular.module('upnpControllers', [])
 			var body = {
 				days : newSchedule.days,
 				time: newSchedule.time,
-				action: newSchedule.action
+				action: newSchedule.action,
+				playlistName: newSchedule.playlistName
 			};
 			$http({
 				method: 'POST',

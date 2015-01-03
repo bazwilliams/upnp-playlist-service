@@ -197,4 +197,20 @@ exports.Ds = function(deviceUrlRoot) {
             }
         );
     };
+    this.playPlaylistFromStart = function (callback) {
+        upnp.soapRequest(
+            deviceUrlRoot,
+            'Ds/Playlist',
+            'urn:av-openhome.org:service:Playlist:1',
+            'SeekIndex',
+            '<Value>0</Value>',
+            function (res) {
+                if (res.statusCode === 200) {
+                    callback();
+                } else {
+                    callback(new Error("Play Playlist failed with status " + res.statusCode));
+                }
+            }
+        );
+    };
 };

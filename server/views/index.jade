@@ -67,14 +67,22 @@ mixin addSchedule
         span.day.ng-show.label.label-primary(ng-show='newSchedule.days.sun') Sun
       | 
     div.col-sm-2
-      input.form-control(type='time',placholder='HH:mm',ng-model='newSchedule.time')
+      input.form-control(type='time',placeholder='HH:mm',ng-model='newSchedule.time')
+    div.col-sm-10.form-horizontal
+      div.form-group
+        label.col-sm-6.control-label Name of Playlist
+        div.col-sm-6
+          input.form-control(type='text',placeholder='Leave blank for radio',ng-model='newSchedule.playlistName')
     div.pull-right
       button.btn.btn-success(ng-click='addWakeUp(newSchedule)',ng-key-select='addWakeUp(newSchedule)') Add
 
 mixin schedule
   div.col-sm-1
-    img(width=24,src='./images/1420303821_27-128.png',ng-show='schedule.action=="sleep"')
-    img(width=24,src='./images/1420302796_45-128.png',ng-show='schedule.action=="wake"')
+    img(width=24,src='./images/1420303821_27-128.png',ng-show='schedule.action == "sleep"')
+    img(width=24,src='./images/1420302796_45-128.png',ng-show='schedule.action == "wake" && !schedule.playlistName')
+    img(width=24,src='./images/1420302928_43-128.png',ng-show='schedule.action == "wake" && schedule.playlistName')
+  div.col-sm-2
+    span {{schedule.playlistName}}
   div.col-sm-5
     span.day.ng-hide.label.label-default(ng-hide='schedule.days.mon') Mon
     span.day.ng-show.label.label-info(ng-show='schedule.days.mon') Mon
