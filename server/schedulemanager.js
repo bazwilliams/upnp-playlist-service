@@ -15,17 +15,23 @@ function recurrenceRuleFactory(schedule) {
     return recurrence;
 }
 
-function actionFactory(uuid, sourceId, callback) {
+function actionFactory(uuid, actions, callback) {
     return function () {
         var device = devices.getDevice(uuid);
         if (device) {
-            async.series([
-                device.ds.powerOn,
-                function(iterCallback) {
-                    device.ds.changeSource(sourceId, iterCallback);
-                },
-                device.ds.playRadio
-            ], callback);
+            if (actions.setStandby) {
+                async.series([
+                    device.ds.powerOff
+                ], callback);
+            } else {
+                async.series([
+                    device.ds.powerOn,
+                    function(iterCallback) {
+                        device.ds.changeSource(actions.sourceId, iterCallback);
+                    },
+                    device.ds.playRadio
+                ], callback);
+            }
         } else {
             callback(new Error("Device with UUID (" + uuid + ") not found"));
         }
@@ -41,12 +47,12 @@ function scheduleJobs() {
     _.each(jobs, function (job) {
         job.cancel();
     });
-    storage.getItem('schedules.json', function scheduleLoadedJobs(err, schedules) {
+    storage.getItem('actions.json', function scheduleLoadedJobs(err, schedules) {
         if (err) {
             callback(err);
         } else {
             jobs = _.map(schedules, function (schedule) {
-                return scheduler.scheduleJob(recurrenceRuleFactory(schedule.wakeUp), actionFactory(schedule.uuid, schedule.source, callback));
+                return scheduler.scheduleJob(recurrenceRuleFactory(schedule.schedule), actionFactory(schedule.uuid, schedule.actions, callback));
             });
         }
     });
@@ -64,7 +70,7 @@ function scheduleAndReturnCallback(callback, returnVal) {
 }
 
 exports.list = function list(uuid, callback) {
-    storage.getItem('schedules.json', function findMatchingJobs(err, schedules) {
+    storage.getItem('actions.json', function findMatchingJobs(err, schedules) {
         if (err) {
             callback(err);
         } else {
@@ -75,19 +81,26 @@ exports.list = function list(uuid, callback) {
 
 exports.addSchedule = function addSchedule(uuid, schedule, callback) {
     if (schedule.dayOfWeek.length > 0) {
-        storage.getItem('schedules.json', function addValidSchedule(err, schedules) { 
+        storage.getItem('actions.json', function addValidSchedule(err, schedules) { 
             if (err) {
                 callback(err);
             } else {
-                var wakeUp = {
+                var action = {
                     id: guid.v1(),
                     uuid: uuid,
-                    source: 1, //defaults to DS radio
-                    wakeUp: schedule
+                    actions: {
+                        setStandby: schedule.isStandby,
+                        sourceId: 1 //defaults to DS radio
+                    },
+                    schedule: {            
+                        dayOfWeek: schedule.dayOfWeek,
+                        hour: schedule.hour,
+                        minute: schedule.minute
+                    }
                 };
                 var newSchedules = _.clone(schedules);
-                newSchedules.push(wakeUp);
-                storage.setItem('schedules.json', newSchedules, scheduleAndReturnCallback(callback, wakeUp));
+                newSchedules.push(action);
+                storage.setItem('actions.json', newSchedules, scheduleAndReturnCallback(callback, action));
             }
         });
     } else {
@@ -96,7 +109,7 @@ exports.addSchedule = function addSchedule(uuid, schedule, callback) {
 };
 
 exports.deleteSchedule = function deleteSchedule(uuid, id, callback) {
-    storage.getItem('schedules.json', function removeUnwantedSchedules(err, schedules) {
+    storage.getItem('actions.json', function removeUnwantedSchedules(err, schedules) {
         if (err) {
             callback(err);
         } else {
@@ -104,7 +117,7 @@ exports.deleteSchedule = function deleteSchedule(uuid, id, callback) {
                 return schedule.uuid === uuid && schedule.id == id;
             });
             if (newSchedules.length < schedules.length) {
-                storage.setItem('schedules.json', newSchedules, scheduleAndReturnCallback(callback));
+                storage.setItem('actions.json', newSchedules, scheduleAndReturnCallback(callback));
             } else {
                 callback(new Error("No schedule found"));
             }
@@ -114,7 +127,7 @@ exports.deleteSchedule = function deleteSchedule(uuid, id, callback) {
 
 storage.initSync();
 
-if (!storage.getItem('schedules.json')) {
-    storage.setItem('schedules.json', []);
+if (!storage.getItem('actions.json')) {
+    storage.setItem('actions.json', []);
 }
 scheduleJobs();

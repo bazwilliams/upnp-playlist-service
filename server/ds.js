@@ -155,12 +155,28 @@ exports.Ds = function(deviceUrlRoot) {
             'Ds/Product/control',
             'urn:av-openhome.org:service:Product:1',
             'SetStandby',
-            '<Value>1</Value>',
+            '<Value>0</Value>',
             function (res) {
                 if (res.statusCode === 200) {
                     callback();
                 } else {
                     callback(new Error("Power On failed with status " + res.statusCode));
+                }
+            }
+        );
+    };
+    this.powerOff = function (callback) {
+        upnp.soapRequest(
+            deviceUrlRoot,
+            'Ds/Product/control',
+            'urn:av-openhome.org:service:Product:1',
+            'SetStandby',
+            '<Value>1</Value>',
+            function (res) {
+                if (res.statusCode === 200) {
+                    callback();
+                } else {
+                    callback(new Error("Power Off failed with status " + res.statusCode));
                 }
             }
         );

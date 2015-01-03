@@ -16,7 +16,7 @@ function convertToSchedule(data) {
             dayOfWeek: dayOfWeek,
             hour: parseInt(data.time.split(':')[0],10),
             minute: parseInt(data.time.split(':')[1],10),
-            isAwake: data.action !== 'sleep'
+            isStandby: data.action === 'sleep'
         };
     }
 }

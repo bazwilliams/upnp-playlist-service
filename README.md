@@ -3,7 +3,7 @@ DS Service
 
 Node.js based system for monitoring a suite of UPNP renderers on a network. It is intended to run all the time so it can discover your renderers and control them. 
 
-A wake up system exists which can be configured to wake a specified DS, change the source to radio and start playing. 
+A wake up and sleep system exists which can be configured to wake, change the source to radio and start playing; or put to sleep a specific DS.  
 
 A capability exists to convert a play queue which exists already on a DS which you may have spent a long time preparing to be saved as an m3u file. This only works for Minimserver and requires both this service and minimserver to be running on the same computer. By storing your playlist as an m3u file, you are free to edit metadata and album art without loss. If you store the raw playlist from a Upnp renderer, the metadata is included in the playlist which means it can become out of sync to your original files. 
 
@@ -56,7 +56,7 @@ Alarm Clock Function
 
 To create an alarm:
 
-POST to `/api/devices/{uuid}/wake-up`
+POST to `/api/devices/{uuid}/schedules`
 
 ```javascript
 {
@@ -68,14 +68,15 @@ POST to `/api/devices/{uuid}/wake-up`
     	"fri" : false,
     	"sat" : false,
     	"sun" : false
-    	}
-    "time": "{hour}:{minute}"
+    	},
+    "time": "{hour}:{minute}",
+    "action": "(sleep|wake)"
 }
 ```
 
 E.g. to wake device with UUID 4c494e4e-0026-0f21-cc9a-01320147013f at 10:00 on Sunday and Wednesday: 
 
-`POST /4c494e4e-0026-0f21-cc9a-01320147013f/wake-up`
+`POST /4c494e4e-0026-0f21-cc9a-01320147013f/schedules`
 
 ```javascript
 {
@@ -87,8 +88,9 @@ E.g. to wake device with UUID 4c494e4e-0026-0f21-cc9a-01320147013f at 10:00 on S
     	"fri" : false,
     	"sat" : false,
     	"sun" : true
-    	}
-    "time": "10:00"
+    	},
+    "time": "10:00",
+    "action": "wake"
 }
 ```
 

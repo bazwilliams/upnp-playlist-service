@@ -15,14 +15,14 @@ function toScheduleResource(schedule) {
             'sat' : false,
             'sun' : false
         };
-        _.each(schedule.wakeUp.dayOfWeek, function (day) {
+        _.each(schedule.schedule.dayOfWeek, function (day) {
             var key = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'][day];
             days[key] = true;
         });
         return {
             days: days,
-            time: zpad(schedule.wakeUp.hour) + ':' + zpad(schedule.wakeUp.minute),
-            action: 'wake',
+            time: zpad(schedule.schedule.hour) + ':' + zpad(schedule.schedule.minute),
+            action: schedule.actions.setStandby ? 'sleep' : 'wake',
             links: [{
                 rel: 'delete',
                 href: '/api/devices/'+schedule.uuid+'/schedules/'+schedule.id
