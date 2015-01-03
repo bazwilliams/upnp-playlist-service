@@ -33,10 +33,10 @@ mixin device
 
 mixin addSchedule
   form.form-inline.add-schedule
-    div.col-sm-2
+    div.col-sm-3
       select.form-control(ng-model='newSchedule.action')
-        option wake
-        option sleep
+        option(value='wake') Add Wakeup
+        option(value='sleep') Add Sleep
     div.col-sm-5
       a(href='',ng-click='toggleDay("mon")',ng-key-select='toggleDay("mon")')
         span.day.ng-hide.label.label-default(ng-hide='newSchedule.days.mon') Mon
@@ -72,7 +72,9 @@ mixin addSchedule
       button.btn.btn-success(ng-click='addWakeUp(newSchedule)',ng-key-select='addWakeUp(newSchedule)') Add
 
 mixin schedule
-  span.col-sm-2 {{schedule.action}}
+  div.col-sm-1
+    span.glyphicon.glyphicon-stop(ng-show='schedule.action=="sleep"')
+    span.glyphicon.glyphicon-music(ng-show='schedule.action=="wake"')
   div.col-sm-5
     span.day.ng-hide.label.label-default(ng-hide='schedule.days.mon') Mon
     span.day.ng-show.label.label-info(ng-show='schedule.days.mon') Mon
