@@ -9,7 +9,7 @@ function playlistFile(playlistName) {
 }
 
 function relative(track) {
-    return path.relative(path.normalize(config.playlistPath), track.track);
+    return path.relative(path.normalize(config.playlistPath), track);
 }
 
 function combine(lines, callback) {
