@@ -35,8 +35,8 @@ mixin addSchedule
   form.form-inline.add-schedule
     div.col-sm-3
       select.form-control(ng-model='newSchedule.action')
-        option(value='wake') Add Wakeup
-        option(value='sleep') Add Sleep
+        option(value='wake') Wakeup
+        option(value='sleep') Sleep
     div.col-sm-5
       a(href='',ng-click='toggleDay("mon")',ng-key-select='toggleDay("mon")')
         span.day.ng-hide.label.label-default(ng-hide='newSchedule.days.mon') Mon
