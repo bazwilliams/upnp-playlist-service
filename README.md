@@ -32,17 +32,21 @@ http://localhost:18080/
 
 ## API
 
-GET /api/devices to see a list of all discovered devices on your network, all wake up schedules will be included under `device.schedules`. Each of which will include a link-rel to delete that wake up by sending a DELETE to it. 
+GET `/api/devices` to see a list of all discovered devices on your network, all wake up schedules will be included under `device.schedules`. Each of which will include a link-rel to delete that wake up by sending a DELETE to it. 
 
 ### Playlists
 
-Storing the current play queue on a DS as an M3U file is optimised if you are serving your music from a Minimserver media server running on the same machine. Otherwise, the DIDL-LITE metadata will be stored as an M3U comment. 
+GET `/api/playlists` to see a list of all M3U files in the configured playlist folder. Any M3U files created by this service can also be loaded back into the DS via the 'replace' button or as part of a schedule. 
 
-The create a playlist:
+Storing the current play queue on a DS as an M3U file is optimised if you are serving your music from a Minimserver media server running on the same machine as a relative path to the original file will be stored in the M3U file. In all cases, the DIDL-LITE metadata will be stored as an M3U comment. 
+
+#### To store a playlist already in a DS
 
 PUT to `/api/devices/{uuid}/playlists/{playlistName}`
 
 No body is required, the playlistName does not need to include any file suffix (one will be added). 
+
+#### To replace the playlist in a DS
 
 Loading a playlist into a DS is now supported by parsing the DIDL-LITE out of an m3u file. The downsides are if the metadata should change, or the URI to the original track or artwork change, the track may not work as expected. Therefore this facility is only reliable if track URI and metadata are not changed. 
 
