@@ -60,8 +60,7 @@ exports.savePlaylist = function (ds, playlistName, callback) {
     ], function storeTrackDetails(err, results) {
         if (err) {
             callback(err);
-        }
-        if (results) {
+        } else {
             storePlaylist(results, playlistName, callback);
         }
     });
