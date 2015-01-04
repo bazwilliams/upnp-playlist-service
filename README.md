@@ -114,13 +114,13 @@ If you include a value within the playlistName attribute of the javascript objec
 
 ## Future Plans
 
-[ ] Playlist builder (add currently playing track to a specific playlist)
-[ ] Skip standby mode if the source has changed (i.e. someone interacted between wakeup and sleep)
-[ ] Provide feedback through the UI when a playlist is stored.
-[ ] Permit overwriting existing playlists. 
-[ ] Provide list of existing playlist when loading into DS. 
-[ ] Ability to decide which radio station to play. 
-[ ] Easy installation on windows, mac, linux and nas drives. 
+- [ ] Playlist builder (add currently playing track to a specific playlist)
+- [ ] Skip standby mode if the source has changed (i.e. someone interacted between wakeup and sleep)
+- [ ] Provide feedback through the UI when a playlist is stored.
+- [ ] Permit overwriting existing playlists. 
+- [ ] Provide list of existing playlist when loading into DS. 
+- [ ] Ability to decide which radio station to play. 
+- [ ] Easy installation on windows, mac, linux and nas drives. 
 
 ## Credits
 
