@@ -53,22 +53,27 @@ exports.read = function read(playlistName, callback) {
 };
 
 exports.write = function write(tracks, playlistName, callback) {
-    async.mapSeries(tracks, function (track, iterCallback) {
-        fs.stat(track.track, function (err, stats) {
-            if (stats && stats.isFile()) {
-                iterCallback(null, relative(track.track) + '\n' + '#' + track.metadata);
-            }
-            iterCallback(null, '#' + track.metadata);
-        });
-    }, function writeLines(err, lines) {
-        combine(lines, function writeFile(err, data) {
-            if (err) {
-                callback(err);
-            } else {
-                fs.writeFile(playlistFile(playlistName), data, { flag: 'wx', encoding: 'utf8' }, callback);
-            }
-        });
-    });
+    async.map(
+        tracks, 
+        function (track, iterCallback) {
+            fs.stat(track.track, function (err, stats) {
+                if (stats && stats.isFile()) {
+                    iterCallback(null, relative(track.track) + '\n' + '#' + track.metadata);
+                } else {
+                    iterCallback(null, '#' + track.metadata);
+                }
+            });
+        }, 
+        function writeLines(err, lines) {
+            combine(lines, function writeFile(err, data) {
+                if (err) {
+                    callback(err);
+                } else {
+                    fs.writeFile(playlistFile(playlistName), data, { flag: 'wx', encoding: 'utf8' }, callback);
+                }
+            });
+        }
+    );
 };
 
 exports.append = function append(track, playlistName, callback) {
