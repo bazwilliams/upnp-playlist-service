@@ -5,6 +5,37 @@ var xml2js = require('xml2js');
 var xmlParser = new xml2js.Parser({explicitArray: false});
 
 exports.Ds = function(deviceUrlRoot) {
+    this.currentTrackDetails = function(callback) {
+        upnp.soapRequest(
+            deviceUrlRoot,
+            'Ds/Info',
+            'urn:av-openhome-org:service:Info:1',
+            'Track',
+            '',
+            function(res) {
+                var body = '';
+                res.setEncoding('utf8');
+                res.on('data', function (chunk) {
+                    body += chunk;
+                });
+                res.once('end', function () {
+                    xmlParser.parseString(body, function (err, result) {
+                        if (err) {
+                            callback(err);
+                        } else {
+                            if (result['s:Envelope']['s:Body']['u:TrackResponse'].Uri) {
+                                callback(null, {
+                                    track: result['s:Envelope']['s:Body']['u:TrackResponse'].Uri,
+                                    metadata: result['s:Envelope']['s:Body']['u:TrackResponse'].Metadata
+                                });
+                            } else {
+                                callback();
+                            }
+                        }
+                    });
+                });
+            })
+    };
     this.retrieveTrackDetails = function(idArray, callback) {
         var idArrayString = '';
         _.each(idArray, function (id) {

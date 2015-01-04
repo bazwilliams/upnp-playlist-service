@@ -63,6 +63,9 @@ exports.list = function list(req, res) {
                         rel: 'store-playlist',
                         href: '/api/devices/' + deviceModel.uuid + '/playlist/'
                     },{
+                        rel: 'add-to-playlist',
+                        href: '/api/devices/' + deviceModel.uuid + '/playlist/'
+                    },{
                         rel: 'replace-playlist',
                         href: '/api/devices/' + deviceModel.uuid + '/playlist/replace'
                     },{

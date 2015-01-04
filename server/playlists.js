@@ -20,19 +20,37 @@ function queueAllTracks(ds) {
     return function queueAllTracksGivenDs(tracks, callback) {
         async.mapSeries(
             tracks.reverse(),
-            function queueTrackAtFront(trackXml, callback) {
-                ds.queueTrack(trackXml, 0, callback);
+            function queueTrackAtFront(trackXml, iterCallback) {
+                ds.queueTrack(trackXml, 0, iterCallback);
             },
-            callback);
+            function (err, results) {
+                if (err) {
+                    callback(err);
+                } else {
+                    callback(null);
+                }
+            });
     };
 }
+exports.appendCurrentTrack = function (ds, playlistName, callback) {
+    async.waterfall([
+        ds.currentTrackDetails,
+        function addToM3u(track, iterCallback) {
+            m3u.append({
+                track: trackProcessor.translate(track.track),
+                metadata: track.metadata
+            }, playlistName, iterCallback);
+        }
+        ], callback)
+};
 exports.replacePlaylist = function (ds, playlistName, callback) {
     async.waterfall([
         ds.deleteAll,
         function readM3u(iterCallback) {
             m3u.read(playlistName, iterCallback);
         },
-        queueAllTracks(ds)
+        queueAllTracks(ds),
+        ds.playPlaylistFromStart
     ], callback);
 };
 exports.savePlaylist = function (ds, playlistName, callback) {

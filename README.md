@@ -1,10 +1,12 @@
 # DS Service
 
-Node.js based system for monitoring a suite of UPNP renderers on a network. It is intended to run all the time so it can discover your renderers and control them. 
+Node.js based system for monitoring a suite of UPNP renderers on a network. It is intended to run all the time so it can discover your renderers and partially control them. 
 
 A wake up and sleep system exists which can be configured to wake, change the source to radio and start playing; play a named saved playlist; or put to sleep a specific DS.  
 
 A capability exists to convert a play queue which exists already on a DS which you may have spent a long time preparing to be saved as an m3u file. This only works for Minimserver and requires both this service and minimserver to be running on the same computer. By storing your playlist as an m3u file, you are free to edit metadata and album art without loss. If you store the raw playlist from a Upnp renderer, the metadata is included in the playlist which means it can become out of sync to your original files. 
+
+A playlist builder function exists to create new stored playlists from the track playing on *any* device. This can then be loaded into any device or used as a wake up playlist. 
 
 ## Installation
 
@@ -53,6 +55,12 @@ GET `/api/devices` to see a list of all discovered devices on your network, all 
 GET `/api/playlists` to see a list of all M3U files in the configured playlist folder. Any M3U files created by this service can also be loaded back into the DS via the 'replace' button or as part of a schedule. 
 
 Storing the current play queue on a DS as an M3U file is optimised if you are serving your music from a Minimserver media server running on the same machine as a relative path to the original file will be stored in the M3U file. In all cases, the DIDL-LITE metadata will be stored as an M3U comment. 
+
+#### To add currently playling track to a new or existing playlist
+
+POST to `/api/devices/{uuid}/playlists/{playlistName}`
+
+No body is required, the playlistName does not need to include any file suffix (one will be added).
 
 #### To store a playlist already in a DS
 
@@ -128,13 +136,13 @@ If you include a value within the playlistName attribute of the javascript objec
 
 ## Future Plans
 
-- [ ] Playlist builder (add currently playing track to a specific playlist)
-- [ ] Skip standby mode if the source has changed (i.e. someone interacted between wakeup and sleep)
+- [X] Playlist builder (add currently playing track to a specific playlist).
+- [ ] Provide list of existing playlist when loading into DS.
 - [ ] Provide feedback through the UI when a playlist is stored.
-- [ ] Permit overwriting existing playlists. 
-- [ ] Provide list of existing playlist when loading into DS. 
-- [ ] Ability to decide which radio station to play. 
-- [ ] Easy installation on windows, mac, linux and nas drives. 
+- [ ] Permit overwriting existing playlists.
+- [ ] Ability to decide which radio station to play.
+- [ ] Skip standby mode if the source has changed (i.e. someone interacted between wakeup and sleep)
+- [ ] Easy installation on windows, mac, linux and nas drives.
 
 ## Credits
 

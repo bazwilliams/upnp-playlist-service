@@ -27,7 +27,9 @@ mixin device
                   input.form-control(id='playlist-name',type='text',name='playlist',placeholder='Name of playlist',ng-model='playlistName')
             div.panel-footer.clearfix
               div.pull-right
-                button.btn.btn-primary(ng-click='replacePlaylist(playlistName)',ng-model='playlistName') Replace
+                button.btn.btn-primary(ng-click='replacePlaylist(playlistName)',ng-model='playlistName') Load Into Device
+                | 
+                button.btn.btn-success(ng-click='appendPlaylist(playlistName)',ng-model='playlistName') Append
                 | 
                 button.btn.btn-success(ng-click='storePlaylist(playlistName)',ng-model='playlistName') Store
 
