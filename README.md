@@ -1,5 +1,4 @@
-DS Service
-==========
+# DS Service
 
 Node.js based system for monitoring a suite of UPNP renderers on a network. It is intended to run all the time so it can discover your renderers and control them. 
 
@@ -7,8 +6,7 @@ A wake up and sleep system exists which can be configured to wake, change the so
 
 A capability exists to convert a play queue which exists already on a DS which you may have spent a long time preparing to be saved as an m3u file. This only works for Minimserver and requires both this service and minimserver to be running on the same computer. By storing your playlist as an m3u file, you are free to edit metadata and album art without loss. If you store the raw playlist from a Upnp renderer, the metadata is included in the playlist which means it can become out of sync to your original files. 
 
-Installation
-============
+## Installation
 
 Clone this repository onto your server and perform an `npm install` which will install all the dependencies. 
 
@@ -16,8 +14,7 @@ You can configure the path to the root of your music (should be the same as your
 
 For Linux, a template upstart script has been included in `etc/init/ds-service.conf` which assumes you have cloned the repository into `/opt/upnp-playlist-service` it also assumes you have node.js installed and have a user called `nodejs` which has read and write privileges to the `/opt/upnp-playlist-service/persist` folder. Modify and copy this into your `/etc/init/` folder to enable you to start the service at boot automatically. 
 
-Running
-=======
+## Running
 
 Start node by running `node server\app.js`
 
@@ -25,13 +22,19 @@ Once running click on the following URL to view your devices, view schedules, st
 
 http://localhost:18080/
 
-API
-===
+*Dashboard for viewing schedules on a DS*
+
+![Control For a DS](https://raw.githubusercontent.com/bazwilliams/upnp-playlist-service/master/docs/control-ui-screenshot.png)
+
+*Options for setting what to play when being woken from standby*
+
+![Playlists shown for what to play](https://raw.githubusercontent.com/bazwilliams/upnp-playlist-service/master/docs/what-to-play-screenshot.png)
+
+## API
 
 GET /api/devices to see a list of all discovered devices on your network, all wake up schedules will be included under `device.schedules`. Each of which will include a link-rel to delete that wake up by sending a DELETE to it. 
 
-Playlists
-=========
+### Playlists
 
 Storing the current play queue on a DS as an M3U file is optimised if you are serving your music from a Minimserver media server running on the same machine. Otherwise, the DIDL-LITE metadata will be stored as an M3U comment. 
 
@@ -51,8 +54,7 @@ POST to `/api/devices/{uuid}/playlists/replace` with Content-Type `application/j
 }
 ```
 
-Alarm Clock Function
-====================
+### Alarm Clock Function
 
 To create an alarm:
 
@@ -106,8 +108,7 @@ You can have multiple schedules for a single UUID or multiple UUIDs.
 
 If you include a value within the playlistName attribute of the javascript object, then this playlist will be loaded into the DS and started from the beginning. If it is empty, the radio is assumed. 
 
-Future Plans
-============
+## Future Plans
 
 Skip standby mode if the source has changed (i.e. someone interacted between wakeup and sleep)
 
@@ -119,11 +120,12 @@ Ability to decide which radio station.
 
 Easy installation on windows, mac, linux and nas drives. 
 
-Credits
-=======
+## Credits
 
 Radio Icon: https://www.iconfinder.com/icons/111101/radio_icon
+
 Playlist Icon: https://www.iconfinder.com/icons/111102/music_nodes_icon
+
 Standby Icon: https://www.iconfinder.com/icons/111007/cable_icon
 
 Icons licenced as Creative Commons (Attribution-Share Alike 3.0 Unported) 
