@@ -68,11 +68,13 @@ mixin addSchedule
       | 
     div.col-sm-2
       input.form-control(type='time',placeholder='HH:mm',ng-model='newSchedule.time')
-    div.col-sm-10.form-horizontal
+    div.col-sm-10.form-horizontal(ng-show='newSchedule.action=="wake"')
       div.form-group
-        label.col-sm-6.control-label Name of Playlist
+        label.col-sm-6.control-label What to Play
         div.col-sm-6
-          input.form-control(type='text',placeholder='Leave blank for radio',ng-model='newSchedule.playlistName')
+          select.form-control(ng-model='newSchedule.playlistName')
+            option(value='') Radio
+            option(ng-repeat='playlist in playlists | orderBy: "playlist"', value='{{playlist}}') Playlist - {{playlist}}
     div.pull-right
       button.btn.btn-success(ng-click='addWakeUp(newSchedule)',ng-key-select='addWakeUp(newSchedule)') Add
 
