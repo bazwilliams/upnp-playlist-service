@@ -103,4 +103,7 @@ angular.module('upnpControllers', [])
                 });
             }
         };
+        $scope['isExistingPlaylist'] = function isExistingPlaylist(playlistName) {
+            return $scope.playlists.indexOf(playlistName) > -1;
+        };
     }]);

@@ -21,7 +21,7 @@ mixin device
         form.form
           div.panel.panel-default.store-playlist
             div.panel-heading
-              h3.panel-title Save play queue as playlist
+              h3.panel-title Playlist
             div.panel-body
                 div.form-group
                   input.form-control(id='playlist-name',type='text',list='playlists',name='playlist',placeholder='Name of playlist',ng-model='playlistName')
@@ -29,11 +29,16 @@ mixin device
                     option(ng-repeat='playlist in playlists | orderBy: "playlist"',value='{{playlist}}')
             div.panel-footer.clearfix
               div.pull-right
-                button.btn.btn-primary(ng-click='replacePlaylist(playlistName)',ng-model='playlistName') Load Into Device
+                button.btn.btn-primary(ng-click='replacePlaylist(playlistName)',ng-show='isExistingPlaylist(playlistName)',ng-model='playlistName')
+                  span.glyphicon.glyphicon-download-alt
+                  | 
+                  span Load Into Device
                 | 
-                button.btn.btn-success(ng-click='appendPlaylist(playlistName)',ng-model='playlistName') Append
+                button.btn.btn-success(ng-click='appendPlaylist(playlistName)',ng-show='isExistingPlaylist(playlistName)',ng-model='playlistName')
+                  span Add Current Track
                 | 
-                button.btn.btn-success(ng-click='storePlaylist(playlistName)',ng-model='playlistName') Store
+                button.btn.btn-success(ng-click='storePlaylist(playlistName)',ng-show='!isExistingPlaylist(playlistName)',ng-model='playlistName')
+                  span Save As New Playlist
 
 mixin addSchedule
   form.form-inline.add-schedule
