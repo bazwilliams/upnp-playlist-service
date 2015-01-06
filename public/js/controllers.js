@@ -30,7 +30,7 @@ angular.module('upnpControllers', [])
         var dsStorePlaylist = _.findWhere($scope.device.links, { 'rel' : 'store-playlist' });
         var dsAppendPlaylist = _.findWhere($scope.device.links, { 'rel' : 'add-to-playlist' });
         var dsReplacePlaylist = _.findWhere($scope.device.links, { 'rel' : 'replace-playlist' });
-        $scope['storePlaylist'] = function (playlistName) {
+        $scope['storePlaylist'] = function storePlaylist(playlistName) {
             if (dsStorePlaylist) {
                 $http({
                     method: 'PUT',
@@ -38,7 +38,7 @@ angular.module('upnpControllers', [])
                 });
             }
         };
-        $scope['appendPlaylist'] = function (playlistName) {
+        $scope['appendPlaylist'] = function appendPlaylist(playlistName) {
             if (dsAppendPlaylist) {
                 $http({
                     method: 'POST',
@@ -46,7 +46,7 @@ angular.module('upnpControllers', [])
                 });
             }
         };
-        $scope['replacePlaylist'] = function (playlistName) {
+        $scope['replacePlaylist'] = function replacePlaylist(playlistName) {
             if (dsReplacePlaylist) {
                 $http({
                     method: 'POST',
@@ -69,12 +69,12 @@ angular.module('upnpControllers', [])
             action: 'wake',
             time: ''
         };
-        $scope['toggleDay'] = function (dayOfWeek) {
+        $scope['toggleDay'] = function toggleDay(dayOfWeek) {
             if ($scope['newSchedule'].days[dayOfWeek] !== void 0) {
                 $scope['newSchedule'].days[dayOfWeek] = !$scope['newSchedule'].days[dayOfWeek];
             }
         };
-        $scope['addWakeUp'] = function (newSchedule) {
+        $scope['addWakeUp'] = function addWakeUp(newSchedule) {
             var result = _.findWhere($scope.device.links, { 'rel' : 'add-schedule' });
             var body = {
                 days : newSchedule.days,
@@ -91,7 +91,7 @@ angular.module('upnpControllers', [])
                 refreshAll();
             });
         };
-        $scope['deleteWakeUp'] = function (schedule) {
+        $scope['deleteWakeUp'] = function deleteWakeUp(schedule) {
             var result = _.findWhere(schedule.links, { 'rel' : 'delete' });
             if (result) {
                 $http({
