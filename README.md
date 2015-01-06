@@ -137,7 +137,7 @@ If you include a value within the playlistName attribute of the javascript objec
 ## Future Plans
 
 - [X] Playlist builder (add currently playing track to a specific playlist).
-- [ ] Provide list of existing playlist when loading into DS.
+- [X] Provide list of existing playlist when loading into DS.
 - [ ] Provide feedback through the UI when a playlist is stored.
 - [ ] Permit overwriting existing playlists.
 - [ ] Ability to decide which radio station to play.
