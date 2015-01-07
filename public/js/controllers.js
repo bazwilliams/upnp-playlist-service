@@ -35,6 +35,9 @@ angular.module('upnpControllers', [])
                 $http({
                     method: 'PUT',
                     url: dsStorePlaylist.href + playlistName
+                })
+                .success(function () {
+                    refreshAll();
                 });
             }
         };
@@ -43,6 +46,9 @@ angular.module('upnpControllers', [])
                 $http({
                     method: 'POST',
                     url: dsAppendPlaylist.href + playlistName
+                })
+                .success(function () {
+                    refreshAll();
                 });
             }
         };
@@ -52,6 +58,9 @@ angular.module('upnpControllers', [])
                     method: 'POST',
                     url: dsReplacePlaylist.href,
                     data: { playlistName: playlistName }
+                })
+                .success(function () {
+                    refreshAll();
                 });
             }
         }
