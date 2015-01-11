@@ -2,17 +2,19 @@
 
 /* Controllers */
 
-function getRefresh(scope, http) {
+function getDeviceRefresh(scope, http) {
     return function () {
-        if (!scope.playlists) { 
-            scope.playlists = []
-        }
         http({
             method: 'GET',
             url: '/api/devices'
         }).success(function (data, status, headers, config) {
           scope.devices = data;
         });
+    };
+};
+
+function getPlaylistRefresh(scope, http) {
+    return function () {
         http({
             method: 'GET',
             url: '/api/playlists'
@@ -22,17 +24,29 @@ function getRefresh(scope, http) {
     };
 };
 
-var refreshAll;
+var refreshDevices, refreshPlaylists;
 
 angular.module('upnpControllers', [])
     .controller('AppCtrl', ['$scope', '$http', function ($scope, $http) {
-        refreshAll = getRefresh($scope, $http);
-        refreshAll();
+        if (!$scope.playlists) { 
+            $scope.playlists = []
+        }
+        refreshDevices = getDeviceRefresh($scope, $http);
+        refreshDevices();
+        refreshPlaylists = getPlaylistRefresh($scope, $http);
+        refreshPlaylists();
     }])
     .controller('DeviceCtrl', ['$scope', '$http', function ($scope, $http) {
         var dsStorePlaylist = _.findWhere($scope.device.links, { 'rel' : 'store-playlist' });
         var dsAppendPlaylist = _.findWhere($scope.device.links, { 'rel' : 'add-to-playlist' });
         var dsPlaymusic = _.findWhere($scope.device.links, { 'rel' : 'play-music' });
+        $scope.alerts = [];
+        $scope['addAlert'] = function addAlert(type, message) {
+            $scope.alerts.push({ type: type, msg: message });
+        };
+        $scope['closeAlert'] = function(index) {
+            $scope.alerts.splice(index, 1);
+        };
         $scope['storePlaylist'] = function storePlaylist(playlistName) {
             if (dsStorePlaylist) {
                 $http({
@@ -40,7 +54,11 @@ angular.module('upnpControllers', [])
                     url: dsStorePlaylist.href + playlistName
                 })
                 .success(function () {
-                    refreshAll();
+                    $scope.addAlert('success', 'Playlist ' + playlistName + ' created');
+                    refreshPlaylists();
+                })
+                .error(function (data, status, headers, config) {
+                    $scope.addAlert('danger', 'Store Playlist Failed: ' + data + ' (' + status + ')');
                 });
             }
         };
@@ -51,7 +69,11 @@ angular.module('upnpControllers', [])
                     url: dsAppendPlaylist.href + playlistName
                 })
                 .success(function () {
-                    refreshAll();
+                    $scope.addAlert('success', 'Track added');
+                    refreshPlaylists();
+                })
+                .error(function (data, status, headers, config) {
+                    $scope.addAlert('danger', 'Add Track Failed: ' + data + ' (' + status + ')');
                 });
             }
         };
@@ -61,9 +83,6 @@ angular.module('upnpControllers', [])
                     method: 'POST',
                     url: dsPlaymusic.href,
                     data: { playlistName: playlistName }
-                })
-                .success(function () {
-                    refreshAll();
                 });
             }
         }
@@ -100,7 +119,7 @@ angular.module('upnpControllers', [])
                 data: body
             })
             .success(function () {
-                refreshAll();
+                refreshDevices();
             });
         };
         $scope['deleteWakeUp'] = function deleteWakeUp(schedule) {
@@ -111,7 +130,7 @@ angular.module('upnpControllers', [])
                     url: result.href
                 })
                 .success(function () {
-                    refreshAll();
+                    refreshDevices();
                 });
             }
         };

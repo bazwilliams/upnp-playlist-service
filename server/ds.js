@@ -29,7 +29,7 @@ exports.Ds = function(deviceUrlRoot) {
                                     metadata: result['s:Envelope']['s:Body']['u:TrackResponse'].Metadata
                                 });
                             } else {
-                                callback();
+                                callback(new Error('No track found'));
                             }
                         }
                     });

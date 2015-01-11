@@ -18,7 +18,7 @@ exports.addToPLaylist = function addToPLaylist(req, res) {
     if (device) {
         playlists.appendCurrentTrack(device.ds, playlistName, function responseHandler(err, results) {
             if (err) {
-                res.status(400).send(err);
+                res.status(400).send( err.message );
             } else {
                 res.status(200).send(results);
             }

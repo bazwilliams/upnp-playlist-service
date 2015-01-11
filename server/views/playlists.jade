@@ -13,6 +13,9 @@ mixin device
           input.input-lg.form-control(id='playlist-name',type='text',list='playlists',name='playlist',placeholder='Name of playlist',ng-model='playlistName')
           datalist#playlists
             option(ng-repeat='playlist in playlists | orderBy: "playlist"',value='{{playlist}}')
+        div.row
+          div.col-sm-12
+            alert(ng-repeat="alert in alerts",type="{{alert.type}}",close="closeAlert($index)") {{alert.msg}}
         div.hidden-xs.clearfix
           div.pull-right
             button.btn.btn-primary(ng-click='playMusic(playlistName)',ng-show='isExistingPlaylist(playlistName)',ng-model='playlistName')
@@ -42,7 +45,6 @@ mixin device
 
 block body
   div(ng-controller='AppCtrl')
-
     tabset
       tab(ng-repeat='device in devices | orderBy: "name"', ng-controller='DeviceCtrl',heading='{{device.room}}')
         +device()

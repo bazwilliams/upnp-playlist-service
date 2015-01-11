@@ -36,14 +36,12 @@ exports.appendCurrentTrack = function (ds, playlistName, callback) {
     async.waterfall([
         ds.currentTrackDetails,
         function addToM3u(track, iterCallback) {
-            if (track.track) {
-                m3u.append({
+            m3u.append({
                     track: trackProcessor.translate(track.track),
                     metadata: track.metadata
-                }, playlistName, iterCallback);
-            } else {
-                callback(new Error('No track found to append'));
-            }
+                }, 
+                playlistName, 
+                iterCallback);
         }
         ], callback)
 };
