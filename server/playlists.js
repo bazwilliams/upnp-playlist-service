@@ -1,6 +1,8 @@
 var async = require('async');
 var m3u = require('./m3u.js');
 var trackProcessor = require('./trackprocessor.js');
+var xml2js = require('xml2js');
+var xmlParser = new xml2js.Parser({explicitArray: false});
 
 function storePlaylist(tracks, playlistName, callback) {
     async.mapSeries(tracks, function processTrack(track, iterCallback) {
@@ -43,7 +45,26 @@ exports.appendCurrentTrack = function (ds, playlistName, callback) {
                 playlistName, 
                 iterCallback);
         }
-        ], callback)
+        ], function (err, metadata) {
+            if (err) {
+                callback(err);
+            } else {
+                xmlParser.parseString(metadata, function (err, result) {
+                    if (err) {
+                        callback(err);
+                    } else {
+                        if (result['DIDL-Lite']['item']) {
+                            callback(null, {
+                                artist: result['DIDL-Lite']['item']['upnp:artist'],
+                                title: result['DIDL-Lite']['item']['dc:title']
+                            });
+                        } else {
+                            callback();
+                        }
+                    }
+                });
+            }
+        })
 };
 exports.replacePlaylist = function (ds, playlistName, callback) {
     async.waterfall([

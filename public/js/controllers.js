@@ -68,8 +68,8 @@ angular.module('upnpControllers', [])
                     method: 'POST',
                     url: dsAppendPlaylist.href + playlistName
                 })
-                .success(function () {
-                    $scope.addAlert('success', 'Track added');
+                .success(function (data) {
+                    $scope.addAlert('success', 'Added: ' + data.artist + ' / ' + data.title);
                     refreshPlaylists();
                 })
                 .error(function (data, status, headers, config) {

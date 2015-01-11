@@ -89,7 +89,13 @@ exports.append = function append(track, playlistName, callback) {
             if (err) {
                 callback(err);
             } else {
-                fs.appendFile(playlistFile(playlistName), line + '\n', { encoding: 'utf8' }, callback);
+                fs.appendFile(playlistFile(playlistName), line + '\n', { encoding: 'utf8' }, function (err) {
+                    if (err) {
+                        callback(err);
+                    } else {
+                        callback(null, track.metadata);
+                    }
+                });
             }
         });
 };

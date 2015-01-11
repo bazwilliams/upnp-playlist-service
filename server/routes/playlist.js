@@ -16,7 +16,7 @@ exports.addToPLaylist = function addToPLaylist(req, res) {
     var uuid = req.params.uuid;
     var playlistName = req.params.playlistName;
     var device = manager.getDevice(uuid);
-    if (device) {
+    if (device && playlistName) {
         playlists.appendCurrentTrack(device.ds, playlistName, function responseHandler(err, results) {
             if (err) {
                 console.error(err.stack);
@@ -33,7 +33,7 @@ exports.storePlaylist = function storePlaylist(req, res) {
     var uuid = req.params.uuid;
     var playlistName = req.params.playlistName;
     var device = manager.getDevice(uuid);
-    if (device) {
+    if (device && playlistName) {
         playlists.savePlaylist(device.ds, playlistName, function responseHandler(err, results) {
             if (err) {
                 console.error(err.stack);
@@ -54,7 +54,7 @@ exports.playMusic = function playMusic(req, res) {
     var uuid = req.params.uuid;
     var playlistName = req.body.playlistName;
     var device = manager.getDevice(uuid);
-    if (device) {
+    if (device && playlistName) {
         playlists.replacePlaylist(device.ds, playlistName, function responseHandler(err, results) {
             if (err) {
                 console.error(err.stack);
