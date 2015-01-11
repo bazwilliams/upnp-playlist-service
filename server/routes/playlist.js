@@ -43,7 +43,7 @@ exports.storePlaylist = function storePlaylist(req, res) {
         res.sendStatus(404);
     }
 };
-exports.replacePlaylist = function replacePlaylist(req, res) {
+exports.playMusic = function playMusic(req, res) {
     var uuid = req.params.uuid;
     var playlistName = req.body.playlistName;
     var device = manager.getDevice(uuid);

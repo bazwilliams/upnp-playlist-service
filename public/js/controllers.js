@@ -4,6 +4,9 @@
 
 function getRefresh(scope, http) {
     return function () {
+        if (!scope.playlists) { 
+            scope.playlists = []
+        }
         http({
             method: 'GET',
             url: '/api/devices'
@@ -29,7 +32,7 @@ angular.module('upnpControllers', [])
     .controller('DeviceCtrl', ['$scope', '$http', function ($scope, $http) {
         var dsStorePlaylist = _.findWhere($scope.device.links, { 'rel' : 'store-playlist' });
         var dsAppendPlaylist = _.findWhere($scope.device.links, { 'rel' : 'add-to-playlist' });
-        var dsReplacePlaylist = _.findWhere($scope.device.links, { 'rel' : 'replace-playlist' });
+        var dsPlaymusic = _.findWhere($scope.device.links, { 'rel' : 'play-music' });
         $scope['storePlaylist'] = function storePlaylist(playlistName) {
             if (dsStorePlaylist) {
                 $http({
@@ -52,11 +55,11 @@ angular.module('upnpControllers', [])
                 });
             }
         };
-        $scope['replacePlaylist'] = function replacePlaylist(playlistName) {
-            if (dsReplacePlaylist) {
+        $scope['playMusic'] = function playMusic(playlistName) {
+            if (dsPlaymusic) {
                 $http({
                     method: 'POST',
-                    url: dsReplacePlaylist.href,
+                    url: dsPlaymusic.href,
                     data: { playlistName: playlistName }
                 })
                 .success(function () {

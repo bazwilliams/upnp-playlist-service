@@ -58,6 +58,7 @@ exports.list = function list(req, res) {
                     uuid: deviceModel.uuid,
                     icon: deviceModel.device.icon,
                     name: deviceModel.device.name,
+                    room: deviceModel.device.name.split(':')[0],
                     schedules: _.map(deviceModel.schedules, toScheduleResource),
                     links: [{
                         rel: 'store-playlist',
@@ -66,8 +67,8 @@ exports.list = function list(req, res) {
                         rel: 'add-to-playlist',
                         href: '/api/devices/' + deviceModel.uuid + '/playlist/'
                     },{
-                        rel: 'replace-playlist',
-                        href: '/api/devices/' + deviceModel.uuid + '/playlist/replace'
+                        rel: 'play-music',
+                        href: '/api/devices/' + deviceModel.uuid + '/play'
                     },{
                         rel: 'add-schedule',
                         href: '/api/devices/' + deviceModel.uuid + '/schedules'

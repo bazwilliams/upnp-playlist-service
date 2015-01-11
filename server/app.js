@@ -26,14 +26,18 @@ app.get('/', function (req, res) {
 	res.render('index');
 });
 
+app.get('/playlists', function (req, res) {
+	res.render('playlists');
+});
+
 // JSON API
 app.get('/api/devices', api.device.list);
 app.get('/api/playlists', api.playlist.listPlaylists);
 app.post('/api/devices/:uuid/schedules', api.schedule.addSchedule);
 app.delete('/api/devices/:uuid/schedules/:id', api.schedule.deleteSchedule);
-app.post('/api/devices/:uuid/playlist/replace', api.playlist.replacePlaylist);
 app.put('/api/devices/:uuid/playlist/:playlistName', api.playlist.storePlaylist);
 app.post('/api/devices/:uuid/playlist/:playlistName', api.playlist.addToPLaylist);
+app.post('/api/devices/:uuid/play', api.playlist.playMusic);
 
 /**
  * Start Server

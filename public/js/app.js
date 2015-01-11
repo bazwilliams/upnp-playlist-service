@@ -4,5 +4,6 @@
 
 angular.module('upnpApp', [
   'upnpControllers',
-  'upnpDirectives'
+  'upnpDirectives',
+  'ui.bootstrap'
 ]);

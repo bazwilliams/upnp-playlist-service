@@ -3,3 +3,7 @@
 form.add-schedule {
 	margin-bottom: 0;
 }
+
+.block-margin {
+	margin-bottom: 7.5px !important;
+}

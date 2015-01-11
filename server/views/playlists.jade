@@ -1,0 +1,56 @@
+extend layout
+
+mixin device
+  div.row
+    div.col-sm-12
+      h2 {{device.room}}
+      img(ng-src='{{device.icon.url}}')
+  div.row
+    div.col-sm-12
+      form.form
+        div.form-group
+          label.control-label(for="playlist-name") Playlist
+          input.input-lg.form-control(id='playlist-name',type='text',list='playlists',name='playlist',placeholder='Name of playlist',ng-model='playlistName')
+          datalist#playlists
+            option(ng-repeat='playlist in playlists | orderBy: "playlist"',value='{{playlist}}')
+        div.hidden-xs.clearfix
+          div.pull-right
+            button.btn.btn-primary(ng-click='playMusic(playlistName)',ng-show='isExistingPlaylist(playlistName)',ng-model='playlistName')
+              span.glyphicon.glyphicon-download-alt
+              | 
+              span Load Into Device
+            | 
+            button.btn.btn-success(ng-click='appendPlaylist(playlistName)',ng-show='isExistingPlaylist(playlistName)',ng-model='playlistName')
+              span Add Current Track
+            | 
+            button.btn.btn-success(ng-click='storePlaylist(playlistName)',ng-show='!isExistingPlaylist(playlistName)',ng-model='playlistName')
+              span Save As New Playlist
+        div.row.visible-xs
+          div.col-sm-12
+            button.block-margin.btn.btn-lg.btn-block.btn-primary(ng-click='playMusic(playlistName)',ng-show='isExistingPlaylist(playlistName)',ng-model='playlistName')
+              span.glyphicon.glyphicon-download-alt
+              | 
+              span Load Into Device
+            | 
+          div.col-sm-12
+            button.block-margin.btn.btn-lg.btn-block.btn-success(ng-click='appendPlaylist(playlistName)',ng-show='isExistingPlaylist(playlistName)',ng-model='playlistName')
+              span Add Current Track
+            | 
+          div.col-sm-12
+            button.block-margin.btn.btn-lg.btn-block.btn-success(ng-click='storePlaylist(playlistName)',ng-show='!isExistingPlaylist(playlistName)',ng-model='playlistName')
+              span Save As New Playlist
+
+block body
+  div(ng-controller='AppCtrl')
+
+    tabset
+      tab(ng-repeat='device in devices | orderBy: "name"', ng-controller='DeviceCtrl',heading='{{device.room}}')
+        +device()
+  script(src='bower_components/angular/angular.js')
+  script(src='bower_components/angular-bootstrap/ui-bootstrap.min.js')
+  script(src='bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js')
+  script(src='js/app.js')
+  script(src='js/services.js')
+  script(src='js/controllers.js')
+  script(src='js/directives.js')
+  script(src='js/filters.js')
