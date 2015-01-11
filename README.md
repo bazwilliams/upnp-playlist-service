@@ -6,7 +6,7 @@ A wake up and sleep system exists which can be configured to wake, change the so
 
 A capability exists to convert a play queue which exists already on a DS which you may have spent a long time preparing to be saved as an m3u file. This only works for Minimserver and requires both this service and minimserver to be running on the same computer. By storing your playlist as an m3u file, you are free to edit metadata and album art without loss. If you store the raw playlist from a Upnp renderer, the metadata is included in the playlist which means it can become out of sync to your original files. 
 
-A playlist builder function exists to create new stored playlists from the track playing on *any* device. This can then be loaded into any device or used as a wake up playlist. 
+A playlist builder function exists to create new stored playlists from the track playing on *any* device. This can then be loaded into any device or used as a wake up playlist. This is a separate page and has been optimised for mobile use. 
 
 ## Installation
 
@@ -34,9 +34,13 @@ For Linux, a template upstart script has been included in `etc/init/ds-service.c
 
 Start node by running `node server\app.js`
 
-Once running click on the following URL to view your devices, view schedules, store playlists and set wake up alarms. 
+Once running click on the following URL to view your devices and manage schedules. 
 
 http://localhost:18080/
+
+To view playlists.
+
+http://localhost:18080/playlists
 
 *Dashboard for viewing schedules on a DS*
 
@@ -45,6 +49,10 @@ http://localhost:18080/
 *Options for setting what to play when being woken from standby*
 
 ![Playlists shown for what to play](https://raw.githubusercontent.com/bazwilliams/upnp-playlist-service/master/docs/what-to-play-screenshot.png)
+
+*Dashboard for managing playlists on a DS*
+
+![Playlist for a DS](https://raw.githubusercontent.com/bazwilliams/upnp-playlist-service/master/docs/playlist-ui-screenshot.png)
 
 ## API
 
@@ -68,11 +76,11 @@ PUT to `/api/devices/{uuid}/playlists/{playlistName}`
 
 No body is required, the playlistName does not need to include any file suffix (one will be added). 
 
-#### To replace the playlist in a DS
+#### To playback a playlist in a DS
 
-Loading a playlist into a DS is now supported by parsing the DIDL-LITE out of an m3u file. The downsides are if the metadata should change, or the URI to the original track or artwork change, the track may not work as expected. Therefore this facility is only reliable if track URI and metadata are not changed. 
+Loading a playlist and starting playback is now supported by parsing the DIDL-LITE out of an m3u file. The downsides are if the metadata should change, or the URI to the original track or artwork change, the track may not work as expected. Therefore this facility is only reliable if track URI and metadata are not changed. 
 
-POST to `/api/devices/{uuid}/playlists/replace` with Content-Type `application/json` with the following body. No suffix is required for the playlistName. This will clear the DS onboard playlist first and load the one from file. 
+POST to `/api/devices/{uuid}/play` with Content-Type `application/json` with the following body. No suffix is required for the playlistName. This will clear the DS onboard playlist first and load the one from file and start playing from the first track. 
 
 ```javascript
 {
@@ -139,6 +147,8 @@ If you include a value within the playlistName attribute of the javascript objec
 - [X] Playlist builder (add currently playing track to a specific playlist).
 - [X] Provide list of existing playlist when loading into DS.
 - [ ] Provide feedback through the UI when a playlist is stored.
+- [ ] Support shuffle playback
+- [ ] Add device toggle standby API
 - [ ] Permit overwriting existing playlists.
 - [ ] Ability to decide which radio station to play.
 - [ ] Skip standby mode if the source has changed (i.e. someone interacted between wakeup and sleep)
