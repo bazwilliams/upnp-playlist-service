@@ -31,7 +31,30 @@ function toScheduleResource(schedule) {
         };
     }
 }
-
+exports.toggleStandby = function toggleStandby(req, res) {
+    var uuid = req.params.uuid;
+    var device = manager.getDevice(uuid);
+    if (device) {
+        async.waterfall([
+            device.ds.standbyState,
+            function togglePowerState(currentStandbyState, iterCallback) {
+                if (currentStandbyState === '1') {
+                    device.ds.powerOn(iterCallback);
+                } else {
+                    device.ds.powerOff(iterCallback);
+                }
+            }
+        ], function responseHandler(err, results) {
+            if (err) {
+                res.status(400).send(err);
+            } else {
+                res.status(200).send(results);
+            }
+        });
+    } else {
+        res.sendStatus(404);
+    }
+};
 exports.list = function list(req, res) {
     async.waterfall([
         function getDevices(iterCallback) {
@@ -72,6 +95,9 @@ exports.list = function list(req, res) {
                     },{
                         rel: 'add-schedule',
                         href: '/api/devices/' + deviceModel.uuid + '/schedules'
+                    },{
+                        rel: 'toggle-standby',
+                        href: '/api/devices/' + deviceModel.uuid + '/toggle-standby'
                     }]
                 });
             }, iterCallback)

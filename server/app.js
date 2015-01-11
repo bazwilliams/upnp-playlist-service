@@ -38,6 +38,7 @@ app.delete('/api/devices/:uuid/schedules/:id', api.schedule.deleteSchedule);
 app.put('/api/devices/:uuid/playlist/:playlistName', api.playlist.storePlaylist);
 app.post('/api/devices/:uuid/playlist/:playlistName', api.playlist.addToPLaylist);
 app.post('/api/devices/:uuid/play', api.playlist.playMusic);
+app.post('/api/devices/:uuid/toggle-standby', api.device.toggleStandby);
 
 /**
  * Start Server

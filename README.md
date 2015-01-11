@@ -76,6 +76,12 @@ PUT to `/api/devices/{uuid}/playlists/{playlistName}`
 
 No body is required, the playlistName does not need to include any file suffix (one will be added). 
 
+#### To toggle the standby state of a DS
+
+POST to `/api/devices/{uuid}/toggle-standby`
+
+No body is required. 
+
 #### To playback a playlist in a DS
 
 Loading a playlist and starting playback is now supported by parsing the DIDL-LITE out of an m3u file. The downsides are if the metadata should change, or the URI to the original track or artwork change, the track may not work as expected. Therefore this facility is only reliable if track URI and metadata are not changed. 
@@ -148,7 +154,7 @@ If you include a value within the playlistName attribute of the javascript objec
 - [X] Provide list of existing playlist when loading into DS.
 - [ ] Provide feedback through the UI when a playlist is stored.
 - [ ] Support shuffle playback
-- [ ] Add device toggle standby API
+- [X] Add device toggle standby API
 - [ ] Permit overwriting existing playlists.
 - [ ] Ability to decide which radio station to play.
 - [ ] Skip standby mode if the source has changed (i.e. someone interacted between wakeup and sleep)

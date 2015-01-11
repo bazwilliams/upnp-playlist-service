@@ -180,6 +180,31 @@ exports.Ds = function(deviceUrlRoot) {
             }
         );
     };
+    this.standbyState = function (callback) {
+        upnp.soapRequest(
+            deviceUrlRoot,
+            'Ds/Product/control',
+            'urn:av-openhome.org:service:Product:1',
+            'Standby',
+            '',
+            function (res) {
+                var body = '';
+                res.setEncoding('utf8');
+                res.on('data', function (chunk) {
+                    body += chunk;
+                });
+                res.once('end', function () {
+                    xmlParser.parseString(body, function (err, result) {
+                        if (err) {
+                            callback(err);
+                        } else {
+                            callback(null, result['s:Envelope']['s:Body']['u:StandbyResponse'].Value);
+                        }
+                    });
+                });
+            }
+        );
+    };
     this.powerOn = function (callback) {
         upnp.soapRequest(
             deviceUrlRoot,
