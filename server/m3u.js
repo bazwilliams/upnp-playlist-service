@@ -82,8 +82,9 @@ exports.append = function append(track, playlistName, callback) {
             fs.stat(track.track, function (err, stats) {
                 if (stats && stats.isFile()) {
                     iterCallback(null, relative(track.track) + '\n' + '#' + track.metadata);
+                } else {
+                    iterCallback(null, '#' + track.metadata);
                 }
-                iterCallback(null, '#' + track.metadata);
             });
         }], function appendLine(err, line) {
             if (err) {

@@ -66,7 +66,7 @@ exports.appendCurrentTrack = function (ds, playlistName, callback) {
                     }
                 });
             }
-        })
+        });
 };
 exports.replacePlaylist = function (ds, playlistName, callback) {
     async.waterfall([
