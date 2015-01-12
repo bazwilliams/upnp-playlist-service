@@ -4,9 +4,11 @@ Node.js based system for monitoring a suite of UPNP renderers on a network. It i
 
 A wake up and sleep system exists which can be configured to wake, change the source to radio and start playing; play a named saved playlist; or put to sleep a specific DS.  
 
-A capability exists to convert a play queue which exists already on a DS which you may have spent a long time preparing to be saved as an m3u file. This only works for Minimserver and requires both this service and minimserver to be running on the same computer. By storing your playlist as an m3u file, you are free to edit metadata and album art without loss. If you store the raw playlist from a Upnp renderer, the metadata is included in the playlist which means it can become out of sync to your original files. 
+The playlist functionality has been optimised for mobile use. 
 
-A playlist builder function exists to create new stored playlists from the track playing on *any* device. This can then be loaded into any device or used as a wake up playlist. This is a separate page and has been optimised for mobile use. 
+Playlists already on a DS can be saved in their entirety for later playback either through the app or used as part of a schedule. If a track is served from a locally running Minimserver and playlist folders and music locations have been configured correctly, the resulting m3u file can be loaded in any media player or server and those tracks will be referenced correctly. The DIDL-Lite metadata is always stored so the full playlist can be restored through this application. 
+
+A playlist builder function exists to add tracks from any playing DS onto any playlist. If the track is a Minimserver served track, the m3u file will contain a file reference. 
 
 ## Installation
 

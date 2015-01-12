@@ -42,7 +42,7 @@ exports.appendCurrentTrack = function (ds, playlistName, callback) {
                     track: trackProcessor.translate(track.track),
                     metadata: track.metadata
                 }, 
-                playlistName, 
+                playlistName,
                 iterCallback);
         }
         ], function (err, metadata) {
@@ -55,10 +55,10 @@ exports.appendCurrentTrack = function (ds, playlistName, callback) {
                     } else {
                         if (result['DIDL-Lite']['item']) {
                             callback(null, {
-                                artist: result['DIDL-Lite']['item']['upnp:artist'],
-                                title: result['DIDL-Lite']['item']['dc:title'],
-                                albumArt: result['DIDL-Lite']['item']['upnp:albumArtURI'],
-                                album: result['DIDL-Lite']['item']['upnp:album']
+                                artist: result['DIDL-Lite']['item']['upnp:artist']._,
+                                title: result['DIDL-Lite']['item']['dc:title']._,
+                                albumArt: result['DIDL-Lite']['item']['upnp:albumArtURI']._,
+                                album: result['DIDL-Lite']['item']['upnp:album']._
                             });
                         } else {
                             callback();
