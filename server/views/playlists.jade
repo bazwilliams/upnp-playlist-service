@@ -12,7 +12,7 @@ mixin device
           label.control-label(for="playlist-name") Playlist
           input.input-lg.form-control(id='playlist-name',type='text',list='playlists',name='playlist',placeholder='Name of playlist',ng-model='playlistName')
           datalist#playlists
-            option(ng-repeat='playlist in playlists | orderBy: "playlist"',value='{{playlist}}')
+            option(ng-repeat='playlist in playlists | orderBy',value='{{playlist}}')
         div.row
           div.col-sm-12
             alert(ng-repeat="alert in alerts",type="{{alert.type}}",close="closeAlert($index)") {{alert.msg}}
