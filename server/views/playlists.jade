@@ -19,29 +19,49 @@ mixin device
         div.hidden-xs.clearfix
           div.pull-right
             button.btn.btn-primary(ng-click='playMusic(playlistName)',ng-show='isExistingPlaylist(playlistName)',ng-model='playlistName')
-              span.glyphicon.glyphicon-download-alt
+              span.glyphicon.glyphicon-play
               | 
-              span Load Into Device
+              span Play
             | 
             button.btn.btn-success(ng-click='appendPlaylist(playlistName)',ng-show='isExistingPlaylist(playlistName)',ng-model='playlistName')
+              | 
               span Add Current Track
             | 
-            button.btn.btn-success(ng-click='storePlaylist(playlistName)',ng-show='!isExistingPlaylist(playlistName)',ng-model='playlistName')
-              span Save As New Playlist
+            button.btn.btn-warning(ng-click='storePlaylist(playlistName)',ng-show='isExistingPlaylist(playlistName)',ng-model='playlistName')
+              | 
+              span Replace Playlist
+            | 
+            div.btn-group(ng-show='!isExistingPlaylist(playlistName)',ng-model='playlistName')
+              button.btn.btn-success(type='button',ng-click='storePlaylist(playlistName)') Save Playlist
+              button.btn.btn-success.dropdown-toggle(type='button',data-toggle='dropdown',aria-expanded='false')
+                span.caret
+                span.sr-only Toggle Dropdown
+              ul.dropdown-menu(role='menu')
+                li
+                  a(ng-click='appendPlaylist(playlistName)') With Only Current Track
         div.row.visible-xs
           div.col-sm-12
             button.block-margin.btn.btn-lg.btn-block.btn-primary(ng-click='playMusic(playlistName)',ng-show='isExistingPlaylist(playlistName)',ng-model='playlistName')
-              span.glyphicon.glyphicon-download-alt
+              span.glyphicon.glyphicon-play
               | 
-              span Load Into Device
+              span Play
             | 
           div.col-sm-12
             button.block-margin.btn.btn-lg.btn-block.btn-success(ng-click='appendPlaylist(playlistName)',ng-show='isExistingPlaylist(playlistName)',ng-model='playlistName')
               span Add Current Track
             | 
           div.col-sm-12
+            button.block-margin.btn.btn-lg.btn-block.btn-success(ng-click='appendPlaylist(playlistName)',ng-show='!isExistingPlaylist(playlistName)',ng-model='playlistName')
+              span Current Track As New Playlist
+            | 
+          div.col-sm-12
             button.block-margin.btn.btn-lg.btn-block.btn-success(ng-click='storePlaylist(playlistName)',ng-show='!isExistingPlaylist(playlistName)',ng-model='playlistName')
-              span Save As New Playlist
+              span Save Playlist
+            | 
+          div.col-sm-12
+            button.block-margin.btn.btn-lg.btn-block.btn-warning(ng-click='storePlaylist(playlistName)',ng-show='isExistingPlaylist(playlistName)',ng-model='playlistName')
+              span Replace Playlist
+            | 
 
 block body
   div(ng-controller='AppCtrl')

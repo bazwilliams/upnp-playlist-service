@@ -157,7 +157,7 @@ If you include a value within the playlistName attribute of the javascript objec
 - [X] Provide feedback through the UI when a playlist is stored.
 - [ ] Support shuffle playback
 - [X] Add device toggle standby API
-- [ ] ~~Permit overwriting existing playlists.~~
+- [X] Permit overwriting existing playlists.
 - [ ] Ability to decide which radio station to play.
 - [ ] Skip standby mode if the source has changed (i.e. someone interacted between wakeup and sleep)
 - [ ] Easy installation on windows, mac, linux and nas drives.

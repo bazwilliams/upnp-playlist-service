@@ -69,7 +69,7 @@ exports.write = function write(tracks, playlistName, callback) {
                 if (err) {
                     callback(err);
                 } else {
-                    fs.writeFile(playlistFile(playlistName), data, { flag: 'wx', encoding: 'utf8' }, callback);
+                    fs.writeFile(playlistFile(playlistName), data, { flag: 'w', encoding: 'utf8' }, callback);
                 }
             });
         }

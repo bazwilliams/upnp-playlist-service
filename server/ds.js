@@ -139,28 +139,33 @@ exports.Ds = function(deviceUrlRoot) {
             if (err) {
                 callback(err);
             } else {
-                var res = _.isObject(result['DIDL-Lite']['item']['res']) ? result['DIDL-Lite']['item']['res']._ : result['DIDL-Lite']['item']['res'];
-                var trackUri = res
-                    .replace(/&/g, "&amp;");
-                var metadata = trackDetailsXml
-                    .replace(/&/g, "&amp;")
-                    .replace(/</g, "&lt;")
-                    .replace(/>/g, "&gt;")
-                    .replace(/"/g, "&quot;");
-                upnp.soapRequest(
-                    deviceUrlRoot,
-                    'Ds/Playlist',
-                    'urn:av-openhome.org:service:Playlist:1',
-                    'Insert',
-                    '<AfterId>' + afterId + '</AfterId><Uri>' + trackUri + '</Uri><Metadata>' + metadata + '</Metadata>',
-                    function (res) {
-                        if (res.statusCode === 200) {
-                            callback();
-                        } else {
-                            callback(new Error("Queue failed with " + res.statusCode));
+                var resources = _.isArray(result['DIDL-Lite']['item']['res']) ? result['DIDL-Lite']['item']['res'][0] : result['DIDL-Lite']['item']['res'];
+                var res = _.isObject(resources) ? resources._ : resources;
+                if (!res) {
+                    callback(new Error('Error adding ' + trackDetailsXml));
+                } else {
+                    var trackUri = res
+                        .replace(/&/g, "&amp;");
+                    var metadata = trackDetailsXml
+                        .replace(/&/g, "&amp;")
+                        .replace(/</g, "&lt;")
+                        .replace(/>/g, "&gt;")
+                        .replace(/"/g, "&quot;");
+                    upnp.soapRequest(
+                        deviceUrlRoot,
+                        'Ds/Playlist',
+                        'urn:av-openhome.org:service:Playlist:1',
+                        'Insert',
+                        '<AfterId>' + afterId + '</AfterId><Uri>' + trackUri + '</Uri><Metadata>' + metadata + '</Metadata>',
+                        function (res) {
+                            if (res.statusCode === 200) {
+                                callback();
+                            } else {
+                                callback(new Error("Queue failed with " + res.statusCode));
+                            }
                         }
-                    }
-                );
+                    );
+                }
             }
         });
     };

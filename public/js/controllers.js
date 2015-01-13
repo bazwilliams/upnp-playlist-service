@@ -48,6 +48,9 @@ angular.module('upnpControllers', [])
             $scope.alerts.splice(index, 1);
         };
         $scope['storePlaylist'] = function storePlaylist(playlistName) {
+            if (!playlistName) {
+                playlistName = '';
+            }
             if (dsStorePlaylist) {
                 $http({
                     method: 'PUT',
@@ -63,6 +66,9 @@ angular.module('upnpControllers', [])
             }
         };
         $scope['appendPlaylist'] = function appendPlaylist(playlistName) {
+            if (!playlistName) {
+                playlistName = '';
+            }
             if (dsAppendPlaylist) {
                 $http({
                     method: 'POST',
@@ -78,6 +84,9 @@ angular.module('upnpControllers', [])
             }
         };
         $scope['playMusic'] = function playMusic(playlistName) {
+            if (!playlistName) {
+                playlistName = '';
+            }
             if (dsPlaymusic) {
                 $http({
                     method: 'POST',

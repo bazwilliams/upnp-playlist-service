@@ -17,6 +17,7 @@ exports.addToPLaylist = function addToPLaylist(req, res) {
     var playlistName = req.params.playlistName;
     var device = manager.getDevice(uuid);
     if (device && playlistName) {
+        console.log(playlistName);
         playlists.appendCurrentTrack(device.ds, playlistName, function responseHandler(err, results) {
             if (err) {
                 console.error(err.stack);
@@ -26,7 +27,7 @@ exports.addToPLaylist = function addToPLaylist(req, res) {
             }
         });
     } else {
-        res.sendStatus(404);
+        res.status(404).send('Invalid uuid or playlist name. ');
     }
 };
 exports.storePlaylist = function storePlaylist(req, res) {
@@ -47,7 +48,7 @@ exports.storePlaylist = function storePlaylist(req, res) {
             }
         });
     } else {
-        res.sendStatus(404);
+        res.status(404).send('Invalid uuid or playlist name. ');
     }
 };
 exports.playMusic = function playMusic(req, res) {
@@ -64,6 +65,6 @@ exports.playMusic = function playMusic(req, res) {
             }
         });
     } else {
-        res.sendStatus(404);
+        res.status(404).send('Invalid uuid or playlist name. ');
     }
 };
