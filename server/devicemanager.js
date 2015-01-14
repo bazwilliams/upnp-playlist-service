@@ -1,10 +1,9 @@
 var upnp = require("./lib/upnp.js");
 var http = require('http');
-var xml2js = require('xml2js');
 var _ = require('underscore');
-var xmlParser = new xml2js.Parser({explicitArray: false});
 var url = require('url');
 var Ds = require('./ds.js').Ds;
+var responseParsers = require('./responseparsers.js');
 var controlPoint = new upnp.ControlPoint();
 var devices = {};
 
@@ -15,33 +14,22 @@ function parseUuid (usn, st) {
     return (/uuid:(.*)?::.*/).exec(usn)[1];
 }
 
+function toDevice(result, callback) {
+    device = {
+        name: result.root.device.friendlyName,
+        urlRoot: result.root.URLBase,
+        serviceList: result.root.device.serviceList.service,
+        ds: new Ds(result.root.URLBase)
+    };
+    if (result.root.device.iconList) {
+        device['icon'] = result.root.device.iconList.icon;
+    }
+    callback(null, device);
+}
+
 function processDevice(location, callback) {
     console.log(location);
-    http.get(location, function spoolHttpResponse(res) {
-        var body = '';
-        res.setEncoding('utf8');
-        res.on('data', function (chunk) {
-            body += chunk;
-        });
-        res.on('end', function () {
-            xmlParser.parseString(body, function parseUpnpResponse(err, result) {
-                if (err) {
-                    callback(err);
-                } else {
-                    device = {
-                        name: result.root.device.friendlyName,
-                        urlRoot: result.root.URLBase,
-                        serviceList: result.root.device.serviceList.service,
-                        ds: new Ds(result.root.URLBase)
-                    };
-                    if (result.root.device.iconList) {
-                        device['icon'] = result.root.device.iconList.icon;
-                    }
-                    callback(null, device);
-                }
-            });
-        });
-    }).on('error', callback);
+    http.get(location, responseParsers.xml(toDevice, callback)).on('error', callback);
 }
 
 exports.getDevices = function getDevices() {
