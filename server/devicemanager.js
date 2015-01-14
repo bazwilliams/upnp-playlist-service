@@ -13,7 +13,7 @@ const linnSources = 'urn:linn-co-uk:device:Source:1';
 
 function parseUuid (usn, st) {
     return (/uuid:(.*)?::.*/).exec(usn)[1];
-};
+}
 
 function processDevice(location, callback) {
     console.log(location);
@@ -41,8 +41,8 @@ function processDevice(location, callback) {
                 }
             });
         });
-    });
-};
+    }).on('error', callback);
+}
 
 exports.getDevices = function getDevices() {
     return _.keys(devices);

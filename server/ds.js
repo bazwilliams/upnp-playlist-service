@@ -34,7 +34,7 @@ exports.Ds = function(deviceUrlRoot) {
                         }
                     });
                 });
-            })
+            }).on('error', callback);
     };
     this.retrieveTrackDetails = function(idArray, callback) {
         var idArrayString = '';
@@ -85,7 +85,7 @@ exports.Ds = function(deviceUrlRoot) {
                     });
                 });
             }
-        );
+        ).on('error', callback);
     };
     this.getTrackIds = function(callback) {
         upnp.soapRequest(
@@ -116,7 +116,7 @@ exports.Ds = function(deviceUrlRoot) {
                     });
                 });
             }
-        );
+        ).on('error', callback);
     };
     this.deleteAll = function(callback) {
         upnp.soapRequest(
@@ -132,7 +132,7 @@ exports.Ds = function(deviceUrlRoot) {
                     callback(new Error("Delete failed with status " + res.statusCode));
                 }
             }
-        );
+        ).on('error', callback);
     };
     this.queueTrack = function(trackDetailsXml, afterId, callback) {
         xmlParser.parseString(trackDetailsXml, function (err, result) {
@@ -164,7 +164,7 @@ exports.Ds = function(deviceUrlRoot) {
                                 callback(new Error("Queue failed with " + res.statusCode));
                             }
                         }
-                    );
+                    ).on('error', callback);
                 }
             }
         });
@@ -183,7 +183,7 @@ exports.Ds = function(deviceUrlRoot) {
                     callback(new Error("Change Source failed with status " + res.statusCode));
                 }
             }
-        );
+        ).on('error', callback);
     };
     this.standbyState = function (callback) {
         upnp.soapRequest(
@@ -208,7 +208,7 @@ exports.Ds = function(deviceUrlRoot) {
                     });
                 });
             }
-        );
+        ).on('error', callback);
     };
     this.powerOn = function (callback) {
         upnp.soapRequest(
@@ -224,7 +224,7 @@ exports.Ds = function(deviceUrlRoot) {
                     callback(new Error("Power On failed with status " + res.statusCode));
                 }
             }
-        );
+        ).on('error', callback);
     };
     this.powerOff = function (callback) {
         upnp.soapRequest(
@@ -240,7 +240,7 @@ exports.Ds = function(deviceUrlRoot) {
                     callback(new Error("Power Off failed with status " + res.statusCode));
                 }
             }
-        );
+        ).on('error', callback);
     };
     this.playRadio = function (callback) {
         upnp.soapRequest(
@@ -256,7 +256,7 @@ exports.Ds = function(deviceUrlRoot) {
                     callback(new Error("Play Radio failed with status " + res.statusCode));
                 }
             }
-        );
+        ).on('error', callback);
     };
     this.playPlaylistFromStart = function (callback) {
         upnp.soapRequest(
@@ -272,6 +272,6 @@ exports.Ds = function(deviceUrlRoot) {
                     callback(new Error("Play Playlist failed with status " + res.statusCode));
                 }
             }
-        );
+        ).on('error', callback);
     };
 };

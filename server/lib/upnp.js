@@ -137,10 +137,9 @@ ControlPoint.prototype.search = function(st) {
   }, 3000);
 }
 
-
 var soapRequest = function (deviceUrlRoot, path, service, fnName, fnParams, callback) {
     var deviceUrl = url.parse(deviceUrlRoot);
-    
+
     var bodyString = '<?xml version="1.0"?>';
     bodyString += '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">';
     bodyString += '  <s:Body s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">';
@@ -166,7 +165,9 @@ var soapRequest = function (deviceUrlRoot, path, service, fnName, fnParams, call
     }, callback);
     req.write(buffer);
     req.end();
-}
+
+    return req;
+};
 exports.soapRequest = soapRequest;
 
 //TODO - Need to handle incoming requests more usefully attributing them to their subscription and device

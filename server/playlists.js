@@ -41,7 +41,7 @@ exports.appendCurrentTrack = function (ds, playlistName, callback) {
             m3u.append({
                     track: trackProcessor.translate(track.track),
                     metadata: track.metadata
-                }, 
+                },
                 playlistName,
                 iterCallback);
         }
