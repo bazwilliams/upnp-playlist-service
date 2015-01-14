@@ -3,6 +3,58 @@ var upnp = require("./lib/upnp.js");
 var binary = require('binary');
 var xml2js = require('xml2js');
 var xmlParser = new xml2js.Parser({explicitArray: false});
+var responseParsers = require('./responseparsers.js');
+
+function toTrack(result, callback) {
+    if (result['s:Envelope']['s:Body']['u:TrackResponse'].Uri) {
+        callback(null, {
+            track: result['s:Envelope']['s:Body']['u:TrackResponse'].Uri,
+            metadata: result['s:Envelope']['s:Body']['u:TrackResponse'].Metadata
+        });
+    } else {
+        callback(new Error('No track found'));
+    }
+}
+
+function binaryIdArrayToIntList(result, callback) {
+    var buffer = new Buffer(result['s:Envelope']['s:Body']['u:IdArrayResponse'].Array, 'base64');
+    var arrayList = [];
+    var binaryList = binary.parse(buffer);
+    _.each(_.range(buffer.length / 4), function () {
+        arrayList.push(binaryList.word32bu('a').vars.a);
+    });
+    callback(null, arrayList); 
+}
+
+function readListResponseToTracks(result, callback) {
+    xmlParser.parseString(result['s:Envelope']['s:Body']['u:ReadListResponse'].TrackList, function (err, result) {
+        if (err) {
+            callback(err);
+        } else {
+            var tracks = [];
+            if (_.isArray(result.TrackList.Entry)) {
+                _.each(result.TrackList.Entry, function (track) {
+                    tracks.push({
+                        track: track.Uri,
+                        metadata: track.Metadata
+                    });
+                });
+            } else {
+                if (result.TrackList.Entry) {
+                    tracks.push({
+                        track: result.TrackList.Entry.Uri,
+                        metadata: result.TrackList.Entry.Metadata
+                    });
+                }
+            }
+            callback(null, tracks);
+        }
+    });
+}
+
+function parseStandbyResponse(result, callback) {
+    callback(null, result['s:Envelope']['s:Body']['u:StandbyResponse'].Value);
+}
 
 exports.Ds = function(deviceUrlRoot) {
     this.currentTrackDetails = function(callback) {
@@ -12,29 +64,8 @@ exports.Ds = function(deviceUrlRoot) {
             'urn:av-openhome-org:service:Info:1',
             'Track',
             '',
-            function(res) {
-                var body = '';
-                res.setEncoding('utf8');
-                res.on('data', function (chunk) {
-                    body += chunk;
-                });
-                res.once('end', function () {
-                    xmlParser.parseString(body, function (err, result) {
-                        if (err) {
-                            callback(err);
-                        } else {
-                            if (result['s:Envelope']['s:Body']['u:TrackResponse'].Uri) {
-                                callback(null, {
-                                    track: result['s:Envelope']['s:Body']['u:TrackResponse'].Uri,
-                                    metadata: result['s:Envelope']['s:Body']['u:TrackResponse'].Metadata
-                                });
-                            } else {
-                                callback(new Error('No track found'));
-                            }
-                        }
-                    });
-                });
-            }).on('error', callback);
+            responseParsers.xml(toTrack, callback)
+        ).on('error', callback);
     };
     this.retrieveTrackDetails = function(idArray, callback) {
         var idArrayString = '';
@@ -47,44 +78,7 @@ exports.Ds = function(deviceUrlRoot) {
             'urn:av-openhome.org:service:Playlist:1',
             'ReadList',
             '<IdList>' + idArrayString + '</IdList>',
-            function(res) {
-                var body = '';
-                res.setEncoding('utf8');
-                res.on('data', function (chunk) {
-                    body += chunk;
-                });
-                res.once('end', function () {
-                    xmlParser.parseString(body, function (err, result) {
-                        if (err) {
-                            callback(err);
-                        } else {
-                            xmlParser.parseString(result['s:Envelope']['s:Body']['u:ReadListResponse'].TrackList, function (err, result) {
-                                if (err) {
-                                    callback(err);
-                                } else {
-                                    var tracks = [];
-                                    if (_.isArray(result.TrackList.Entry)) {
-                                        _.each(result.TrackList.Entry, function (track) {
-                                            tracks.push({
-                                                track: track.Uri,
-                                                metadata: track.Metadata
-                                            });
-                                        });
-                                    } else {
-                                        if (result.TrackList.Entry) {
-                                            tracks.push({
-                                                track: result.TrackList.Entry.Uri,
-                                                metadata: result.TrackList.Entry.Metadata
-                                            });
-                                        }
-                                    }
-                                    callback(null, tracks);
-                                }
-                            });
-                        }
-                    });
-                });
-            }
+            responseParsers.xml(readListResponseToTracks, callback)
         ).on('error', callback);
     };
     this.getTrackIds = function(callback) {
@@ -94,28 +88,7 @@ exports.Ds = function(deviceUrlRoot) {
             'urn:av-openhome.org:service:Playlist:1',
             'IdArray',
             '',
-            function (res) {
-                var body = '';
-                res.setEncoding('utf8');
-                res.on('data', function (chunk) {
-                    body += chunk;
-                });
-                res.once('end', function () {
-                    xmlParser.parseString(body, function (err, result) {
-                        if (err) {
-                            callback(err);
-                        } else {
-                            var buffer = new Buffer(result['s:Envelope']['s:Body']['u:IdArrayResponse'].Array, 'base64');
-                            var arrayList = [];
-                            var binaryList = binary.parse(buffer);
-                            _.each(_.range(buffer.length / 4), function () {
-                                arrayList.push(binaryList.word32bu('a').vars.a);
-                            });
-                            callback(null, arrayList);
-                        }
-                    });
-                });
-            }
+            responseParsers.xml(binaryIdArrayToIntList, callback)
         ).on('error', callback);
     };
     this.deleteAll = function(callback) {
@@ -192,22 +165,7 @@ exports.Ds = function(deviceUrlRoot) {
             'urn:av-openhome.org:service:Product:1',
             'Standby',
             '',
-            function (res) {
-                var body = '';
-                res.setEncoding('utf8');
-                res.on('data', function (chunk) {
-                    body += chunk;
-                });
-                res.once('end', function () {
-                    xmlParser.parseString(body, function (err, result) {
-                        if (err) {
-                            callback(err);
-                        } else {
-                            callback(null, result['s:Envelope']['s:Body']['u:StandbyResponse'].Value);
-                        }
-                    });
-                });
-            }
+            responseParsers.xml(parseStandbyResponse, callback)
         ).on('error', callback);
     };
     this.powerOn = function (callback) {

@@ -3,6 +3,7 @@ var m3u = require('./m3u.js');
 var trackProcessor = require('./trackprocessor.js');
 var xml2js = require('xml2js');
 var xmlParser = new xml2js.Parser({explicitArray: false});
+var _ = require('underscore');
 
 function storePlaylist(tracks, playlistName, callback) {
     async.mapSeries(tracks, function processTrack(track, iterCallback) {
@@ -34,6 +35,12 @@ function queueAllTracks(ds) {
             });
     };
 }
+function elementText(element) {
+    return _.isObject(element) ? element._ : element;
+}
+function first(element) {
+    return _.isArray(element) ? element[0] : element;
+}
 exports.appendCurrentTrack = function (ds, playlistName, callback) {
     async.waterfall([
         ds.currentTrackDetails,
@@ -45,7 +52,7 @@ exports.appendCurrentTrack = function (ds, playlistName, callback) {
                 playlistName,
                 iterCallback);
         }
-        ], function (err, metadata) {
+        ], function parseTrackDetails(err, metadata) {
             if (err) {
                 callback(err);
             } else {
@@ -55,10 +62,10 @@ exports.appendCurrentTrack = function (ds, playlistName, callback) {
                     } else {
                         if (result['DIDL-Lite']['item']) {
                             callback(null, {
-                                artist: result['DIDL-Lite']['item']['upnp:artist']._,
-                                title: result['DIDL-Lite']['item']['dc:title']._,
-                                albumArt: result['DIDL-Lite']['item']['upnp:albumArtURI']._,
-                                album: result['DIDL-Lite']['item']['upnp:album']._
+                                artist: elementText(first(result['DIDL-Lite']['item']['upnp:artist'])),
+                                title: elementText(first(result['DIDL-Lite']['item']['dc:title'])),
+                                albumArt: elementText(first(result['DIDL-Lite']['item']['upnp:albumArtURI'])),
+                                album: elementText(first(result['DIDL-Lite']['item']['upnp:album']))
                             });
                         } else {
                             callback();
