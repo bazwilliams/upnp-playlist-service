@@ -73,10 +73,7 @@ exports.Ds = function(deviceUrlRoot) {
         ).on('error', callback);
     };
     this.retrieveTrackDetails = function(idArray, callback) {
-        var idArrayString = '';
-        _.each(idArray, function (id) {
-            idArrayString += (id + ' ');
-        });
+        var idArrayString = _.reduce(idArray, function (memo, num) { return memo + num + ' ' }, '');
         upnp.soapRequest(
             deviceUrlRoot,
             'Ds/Playlist',

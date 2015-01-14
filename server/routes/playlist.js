@@ -12,12 +12,11 @@ exports.listPlaylists = function listPlaylists(req, res) {
         }
     });
 };
-exports.addToPLaylist = function addToPLaylist(req, res) {
+exports.addToPlaylist = function addToPlaylist(req, res) {
     var uuid = req.params.uuid;
     var playlistName = req.params.playlistName;
     var device = manager.getDevice(uuid);
     if (device && playlistName) {
-        console.log(playlistName);
         playlists.appendCurrentTrack(device.ds, playlistName, function responseHandler(err, results) {
             if (err) {
                 console.error(err.stack);
