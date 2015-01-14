@@ -15,7 +15,6 @@ function toTrack(result, callback) {
         callback(new Error('No track found'));
     }
 }
-
 function binaryIdArrayToIntList(result, callback) {
     var buffer = new Buffer(result['s:Envelope']['s:Body']['u:IdArrayResponse'].Array, 'base64');
     var arrayList = [];
@@ -25,7 +24,6 @@ function binaryIdArrayToIntList(result, callback) {
     });
     callback(null, arrayList); 
 }
-
 function readListResponseToTracks(result, callback) {
     xmlParser.parseString(result['s:Envelope']['s:Body']['u:ReadListResponse'].TrackList, function (err, result) {
         if (err) {
@@ -51,11 +49,18 @@ function readListResponseToTracks(result, callback) {
         }
     });
 }
-
 function parseStandbyResponse(result, callback) {
     callback(null, result['s:Envelope']['s:Body']['u:StandbyResponse'].Value);
 }
-
+function ensureStatusCode(expectedStatusCode, taskMessage, callback) {
+    return function statusChecker(res) {
+        if (res.statusCode === expectedStatusCode) {
+            callback();
+        } else {
+            callback(new Error(taskMessage + ": Failed with status " + res.statusCode));
+        }
+    }
+}
 exports.Ds = function(deviceUrlRoot) {
     this.currentTrackDetails = function(callback) {
         upnp.soapRequest(
@@ -98,13 +103,7 @@ exports.Ds = function(deviceUrlRoot) {
             'urn:av-openhome.org:service:Playlist:1',
             'DeleteAll',
             '',
-            function (res) {
-                if (res.statusCode === 200) {
-                    callback();
-                } else {
-                    callback(new Error("Delete failed with status " + res.statusCode));
-                }
-            }
+            ensureStatusCode(200, "Delete", callback)
         ).on('error', callback);
     };
     this.queueTrack = function(trackDetailsXml, afterId, callback) {
@@ -130,13 +129,7 @@ exports.Ds = function(deviceUrlRoot) {
                         'urn:av-openhome.org:service:Playlist:1',
                         'Insert',
                         '<AfterId>' + afterId + '</AfterId><Uri>' + trackUri + '</Uri><Metadata>' + metadata + '</Metadata>',
-                        function (res) {
-                            if (res.statusCode === 200) {
-                                callback();
-                            } else {
-                                callback(new Error("Queue failed with " + res.statusCode));
-                            }
-                        }
+                        ensureStatusCode(200, "Queue", callback)
                     ).on('error', callback);
                 }
             }
@@ -149,13 +142,7 @@ exports.Ds = function(deviceUrlRoot) {
             'urn:av-openhome.org:service:Product:1',
             'SetSourceIndex',
             '<Value>'+source+'</Value>',
-            function (res) {
-                if (res.statusCode === 200) {
-                    callback();
-                } else {
-                    callback(new Error("Change Source failed with status " + res.statusCode));
-                }
-            }
+            ensureStatusCode(200, "Change Source", callback)
         ).on('error', callback);
     };
     this.standbyState = function (callback) {
@@ -175,13 +162,7 @@ exports.Ds = function(deviceUrlRoot) {
             'urn:av-openhome.org:service:Product:1',
             'SetStandby',
             '<Value>0</Value>',
-            function (res) {
-                if (res.statusCode === 200) {
-                    callback();
-                } else {
-                    callback(new Error("Power On failed with status " + res.statusCode));
-                }
-            }
+            ensureStatusCode(200, "Power On", callback)
         ).on('error', callback);
     };
     this.powerOff = function (callback) {
@@ -191,13 +172,7 @@ exports.Ds = function(deviceUrlRoot) {
             'urn:av-openhome.org:service:Product:1',
             'SetStandby',
             '<Value>1</Value>',
-            function (res) {
-                if (res.statusCode === 200) {
-                    callback();
-                } else {
-                    callback(new Error("Power Off failed with status " + res.statusCode));
-                }
-            }
+            ensureStatusCode(200, "Power Off", callback)
         ).on('error', callback);
     };
     this.playRadio = function (callback) {
@@ -207,13 +182,7 @@ exports.Ds = function(deviceUrlRoot) {
             'urn:av-openhome.org:service:Radio:1',
             'Play',
             '',
-            function (res) {
-                if (res.statusCode === 200) {
-                    callback();
-                } else {
-                    callback(new Error("Play Radio failed with status " + res.statusCode));
-                }
-            }
+            ensureStatusCode(200, "Play Radio", callback)
         ).on('error', callback);
     };
     this.playPlaylistFromStart = function (callback) {
@@ -223,13 +192,7 @@ exports.Ds = function(deviceUrlRoot) {
             'urn:av-openhome.org:service:Playlist:1',
             'SeekIndex',
             '<Value>0</Value>',
-            function (res) {
-                if (res.statusCode === 200) {
-                    callback();
-                } else {
-                    callback(new Error("Play Playlist failed with status " + res.statusCode));
-                }
-            }
+            ensureStatusCode(200, "Play Playlist", callback)
         ).on('error', callback);
     };
 };
