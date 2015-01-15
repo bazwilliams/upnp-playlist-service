@@ -14,7 +14,7 @@ function relative(track) {
 
 function combine(lines, callback) {
     async.reduce(lines, '', function appendLine(memo, item, iterCallback){
-        iterCallback(null, memo + item + '\n')
+        iterCallback(null, memo + item + '\n');
     }, callback);
 }
 
@@ -31,7 +31,7 @@ exports.list = function list(callback) {
                     .value());
         }
     });
-}
+};
 
 exports.read = function read(playlistName, callback) {
     fs.readFile(playlistFile(playlistName), { encoding: 'utf8' }, function (err, data) {

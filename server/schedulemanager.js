@@ -83,7 +83,7 @@ function scheduleAndReturnCallback(callback, returnVal) {
             scheduleJobs();
             callback(null, returnVal);
         }
-    }
+    };
 }
 
 exports.list = function list(uuid, callback) {

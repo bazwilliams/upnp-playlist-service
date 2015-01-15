@@ -1,9 +1,8 @@
-'use strict';
-
-// Declare app level module which depends on filters, and services
-
-angular.module('upnpApp', [
-  'upnpControllers',
-  'upnpDirectives',
-  'ui.bootstrap'
-]);
+(function () {
+    "use strict";
+	angular.module('upnpApp', [
+	  'upnpControllers',
+	  'upnpDirectives',
+	  'ui.bootstrap'
+	]);
+}());
