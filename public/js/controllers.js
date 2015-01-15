@@ -1,5 +1,5 @@
 (function() {
-    'use strict';
+    "use strict";
     var refreshDevices, refreshPlaylists;
     function getDeviceRefresh(scope, http) {
         return function () {
@@ -89,7 +89,7 @@
                         data: { playlistName: playlistName }
                     });
                 }
-            }
+            };
             $scope.newSchedule = {
                 days: {
                     'mon' : false,
@@ -105,8 +105,8 @@
                 time: ''
             };
             $scope.toggleDay = function toggleDay(dayOfWeek) {
-                if ($scope['newSchedule'].days[dayOfWeek] !== void 0) {
-                    $scope['newSchedule'].days[dayOfWeek] = !$scope['newSchedule'].days[dayOfWeek];
+                if ($scope.newSchedule.days[dayOfWeek] !== void 0) {
+                    $scope.newSchedule.days[dayOfWeek] = !$scope.newSchedule.days[dayOfWeek];
                 }
             };
             $scope.addWakeUp = function addWakeUp(newSchedule) {
