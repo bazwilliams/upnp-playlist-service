@@ -1,6 +1,13 @@
 var manager = require('../devicemanager.js');
 var playlists = require('../playlists.js');
 var m3u = require('../m3u.js');
+var async = require('async');
+
+function delay(milliseconds) {
+    return function (callback) {
+        setTimeout(callback, milliseconds);
+    };
+}
 
 exports.listPlaylists = function listPlaylists(req, res) {
     m3u.list(function (err, results) {
@@ -65,7 +72,14 @@ exports.playMusic = function playMusic(req, res) {
                 }
             });
         } else {
-            device.ds.changeSource(1, function responseHandler(err, results) {
+            async.series([
+                device.ds.powerOn,
+                function(iterCallback) {
+                    device.ds.changeSource(1, iterCallback);
+                },
+                delay(1000),
+                device.ds.playRadio
+            ], function responseHandler(err, results) {
                 if (err) {
                     console.error(err.stack);
                     res.status(400).send(err.message);
