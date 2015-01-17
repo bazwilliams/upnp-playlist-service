@@ -60,12 +60,12 @@ exports.appendCurrentTrack = function (ds, playlistName, callback) {
                     if (err) {
                         callback(err);
                     } else {
-                        if (result['DIDL-Lite']['item']) {
+                        if (result['DIDL-Lite'].item) {
                             callback(null, {
-                                artist: elementText(first(result['DIDL-Lite']['item']['upnp:artist'])),
-                                title: elementText(first(result['DIDL-Lite']['item']['dc:title'])),
-                                albumArt: elementText(first(result['DIDL-Lite']['item']['upnp:albumArtURI'])),
-                                album: elementText(first(result['DIDL-Lite']['item']['upnp:album']))
+                                artist: elementText(first(result['DIDL-Lite'].item['upnp:artist'])),
+                                title: elementText(first(result['DIDL-Lite'].item['dc:title'])),
+                                albumArt: elementText(first(result['DIDL-Lite'].item['upnp:albumArtURI'])),
+                                album: elementText(first(result['DIDL-Lite'].item['upnp:album']))
                             });
                         } else {
                             callback();

@@ -68,11 +68,3 @@ block body
     tabset
       tab(ng-repeat='device in devices | orderBy: "name"', ng-controller='DeviceCtrl',heading='{{device.room}}')
         +device()
-  script(src='bower_components/angular/angular.js')
-  script(src='bower_components/angular-bootstrap/ui-bootstrap.min.js')
-  script(src='bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js')
-  script(src='js/app.js')
-  script(src='js/services.js')
-  script(src='js/controllers.js')
-  script(src='js/directives.js')
-  script(src='js/filters.js')

@@ -59,7 +59,7 @@ function ensureStatusCode(expectedStatusCode, taskMessage, callback) {
         } else {
             callback(new Error(taskMessage + ": Failed with status " + res.statusCode));
         }
-    }
+    };
 }
 exports.Ds = function(deviceUrlRoot) {
     this.currentTrackDetails = function(callback) {
@@ -73,7 +73,7 @@ exports.Ds = function(deviceUrlRoot) {
         ).on('error', callback);
     };
     this.retrieveTrackDetails = function(idArray, callback) {
-        var idArrayString = _.reduce(idArray, function (memo, num) { return memo + num + ' ' }, '');
+        var idArrayString = _.reduce(idArray, function (memo, num) { return memo + num + ' '; }, '');
         upnp.soapRequest(
             deviceUrlRoot,
             'Ds/Playlist',
@@ -108,7 +108,7 @@ exports.Ds = function(deviceUrlRoot) {
             if (err) {
                 callback(err);
             } else {
-                var resources = _.isArray(result['DIDL-Lite']['item']['res']) ? result['DIDL-Lite']['item']['res'][0] : result['DIDL-Lite']['item']['res'];
+                var resources = _.isArray(result['DIDL-Lite'].item.res) ? result['DIDL-Lite'].item.res[0] : result['DIDL-Lite'].item.res;
                 var res = _.isObject(resources) ? resources._ : resources;
                 if (!res) {
                     callback(new Error('Error adding ' + trackDetailsXml));

@@ -22,7 +22,7 @@ function toDevice(result, callback) {
         ds: new Ds(result.root.URLBase)
     };
     if (result.root.device.iconList) {
-        device['icon'] = result.root.device.iconList.icon;
+        device.icon = result.root.device.iconList.icon;
     }
     callback(null, device);
 }

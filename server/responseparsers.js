@@ -17,5 +17,5 @@ exports.xml = function (parser, callback) {
                 }
             });
         });
-    }
-}
+    };
+};

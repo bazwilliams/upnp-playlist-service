@@ -114,7 +114,7 @@ exports.list = function list(req, res) {
                         href: '/api/devices/' + deviceModel.uuid + '/toggle-standby'
                     }]
                 });
-            }, iterCallback)
+            }, iterCallback);
         }
     ], function (err, deviceResources) {
         if (err) {
