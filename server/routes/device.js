@@ -44,7 +44,7 @@ exports.toggleStandby = function toggleStandby(req, res) {
                             iterCallback(err);
                         }
                         else {
-                            iterCallback({ standbyState: 0 });
+                            iterCallback(null, { standbyState: 0 });
                         }
                     });
                 } else {
@@ -53,7 +53,7 @@ exports.toggleStandby = function toggleStandby(req, res) {
                             iterCallback(err);
                         }
                         else {
-                            iterCallback({ standbyState: 1 });
+                            iterCallback(null, { standbyState: 1 });
                         }
                     });
                 }
