@@ -39,9 +39,23 @@ exports.toggleStandby = function toggleStandby(req, res) {
             device.ds.standbyState,
             function togglePowerState(currentStandbyState, iterCallback) {
                 if (currentStandbyState === '1') {
-                    device.ds.powerOn(iterCallback);
+                    device.ds.powerOn(function (err, results) {
+                        if (err) {
+                            iterCallback(err);
+                        }
+                        else {
+                            iterCallback({ standbyState: 0 });
+                        }
+                    });
                 } else {
-                    device.ds.powerOff(iterCallback);
+                    device.ds.powerOff(function (err, results) {
+                        if (err) {
+                            iterCallback(err);
+                        }
+                        else {
+                            iterCallback({ standbyState: 1 });
+                        }
+                    });
                 }
             }
         ], function responseHandler(err, results) {
