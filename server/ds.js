@@ -192,4 +192,24 @@ exports.Ds = function(deviceUrlRoot) {
             ensureStatusCode(200, "Play Playlist", callback)
         ).on('error', callback);
     };
+    this.volumeInc = function (callback) {
+        upnp.soapRequest(
+            deviceUrlRoot,
+            'Ds/Volume',
+            'urn:av-openhome.org:service:Volume:1',
+            'VolumeInc',
+            '',
+            ensureStatusCode(200, "Volume Increase", callback)
+        ).on('error', callback);
+    };
+    this.volumeDec = function (callback) {
+        upnp.soapRequest(
+            deviceUrlRoot,
+            'Ds/Volume',
+            'urn:av-openhome.org:service:Volume:1',
+            'VolumeDec',
+            '',
+            ensureStatusCode(200, "Volume Increase", callback)
+        ).on('error', callback);
+    };
 };

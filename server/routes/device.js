@@ -31,6 +31,36 @@ function toScheduleResource(schedule) {
         };
     }
 }
+exports.volumeUp = function volumeUp(req, res) {
+    var uuid = req.params.uuid;
+    var device = manager.getDevice(uuid);
+    if (device) {
+        device.ds.volumeInc(function responseHandler(err, results) {
+            if (err) {
+                res.status(400).send(err);
+            } else {
+                res.status(200).send(results);
+            }
+        });
+    } else {
+        res.sendStatus(404);
+    }
+};
+exports.volumeDown = function volumeDown(req, res) {
+    var uuid = req.params.uuid;
+    var device = manager.getDevice(uuid);
+    if (device) {
+        device.ds.volumeDec(function responseHandler(err, results) {
+            if (err) {
+                res.status(400).send(err);
+            } else {
+                res.status(200).send(results);
+            }
+        });
+    } else {
+        res.sendStatus(404);
+    }
+};
 exports.toggleStandby = function toggleStandby(req, res) {
     var uuid = req.params.uuid;
     var device = manager.getDevice(uuid);
@@ -112,6 +142,12 @@ exports.list = function list(req, res) {
                     },{
                         rel: 'toggle-standby',
                         href: '/api/devices/' + deviceModel.uuid + '/toggle-standby'
+                    },{
+                        rel: 'volume-up',
+                        href: '/api/devices/' + deviceModel.uuid + '/volume-up'
+                    },{
+                        rel: 'volume-down',
+                        href: '/api/devices/' + deviceModel.uuid + '/volume-down'
                     }]
                 });
             }, iterCallback);

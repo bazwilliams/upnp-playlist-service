@@ -39,6 +39,8 @@ app.put('/api/devices/:uuid/playlist/:playlistName', api.playlist.storePlaylist)
 app.post('/api/devices/:uuid/playlist/:playlistName', api.playlist.addToPlaylist);
 app.post('/api/devices/:uuid/play', api.playlist.playMusic);
 app.post('/api/devices/:uuid/toggle-standby', api.device.toggleStandby);
+app.post('/api/devices/:uuid/volume-up', api.device.volumeUp);
+app.post('/api/devices/:uuid/volume-down', api.device.volumeDown);
 
 /**
  * Start Server
