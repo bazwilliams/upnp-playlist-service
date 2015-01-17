@@ -54,15 +54,26 @@ exports.playMusic = function playMusic(req, res) {
     var uuid = req.params.uuid;
     var playlistName = req.body.playlistName;
     var device = manager.getDevice(uuid);
-    if (device && playlistName) {
-        playlists.replacePlaylist(device.ds, playlistName, function responseHandler(err, results) {
-            if (err) {
-                console.error(err.stack);
-                res.status(400).send(err.message);
-            } else {
-                res.sendStatus(200);
-            }
-        });
+    if (device) {
+        if (playlistName) {
+            playlists.replacePlaylist(device.ds, playlistName, function responseHandler(err, results) {
+                if (err) {
+                    console.error(err.stack);
+                    res.status(400).send(err.message);
+                } else {
+                    res.sendStatus(200);
+                }
+            });
+        } else {
+            device.ds.changeSource(1, function responseHandler(err, results) {
+                if (err) {
+                    console.error(err.stack);
+                    res.status(400).send(err.message);
+                } else {
+                    res.sendStatus(200);
+                }
+            });
+        }
     } else {
         res.status(404).send('Invalid uuid or playlist name. ');
     }
