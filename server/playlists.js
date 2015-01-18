@@ -81,8 +81,7 @@ exports.replacePlaylist = function (ds, playlistName, callback) {
         function readM3u(iterCallback) {
             m3u.read(playlistName, iterCallback);
         },
-        queueAllTracks(ds),
-        ds.playPlaylistFromStart
+        queueAllTracks(ds)
     ], callback);
 };
 exports.savePlaylist = function (ds, playlistName, callback) {

@@ -60,10 +60,18 @@ exports.storePlaylist = function storePlaylist(req, res) {
 exports.playMusic = function playMusic(req, res) {
     var uuid = req.params.uuid;
     var playlistName = req.body.playlistName;
+    var shuffle = req.body.shuffle || false;
     var device = manager.getDevice(uuid);
     if (device) {
         if (playlistName) {
-            playlists.replacePlaylist(device.ds, playlistName, function responseHandler(err, results) {
+            async.series([
+                device.ds.powerOn,
+                function(iterCallback) {
+                    playlists.replacePlaylist(device.ds, playlistName, iterCallback);
+                },
+                shuffle ? device.ds.enableShuffle : device.ds.disableShuffle,
+                shuffle ? device.ds.play : device.ds.playPlaylistFromStart
+            ], function responseHandler(err, results) {
                 if (err) {
                     console.error(err.stack);
                     res.status(400).send(err.message);
