@@ -64,13 +64,19 @@ exports.playMusic = function playMusic(req, res) {
     var device = manager.getDevice(uuid);
     if (device) {
         if (playlistName) {
-            async.series([
+            async.waterfall([
                 device.ds.powerOn,
+                shuffle ? device.ds.enableShuffle : device.ds.disableShuffle,
                 function(iterCallback) {
                     playlists.replacePlaylist(device.ds, playlistName, iterCallback);
                 },
-                shuffle ? device.ds.enableShuffle : device.ds.disableShuffle,
-                shuffle ? device.ds.play : device.ds.playPlaylistFromStart
+                function(trackIds, iterCallback) {
+                    if (shuffle) {
+                        device.ds.playFromPlaylistIndex(Math.floor((Math.random() * trackIds.length) + 1), iterCallback);
+                    } else {
+                        device.ds.playFromPlaylistIndex(0, iterCallback);
+                    }
+                }
             ], function responseHandler(err, results) {
                 if (err) {
                     console.error(err.stack);

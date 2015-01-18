@@ -30,7 +30,7 @@ function queueAllTracks(ds) {
                 if (err) {
                     callback(err);
                 } else {
-                    callback(null);
+                    callback(null, results);
                 }
             });
     };

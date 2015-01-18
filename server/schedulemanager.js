@@ -37,7 +37,10 @@ function actionsTasks(uuid, actions, callback) {
                         playlists.replacePlaylist(device.ds, actions.playlistName, iterCallback);
                     },
                     delay(1000),
-                    device.ds.playPlaylistFromStart
+                    device.ds.disableShuffle,
+                    function(iterCallback) {
+                        device.ds.playFromPlaylistIndex(0, iterCallback);
+                    }
                 ], callback);
             } else {
                 async.series([

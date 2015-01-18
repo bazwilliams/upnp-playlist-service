@@ -24,6 +24,13 @@ function binaryIdArrayToIntList(result, callback) {
     });
     callback(null, arrayList); 
 }
+function parseNewId(result, callback) {
+    if (result['s:Envelope']['s:Body']['u:InsertResponse']) {
+        callback(null, result['s:Envelope']['s:Body']['u:InsertResponse'].NewId)
+    } else {
+        callback(new Error('No NewId Found'));
+    }
+}
 function readListResponseToTracks(result, callback) {
     xmlParser.parseString(result['s:Envelope']['s:Body']['u:ReadListResponse'].TrackList, function (err, result) {
         if (err) {
@@ -126,7 +133,7 @@ exports.Ds = function(deviceUrlRoot) {
                         'urn:av-openhome.org:service:Playlist:1',
                         'Insert',
                         '<AfterId>' + afterId + '</AfterId><Uri>' + trackUri + '</Uri><Metadata>' + metadata + '</Metadata>',
-                        ensureStatusCode(200, "Queue", callback)
+                        responseParsers.xml(parseNewId, callback)
                     ).on('error', callback);
                 }
             }
@@ -182,16 +189,6 @@ exports.Ds = function(deviceUrlRoot) {
             ensureStatusCode(200, "Play Radio", callback)
         ).on('error', callback);
     };
-    this.play = function (callback) {
-        upnp.soapRequest(
-            deviceUrlRoot,
-            'Ds/Playlist',
-            'urn:av-openhome.org:service:Playlist:1',
-            'Play',
-            '',
-            ensureStatusCode(200, "Play", callback)
-        ).on('error', callback);
-    };
     this.enableShuffle = function (callback) {
         upnp.soapRequest(
             deviceUrlRoot,
@@ -212,13 +209,13 @@ exports.Ds = function(deviceUrlRoot) {
             ensureStatusCode(200, "Disable Shuffle", callback)
         ).on('error', callback);
     };
-    this.playPlaylistFromStart = function (callback) {
+    this.playFromPlaylistIndex = function (index, callback) {
         upnp.soapRequest(
             deviceUrlRoot,
             'Ds/Playlist',
             'urn:av-openhome.org:service:Playlist:1',
             'SeekIndex',
-            '<Value>0</Value>',
+            '<Value>' + index + '</Value>',
             ensureStatusCode(200, "Play Playlist From Start", callback)
         ).on('error', callback);
     };
