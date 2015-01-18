@@ -182,6 +182,36 @@ exports.Ds = function(deviceUrlRoot) {
             ensureStatusCode(200, "Play Radio", callback)
         ).on('error', callback);
     };
+    this.play = function (callback) {
+        upnp.soapRequest(
+            deviceUrlRoot,
+            'Ds/Playlist',
+            'urn:av-openhome.org:service:Playlist:1',
+            'Play',
+            '',
+            ensureStatusCode(200, "Play", callback)
+        ).on('error', callback);
+    };
+    this.enableShuffle = function (callback) {
+        upnp.soapRequest(
+            deviceUrlRoot,
+            'Ds/Playlist',
+            'urn:av-openhome.org:service:Playlist:1',
+            'SetShuffle',
+            '<Value>1</Value>',
+            ensureStatusCode(200, "Enable Shuffle", callback)
+        ).on('error', callback);
+    };
+    this.disableShuffle = function (callback) {
+        upnp.soapRequest(
+            deviceUrlRoot,
+            'Ds/Playlist',
+            'urn:av-openhome.org:service:Playlist:1',
+            'SetShuffle',
+            '<Value>0</Value>',
+            ensureStatusCode(200, "Disable Shuffle", callback)
+        ).on('error', callback);
+    };
     this.playPlaylistFromStart = function (callback) {
         upnp.soapRequest(
             deviceUrlRoot,
@@ -189,7 +219,7 @@ exports.Ds = function(deviceUrlRoot) {
             'urn:av-openhome.org:service:Playlist:1',
             'SeekIndex',
             '<Value>0</Value>',
-            ensureStatusCode(200, "Play Playlist", callback)
+            ensureStatusCode(200, "Play Playlist From Start", callback)
         ).on('error', callback);
     };
     this.volumeInc = function (callback) {
