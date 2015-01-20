@@ -8,7 +8,6 @@ function delay(milliseconds) {
         setTimeout(callback, milliseconds);
     };
 }
-
 function responseHandler(res) {
     return function handler(err, results) {
         if (err) {

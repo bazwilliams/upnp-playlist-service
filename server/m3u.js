@@ -78,7 +78,7 @@ exports.write = function write(tracks, playlistName, callback) {
 
 exports.append = function append(track, playlistName, callback) {
     async.waterfall([
-        function (iterCallback) {
+        function buildTrackAndMetadataLine(iterCallback) {
             fs.stat(track.track, function (err, stats) {
                 if (stats && stats.isFile()) {
                     iterCallback(null, relative(track.track) + '\n' + '#' + track.metadata);
