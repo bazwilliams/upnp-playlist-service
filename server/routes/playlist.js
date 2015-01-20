@@ -9,29 +9,25 @@ function delay(milliseconds) {
     };
 }
 
-exports.listPlaylists = function listPlaylists(req, res) {
-    m3u.list(function (err, results) {
+function responseHandler(res) {
+    return function handler(err, results) {
         if (err) {
             console.error(err.stack);
             res.status(400).send(err.message);
         } else {
             res.status(200).send(results);
         }
-    });
+    }
+}
+exports.listPlaylists = function listPlaylists(req, res) {
+    m3u.list(responseHandler(res));
 };
 exports.addToPlaylist = function addToPlaylist(req, res) {
     var uuid = req.params.uuid;
     var playlistName = req.params.playlistName;
     var device = manager.getDevice(uuid);
     if (device && playlistName) {
-        playlists.appendCurrentTrack(device.ds, playlistName, function responseHandler(err, results) {
-            if (err) {
-                console.error(err.stack);
-                res.status(400).send(err.message);
-            } else {
-                res.status(200).send(results);
-            }
-        });
+        playlists.appendCurrentTrack(device.ds, playlistName, responseHandler(res));
     } else {
         res.status(404).send('Invalid uuid or playlist name. ');
     }
@@ -77,14 +73,7 @@ exports.playMusic = function playMusic(req, res) {
                         device.ds.playFromPlaylistIndex(0, iterCallback);
                     }
                 }
-            ], function responseHandler(err, results) {
-                if (err) {
-                    console.error(err.stack);
-                    res.status(400).send(err.message);
-                } else {
-                    res.sendStatus(200);
-                }
-            });
+            ], responseHandler(res));
         } else {
             async.series([
                 device.ds.powerOn,
@@ -93,14 +82,7 @@ exports.playMusic = function playMusic(req, res) {
                 },
                 delay(1000),
                 device.ds.playRadio
-            ], function responseHandler(err, results) {
-                if (err) {
-                    console.error(err.stack);
-                    res.status(400).send(err.message);
-                } else {
-                    res.sendStatus(200);
-                }
-            });
+            ], responseHandler(res));
         }
     } else {
         res.status(404).send('Invalid uuid or playlist name. ');
