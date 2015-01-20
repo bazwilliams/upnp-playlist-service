@@ -4,6 +4,15 @@ var _ = require('underscore');
 var zpad = require('zpad');
 var async = require('async');
 
+function responseHandler(res) {
+    return function handler(err, results) {
+        if (err) {
+            res.status(400).send(err);
+        } else {
+            res.status(200).send(results);
+        }
+    };
+}
 function toScheduleResource(schedule) {
     if (schedule) {
         var days = {
@@ -31,17 +40,52 @@ function toScheduleResource(schedule) {
         };
     }
 }
+function toDeviceResource(deviceModel, callback) {
+    callback(null, {
+        uuid: deviceModel.uuid,
+        icon: deviceModel.device.icon,
+        name: deviceModel.device.name,
+        room: deviceModel.device.name.split(':')[0],
+        schedules: _.map(deviceModel.schedules, toScheduleResource),
+        links: [{
+            rel: 'store-playlist',
+            href: '/api/devices/' + deviceModel.uuid + '/playlist/'
+        },{
+            rel: 'add-to-playlist',
+            href: '/api/devices/' + deviceModel.uuid + '/playlist/'
+        },{
+            rel: 'play-music',
+            href: '/api/devices/' + deviceModel.uuid + '/play'
+        },{
+            rel: 'add-schedule',
+            href: '/api/devices/' + deviceModel.uuid + '/schedules'
+        },{
+            rel: 'toggle-standby',
+            href: '/api/devices/' + deviceModel.uuid + '/toggle-standby'
+        },{
+            rel: 'volume-up',
+            href: '/api/devices/' + deviceModel.uuid + '/volume-up'
+        },{
+            rel: 'volume-down',
+            href: '/api/devices/' + deviceModel.uuid + '/volume-down'
+        }]
+    });
+}
+function returnStandbyState(standbyState) {
+    return function powerResponseHandler(err, results) {
+        if (err) {
+            iterCallback(err);
+        }
+        else {
+            iterCallback(null, { standbyState: standbyState });
+        }
+    };
+}
 exports.volumeUp = function volumeUp(req, res) {
     var uuid = req.params.uuid;
     var device = manager.getDevice(uuid);
     if (device) {
-        device.ds.volumeInc(function responseHandler(err, results) {
-            if (err) {
-                res.status(400).send(err);
-            } else {
-                res.status(200).send(results);
-            }
-        });
+        device.ds.volumeInc(responseHandler(res));
     } else {
         res.sendStatus(404);
     }
@@ -50,13 +94,7 @@ exports.volumeDown = function volumeDown(req, res) {
     var uuid = req.params.uuid;
     var device = manager.getDevice(uuid);
     if (device) {
-        device.ds.volumeDec(function responseHandler(err, results) {
-            if (err) {
-                res.status(400).send(err);
-            } else {
-                res.status(200).send(results);
-            }
-        });
+        device.ds.volumeDec(responseHandler(res));
     } else {
         res.sendStatus(404);
     }
@@ -69,32 +107,12 @@ exports.toggleStandby = function toggleStandby(req, res) {
             device.ds.standbyState,
             function togglePowerState(currentStandbyState, iterCallback) {
                 if (currentStandbyState === '1') {
-                    device.ds.powerOn(function (err, results) {
-                        if (err) {
-                            iterCallback(err);
-                        }
-                        else {
-                            iterCallback(null, { standbyState: 0 });
-                        }
-                    });
+                    device.ds.powerOn(returnStandbyState(0));
                 } else {
-                    device.ds.powerOff(function (err, results) {
-                        if (err) {
-                            iterCallback(err);
-                        }
-                        else {
-                            iterCallback(null, { standbyState: 1 });
-                        }
-                    });
+                    device.ds.powerOff(returnStandbyState(1));
                 }
             }
-        ], function responseHandler(err, results) {
-            if (err) {
-                res.status(400).send(err);
-            } else {
-                res.status(200).send(results);
-            }
-        });
+        ], responseHandler(res));
     } else {
         res.sendStatus(404);
     }
@@ -120,43 +138,7 @@ exports.list = function list(req, res) {
             }, iterCallback);
         },
         function toResource(results, iterCallback) {
-            async.map(results, function toDeviceResource(deviceModel, jterCallback) {
-                jterCallback(null, {
-                    uuid: deviceModel.uuid,
-                    icon: deviceModel.device.icon,
-                    name: deviceModel.device.name,
-                    room: deviceModel.device.name.split(':')[0],
-                    schedules: _.map(deviceModel.schedules, toScheduleResource),
-                    links: [{
-                        rel: 'store-playlist',
-                        href: '/api/devices/' + deviceModel.uuid + '/playlist/'
-                    },{
-                        rel: 'add-to-playlist',
-                        href: '/api/devices/' + deviceModel.uuid + '/playlist/'
-                    },{
-                        rel: 'play-music',
-                        href: '/api/devices/' + deviceModel.uuid + '/play'
-                    },{
-                        rel: 'add-schedule',
-                        href: '/api/devices/' + deviceModel.uuid + '/schedules'
-                    },{
-                        rel: 'toggle-standby',
-                        href: '/api/devices/' + deviceModel.uuid + '/toggle-standby'
-                    },{
-                        rel: 'volume-up',
-                        href: '/api/devices/' + deviceModel.uuid + '/volume-up'
-                    },{
-                        rel: 'volume-down',
-                        href: '/api/devices/' + deviceModel.uuid + '/volume-down'
-                    }]
-                });
-            }, iterCallback);
+            async.map(results, toDeviceResource, iterCallback);
         }
-    ], function (err, deviceResources) {
-        if (err) {
-            res.status(400).send(err);
-        } else {
-            res.status(200).json(deviceResources);
-        }
-    });
+    ], responseHandler(res));
 };
