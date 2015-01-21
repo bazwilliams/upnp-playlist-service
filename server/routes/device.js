@@ -71,13 +71,13 @@ function toDeviceResource(deviceModel, callback) {
         }]
     });
 }
-function returnStandbyState(standbyState) {
+function returnStandbyState(standbyState, callback) {
     return function powerResponseHandler(err, results) {
         if (err) {
-            iterCallback(err);
+            callback(err);
         }
         else {
-            iterCallback(null, { standbyState: standbyState });
+            callback(null, { standbyState: standbyState });
         }
     };
 }
@@ -107,9 +107,9 @@ exports.toggleStandby = function toggleStandby(req, res) {
             device.ds.standbyState,
             function togglePowerState(currentStandbyState, iterCallback) {
                 if (currentStandbyState === '1') {
-                    device.ds.powerOn(returnStandbyState(0));
+                    device.ds.powerOn(returnStandbyState(0, iterCallback));
                 } else {
-                    device.ds.powerOff(returnStandbyState(1));
+                    device.ds.powerOff(returnStandbyState(1, iterCallback));
                 }
             }
         ], responseHandler(res));
