@@ -13,7 +13,6 @@ function ensureOn(ds) {
             function switchOnIfOff(currentStandbyState, iterCallback) {
                 if (currentStandbyState === '1') {
                     ds.powerOn(function(err, results) {
-                        delay(500);
                         callback();
                     });
                 } else {
