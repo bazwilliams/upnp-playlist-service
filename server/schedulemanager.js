@@ -2,9 +2,8 @@ var storage = require('./lib/node-persist.js');
 var scheduler = require('node-schedule');
 var _ = require('underscore');
 var guid = require('node-uuid');
-var async = require('async');
 var devices = require('./devicemanager.js');
-var playlists = require('./playlists.js');
+var recipes = require('./recipes.js');
 
 var jobs = [];
 
@@ -27,30 +26,9 @@ function actionsTasks(uuid, actions, callback) {
         var device = devices.getDevice(uuid);
         if (device) {
             if (actions.setStandby) {
-                async.series([
-                    device.ds.powerOff
-                ], callback);
-            } else if (actions.playlistName) {
-                async.series([
-                    device.ds.powerOn,
-                    function(iterCallback) {
-                        playlists.replacePlaylist(device.ds, actions.playlistName, iterCallback);
-                    },
-                    delay(1000),
-                    device.ds.disableShuffle,
-                    function(iterCallback) {
-                        device.ds.playFromPlaylistIndex(0, iterCallback);
-                    }
-                ], callback);
+                device.ds.powerOff(callback);
             } else {
-                async.series([
-                    device.ds.powerOn,
-                    function(iterCallback) {
-                        device.ds.changeSource(actions.sourceId, iterCallback);
-                    },
-                    delay(1000),
-                    device.ds.playRadio
-                ], callback);
+                recipes.play(device.ds, actions.playlistName, false, callback);
             }
         } else {
             callback(new Error("Device with UUID (" + uuid + ") not found"));
