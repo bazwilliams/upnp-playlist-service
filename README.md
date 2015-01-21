@@ -91,9 +91,14 @@ Loading a playlist and starting playback is now supported by parsing the DIDL-LI
 
 POST to `/api/devices/{uuid}/play` with Content-Type `application/json` with the following body. No suffix is required for the playlistName. This will clear the DS onboard playlist first and load the one from file and start playing from the first track. 
 
+To shuffle the playlist, set 'random' to true. 
+
+If the playlistName is empty, the radio source will be selected and play. 
+
 ```javascript
 {
-    "playlistName": "{playlistName}" 
+    "playlistName": "{playlistName}"
+    "random": "[true|false]"
 }
 ```
 
@@ -156,7 +161,7 @@ If you include a value within the playlistName attribute of the javascript objec
 - [X] Playlist builder (add currently playing track to a specific playlist).
 - [X] Provide list of existing playlist when loading into DS.
 - [X] Provide feedback through the UI when a playlist is stored.
-- [ ] Support shuffle playback
+- [X] Support shuffle playback
 - [X] Add device toggle standby API
 - [X] Permit overwriting existing playlists.
 - [ ] Ability to decide which radio station to play.
