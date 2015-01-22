@@ -83,7 +83,31 @@ No body is required, the playlistName does not need to include any file suffix (
 
 POST to `/api/devices/{uuid}/toggle-standby`
 
-No body is required. 
+No body is required. The resulting standby state is provided in the response. 
+
+#### To adjust volume up
+
+POST to `/api/devices/{uuid}/volume-up`
+
+```javascript
+{
+    "increment": "{increment}"
+}
+```
+
+Where increment is a number of the amount you wish the volume to be added by, if empty it defaults to 1. 
+
+#### To adjust volume down
+
+POST to `/api/devices/{uuid}/volume-down`
+
+```javascript
+{
+    "decrement": "{increment}"
+}
+```
+
+Where decrement is a number of the amount you wish the volume to be reduced by, if empty it defaults to 1. 
 
 #### To playback a playlist in a DS
 
@@ -97,7 +121,7 @@ If the playlistName is empty, the radio source will be selected and play.
 
 ```javascript
 {
-    "playlistName": "{playlistName}"
+    "playlistName": "{playlistName}",
     "random": "[true|false]"
 }
 ```
