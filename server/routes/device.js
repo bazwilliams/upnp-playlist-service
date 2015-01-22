@@ -14,6 +14,15 @@ function responseHandler(res) {
         }
     };
 }
+function noResponseHandler(res) {
+    return function handler(err, results) {
+        if (err) {
+            res.status(400).send(err);
+        } else {
+            res.status(204);
+        }
+    };
+}
 function toScheduleResource(schedule) {
     if (schedule) {
         var days = {
@@ -76,7 +85,7 @@ exports.volumeUp = function volumeUp(req, res) {
     var uuid = req.params.uuid;
     var device = manager.getDevice(uuid);
     if (device) {
-        recipes.volumeUp(device.ds, req.body.increment || 1, responseHandler(res));
+        recipes.volumeUp(device.ds, req.body.increment || 1, noResponseHandler(res));
     } else {
         res.sendStatus(404);
     }
@@ -85,7 +94,7 @@ exports.volumeDown = function volumeDown(req, res) {
     var uuid = req.params.uuid;
     var device = manager.getDevice(uuid);
     if (device) {
-        recipes.volumeDown(device.ds, req.body.decrement || 1, responseHandler(res));
+        recipes.volumeDown(device.ds, req.body.decrement || 1, noResponseHandler(res));
     } else {
         res.sendStatus(404);
     }

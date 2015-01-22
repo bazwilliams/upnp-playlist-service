@@ -51,13 +51,7 @@ exports.toggleStandby = function toggleStandby(ds, callback) {
                 ds.powerOff(returnStandbyState(1, iterCallback));
             }
         }
-    ], function (err, results) {
-        if (err) {
-            callback(err);
-        } else {
-            callback();
-        }
-    });
+    ], callback);
 };
 exports.play = function play(ds, playlistName, shuffle, callback) {
     if (playlistName) {
