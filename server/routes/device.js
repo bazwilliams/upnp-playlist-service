@@ -3,6 +3,7 @@ var scheduleManager = require('../schedulemanager.js');
 var _ = require('underscore');
 var zpad = require('zpad');
 var async = require('async');
+var recipes = require('../recipes.js');
 
 function responseHandler(res) {
     return function handler(err, results) {
@@ -71,21 +72,11 @@ function toDeviceResource(deviceModel, callback) {
         }]
     });
 }
-function returnStandbyState(standbyState, callback) {
-    return function powerResponseHandler(err, results) {
-        if (err) {
-            callback(err);
-        }
-        else {
-            callback(null, { standbyState: standbyState });
-        }
-    };
-}
 exports.volumeUp = function volumeUp(req, res) {
     var uuid = req.params.uuid;
     var device = manager.getDevice(uuid);
     if (device) {
-        device.ds.volumeInc(responseHandler(res));
+        recipes.volumeUp(device.ds, req.body.increment || 1, responseHandler(res));
     } else {
         res.sendStatus(404);
     }
@@ -94,7 +85,7 @@ exports.volumeDown = function volumeDown(req, res) {
     var uuid = req.params.uuid;
     var device = manager.getDevice(uuid);
     if (device) {
-        device.ds.volumeDec(responseHandler(res));
+        recipes.volumeDown(device.ds, req.body.decrement || 1, responseHandler(res));
     } else {
         res.sendStatus(404);
     }
@@ -103,16 +94,7 @@ exports.toggleStandby = function toggleStandby(req, res) {
     var uuid = req.params.uuid;
     var device = manager.getDevice(uuid);
     if (device) {
-        async.waterfall([
-            device.ds.standbyState,
-            function togglePowerState(currentStandbyState, iterCallback) {
-                if (currentStandbyState === '1') {
-                    device.ds.powerOn(returnStandbyState(0, iterCallback));
-                } else {
-                    device.ds.powerOff(returnStandbyState(1, iterCallback));
-                }
-            }
-        ], responseHandler(res));
+        recipes.toggleStandby(device.ds, responseHandler(res));
     } else {
         res.sendStatus(404);
     }

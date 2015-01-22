@@ -22,6 +22,43 @@ function ensureOn(ds) {
         ], callback);
     }
 }
+function returnStandbyState(standbyState, callback) {
+    return function powerResponseHandler(err, results) {
+        if (err) {
+            callback(err);
+        } else {
+            callback(null, { standbyState: standbyState });
+        }
+    };
+}
+exports.volumeUp = function volumeUp(ds, delta, callback) {
+    async.times(delta, function(n, next) {
+        ds.volumeInc(next)
+    }, callback);
+};
+exports.volumeDown = function volumeDown(ds, delta, callback) {
+    async.times(delta, function(n, next) {
+        ds.volumeDec(next)
+    }, callback);
+};
+exports.toggleStandby = function toggleStandby(ds, callback) {
+    async.waterfall([
+        ds.standbyState,
+        function togglePowerState(currentStandbyState, iterCallback) {
+            if (currentStandbyState === '1') {
+                ds.powerOn(returnStandbyState(0, iterCallback));
+            } else {
+                ds.powerOff(returnStandbyState(1, iterCallback));
+            }
+        }
+    ], function (err, results) {
+        if (err) {
+            callback(err);
+        } else {
+            callback();
+        }
+    });
+};
 exports.play = function play(ds, playlistName, shuffle, callback) {
     if (playlistName) {
         async.waterfall([
@@ -48,4 +85,4 @@ exports.play = function play(ds, playlistName, shuffle, callback) {
             ds.playRadio
         ], callback);
     }
-}
+};
