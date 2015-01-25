@@ -50,6 +50,15 @@ function toScheduleResource(schedule) {
         };
     }
 }
+function toSourceResource(source, index) {
+    if (source && source.Visible === 'true') {
+        return {
+            index: index,
+            name: source.Name,
+            type: source.Type
+        };
+    }
+}
 function toDeviceResource(deviceModel, callback) {
     callback(null, {
         uuid: deviceModel.uuid,
@@ -57,6 +66,10 @@ function toDeviceResource(deviceModel, callback) {
         name: deviceModel.device.name,
         room: deviceModel.device.name.split(':')[0],
         schedules: _.map(deviceModel.schedules, toScheduleResource),
+        sources: _.chain(deviceModel.sources)
+                  .map(toSourceResource)
+                  .compact()
+                  .value(),
         links: [{
             rel: 'store-playlist',
             href: '/api/devices/' + deviceModel.uuid + '/playlist/'
@@ -79,6 +92,27 @@ function toDeviceResource(deviceModel, callback) {
             rel: 'volume-down',
             href: '/api/devices/' + deviceModel.uuid + '/volume-down'
         }]
+    });
+}
+function createDeviceModel(uuid, callback) {
+    async.parallel({
+        schedules: function listSchedules(iterCallback) {
+            scheduleManager.list(uuid, iterCallback);
+        },
+        sources: function listSources(iterCallback) {
+            manager.getDevice(uuid).ds.getSources(iterCallback);
+        }
+    }, function (err, results) {
+        if (err) {
+            callback(err);
+        } else {
+            callback(null, {
+                uuid: uuid,
+                device: manager.getDevice(uuid),
+                schedules: results.schedules, 
+                sources: results.sources
+            });
+        }
     });
 }
 exports.volumeUp = function volumeUp(req, res) {
@@ -110,23 +144,11 @@ exports.toggleStandby = function toggleStandby(req, res) {
 };
 exports.list = function list(req, res) {
     async.waterfall([
-        function getDevices(iterCallback) {
+        function getUuids(iterCallback) {
             iterCallback(null, manager.getDevices());
         },
-        function getSchedules(uuids, iterCallback) {
-            async.map(uuids, function getDeviceSchedule(uuid, jterCallback) {
-                scheduleManager.list(uuid, function createDeviceModel(err, schedules) {
-                    if (err) {
-                        jterCallback(err);
-                    } else {
-                        jterCallback(null, {
-                            uuid: uuid,
-                            device: manager.getDevice(uuid),
-                            schedules: schedules
-                        });
-                    }
-                });
-            }, iterCallback);
+        function createDeviceModels(uuids, iterCallback) {
+            async.map(uuids, createDeviceModel, iterCallback);
         },
         function toResource(results, iterCallback) {
             async.map(results, toDeviceResource, iterCallback);

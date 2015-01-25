@@ -24,6 +24,15 @@ function binaryIdArrayToIntList(result, callback) {
     });
     callback(null, arrayList); 
 }
+function toSourceList(result, callback) {
+    if (result['s:Envelope']['s:Body']['u:SourceXmlResponse']) {
+            xmlParser.parseString(result['s:Envelope']['s:Body']['u:SourceXmlResponse'].Value, function (err, result) {
+            callback(null, result.SourceList.Source)
+        });
+    } else {
+        callback(new Error('No sourceXml Found'));
+    }
+}
 function parseNewId(result, callback) {
     if (result['s:Envelope']['s:Body']['u:InsertResponse']) {
         callback(null, result['s:Envelope']['s:Body']['u:InsertResponse'].NewId)
@@ -138,6 +147,16 @@ exports.Ds = function(deviceUrlRoot) {
                 }
             }
         });
+    };
+    this.getSources = function (callback) {
+        upnp.soapRequest(
+            deviceUrlRoot,
+            'Ds/Product/control',
+            'urn:av-openhome.org:service:Product:1',
+            'SourceXml',
+            '',
+            responseParsers.xml(toSourceList, callback)
+        ).on('error', callback);
     };
     this.changeSource = function (source, callback) {
         upnp.soapRequest(
