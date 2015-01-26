@@ -103,7 +103,10 @@ function createDeviceModel(uuid, callback) {
             scheduleManager.list(uuid, iterCallback);
         },
         sources: function listSources(iterCallback) {
-            manager.getDevice(uuid).ds.getSources(iterCallback);
+            var device = manager.getDevice(uuid);
+            if (device) {
+                device.ds.getSources(iterCallback);
+            }
         }
     }, function (err, results) {
         if (err) {
