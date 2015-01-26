@@ -66,11 +66,11 @@ mixin addSchedule
 mixin schedule
   div.col-sm-1
     img(width=24,src='./images/1420303821_27-128.png',ng-show='schedule.action == "sleep"')
-    img(width=24,src='./images/1420302796_45-128.png',ng-show='schedule.action == "wake" && schedule.sourceId === 0')
-    img(width=24,src='./images/1420302928_43-128.png',ng-show='schedule.action == "wake" && schedule.sourceId === 1')
+    img(width=24,src='./images/1420302796_45-128.png',ng-show='schedule.action == "wake" && schedule.sourceName === "Radio"')
+    img(width=24,src='./images/1420302928_43-128.png',ng-show='schedule.action == "wake" && schedule.sourceName === "Playlist"')
   div.col-sm-2
-    span(ng-show='schedule.sourceId === 0') {{schedule.playlistName}}
-    span(ng-show='schedule.sourceId > 1') Source: {{schedule.sourceId}}
+    span(ng-show='schedule.sourceName === "Playlist"') {{schedule.playlistName}}
+    span(ng-show='schedule.sourceName !== "Playlist" || schedule.sourceName !== "Radio"') {{schedule.sourceName}}
   div.col-sm-5
     span.day.ng-hide.label.label-default(ng-hide='schedule.days.mon') Mon
     span.day.ng-show.label.label-info(ng-show='schedule.days.mon') Mon

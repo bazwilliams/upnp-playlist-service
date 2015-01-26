@@ -23,32 +23,34 @@ function noResponseHandler(res) {
         }
     };
 }
-function toScheduleResource(schedule) {
-    if (schedule) {
-        var days = {
-            'mon' : false,
-            'tue' : false,
-            'wed' : false,
-            'thu' : false,
-            'fri' : false,
-            'sat' : false,
-            'sun' : false
-        };
-        _.each(schedule.schedule.dayOfWeek, function (day) {
-            var key = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'][day];
-            days[key] = true;
-        });
-        return {
-            days: days,
-            time: zpad(schedule.schedule.hour) + ':' + zpad(schedule.schedule.minute),
-            action: schedule.actions.setStandby ? 'sleep' : 'wake',
-            playlistName: schedule.actions.playlistName,
-            sourceId: schedule.actions.sourceId,
-            links: [{
-                rel: 'delete',
-                href: '/api/devices/'+schedule.uuid+'/schedules/'+schedule.id
-            }]
-        };
+function toScheduleResourceUsingNamedSources(sourceList) {
+    return function toScheduleResource(schedule) {
+        if (schedule) {
+            var days = {
+                'mon' : false,
+                'tue' : false,
+                'wed' : false,
+                'thu' : false,
+                'fri' : false,
+                'sat' : false,
+                'sun' : false
+            };
+            _.each(schedule.schedule.dayOfWeek, function (day) {
+                var key = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'][day];
+                days[key] = true;
+            });
+            return {
+                days: days,
+                time: zpad(schedule.schedule.hour) + ':' + zpad(schedule.schedule.minute),
+                action: schedule.actions.setStandby ? 'sleep' : 'wake',
+                playlistName: schedule.actions.playlistName,
+                sourceName: sourceList[schedule.actions.sourceId] ? sourceList[schedule.actions.sourceId].Name : void 0,
+                links: [{
+                    rel: 'delete',
+                    href: '/api/devices/'+schedule.uuid+'/schedules/'+schedule.id
+                }]
+            };
+        }
     }
 }
 function toSourceResource(source, index) {
@@ -66,7 +68,7 @@ function toDeviceResource(deviceModel, callback) {
         icon: deviceModel.device.icon,
         name: deviceModel.device.name,
         room: deviceModel.device.name.split(':')[0],
-        schedules: _.map(deviceModel.schedules, toScheduleResource),
+        schedules: _.map(deviceModel.schedules, toScheduleResourceUsingNamedSources(deviceModel.sources)),
         sources: _.chain(deviceModel.sources)
                   .map(toSourceResource)
                   .compact()
