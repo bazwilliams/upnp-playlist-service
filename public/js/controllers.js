@@ -1,13 +1,36 @@
 (function() {
     "use strict";
     var refreshDevices, refreshPlaylists;
+    function updateDeviceSources(scope) {
+        _.each(scope.devices, function(device) {
+            var playlistSource = _.findWhere(device.sources, { 'type' : 'Playlist' });
+            device.whatCanPlay = [];
+            _.each(device.sources, function (source, index) {
+                device.whatCanPlay.push({
+                    index: source.index,
+                    sourceName: source.name,
+                    playlistName: ''
+                });
+            });
+            if (playlistSource && scope.playlists) {
+                _.each(scope.playlists, function (playlistName) {
+                    device.whatCanPlay.push({
+                        index: playlistSource.index,
+                        sourceName: playlistSource.name + ': ' + playlistName,
+                        playlistName: playlistName
+                    });
+                });
+            }
+        })
+    }
     function getDeviceRefresh(scope, http) {
         return function () {
             http({
                 method: 'GET',
                 url: '/api/devices'
             }).success(function (data, status, headers, config) {
-              scope.devices = data;
+                scope.devices = data;
+                updateDeviceSources(scope);
             });
         };
     }
@@ -18,6 +41,7 @@
                 url: '/api/playlists'
             }).success(function (data, status, headers, config) {
                 scope.playlists = data;
+                updateDeviceSources(scope);
             });
         };
     }
@@ -111,11 +135,13 @@
             };
             $scope.addWakeUp = function addWakeUp(newSchedule) {
                 var result = _.findWhere($scope.device.links, { 'rel' : 'add-schedule' });
+                var selectedSource = _.findWhere($scope.device.whatCanPlay, { sourceName: newSchedule.sourceName });
                 var body = {
                     days : newSchedule.days,
                     time: newSchedule.time,
                     action: newSchedule.action,
-                    playlistName: newSchedule.playlistName
+                    playlistName: selectedSource.playlistName,
+                    sourceId: selectedSource.index
                 };
                 $http({
                     method: 'POST',

@@ -51,7 +51,7 @@ exports.storePlaylist = function storePlaylist(req, res) {
 exports.playMusic = function playMusic(req, res) {
     var device = manager.getDevice(req.params.uuid);
     if (device) {
-        recipes.play(device.ds, req.body.playlistName, req.body.shuffle || false, responseHandler(res));
+        recipes.play(device.ds, req.body.playlistName ? 0 : 1, req.body.playlistName, req.body.shuffle || false, responseHandler(res));
     } else {
         res.status(404).send('Invalid uuid. ');
     }

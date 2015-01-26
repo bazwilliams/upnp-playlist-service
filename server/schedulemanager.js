@@ -14,13 +14,11 @@ function recurrenceRuleFactory(schedule) {
     recurrence.minute = schedule.minute;
     return recurrence;
 }
-
 function delay(milliseconds) {
     return function (callback) {
         setTimeout(callback, milliseconds);
     };
 }
-
 function actionsTasks(uuid, actions, callback) {
     return function () {
         var device = devices.getDevice(uuid);
@@ -28,14 +26,13 @@ function actionsTasks(uuid, actions, callback) {
             if (actions.setStandby) {
                 device.ds.powerOff(callback);
             } else {
-                recipes.play(device.ds, actions.playlistName, false, callback);
+                recipes.play(device.ds, actions.sourceId, actions.playlistName, false, callback);
             }
         } else {
             callback(new Error("Device with UUID (" + uuid + ") not found"));
         }
     };
 }
-
 function scheduleJobs() {
     function callback(err) {
         if (err) {
@@ -55,7 +52,6 @@ function scheduleJobs() {
         }
     });
 }
-
 function scheduleAndReturnCallback(callback, returnVal) {
     return function scheduleAndReturn(err) {
         if (err) {
@@ -66,7 +62,6 @@ function scheduleAndReturnCallback(callback, returnVal) {
         }
     };
 }
-
 exports.list = function list(uuid, callback) {
     storage.getItem('actions.json', function findMatchingJobs(err, schedules) {
         if (err) {
@@ -76,7 +71,6 @@ exports.list = function list(uuid, callback) {
         }
     });
 };
-
 exports.addSchedule = function addSchedule(uuid, schedule, callback) {
     if (schedule.dayOfWeek.length > 0) {
         storage.getItem('actions.json', function addValidSchedule(err, schedules) { 
@@ -88,7 +82,7 @@ exports.addSchedule = function addSchedule(uuid, schedule, callback) {
                     uuid: uuid,
                     actions: {
                         setStandby: schedule.isStandby,
-                        sourceId: schedule.playlistName ? 0 : 1,
+                        sourceId: schedule.sourceId,
                         playlistName: schedule.playlistName
                     },
                     schedule: {            
@@ -106,7 +100,6 @@ exports.addSchedule = function addSchedule(uuid, schedule, callback) {
         callback(new Error("No days of week set"));
     }
 };
-
 exports.deleteSchedule = function deleteSchedule(uuid, id, callback) {
     storage.getItem('actions.json', function removeUnwantedSchedules(err, schedules) {
         if (err) {

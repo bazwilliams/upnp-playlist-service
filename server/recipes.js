@@ -53,30 +53,31 @@ exports.toggleStandby = function toggleStandby(ds, callback) {
         }
     ], callback);
 };
-exports.play = function play(ds, playlistName, shuffle, callback) {
-    if (playlistName) {
-        async.waterfall([
-            ensureOn(ds),
-            shuffle ? ds.enableShuffle : ds.disableShuffle,
-            function replacePlaylist(iterCallback) {
-                playlists.replacePlaylist(ds, playlistName, iterCallback);
-            },
-            function startPlayback(trackIds, iterCallback) {
-                if (shuffle) {
-                    ds.playFromPlaylistIndex(Math.floor((Math.random() * trackIds.length) + 1), iterCallback);
-                } else {
-                    ds.playFromPlaylistIndex(0, iterCallback);
-                }
-            }
-        ], callback);
-    } else {
-        async.waterfall([
-            ensureOn(ds),
-            function changeSourceToRadio(iterCallback) {
-                ds.changeSource(1, iterCallback);
-            },
-            delay(1000),
-            ds.playRadio
-        ], callback);
+exports.play = function play(ds, sourceId, playlistName, shuffle, callback) {
+    var pipeline = [
+        ensureOn(ds),
+        function changeSource(iterCallback) {
+            ds.changeSource(sourceId, iterCallback);
+        }
+    ];
+    if (sourceId === 1) {
+        pipeline.push(ds.playRadio);
     }
+    if (playlistName) {
+        pipeline.push(shuffle ? ds.enableShuffle : ds.disableShuffle);
+        pipeline.push(function replacePlaylist(iterCallback) {
+            playlists.replacePlaylist(ds, playlistName, iterCallback);
+        });
+        pipeline.push(function startPlayback(trackIds, iterCallback) {
+            if (shuffle) {
+                ds.playFromPlaylistIndex(Math.floor((Math.random() * trackIds.length) + 1), iterCallback);
+            } else {
+                ds.playFromPlaylistIndex(0, iterCallback);
+            }
+        });
+    } else if (sourceId === 0) {
+        pipeline.push(ds.playPlaylist);    
+    }
+
+    async.waterfall(pipeline, callback);
 };

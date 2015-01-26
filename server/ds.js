@@ -235,7 +235,17 @@ exports.Ds = function(deviceUrlRoot) {
             'urn:av-openhome.org:service:Playlist:1',
             'SeekIndex',
             '<Value>' + index + '</Value>',
-            ensureStatusCode(200, "Play Playlist From Start", callback)
+            ensureStatusCode(200, "Play Playlist From Index " + index, callback)
+        ).on('error', callback);
+    };
+    this.playPlaylist = function (callback) {
+        upnp.soapRequest(
+            deviceUrlRoot,
+            'Ds/Playlist',
+            'urn:av-openhome.org:service:Playlist:1',
+            'Play',
+            '',
+            ensureStatusCode(200, "Play Playlist", callback)
         ).on('error', callback);
     };
     this.volumeInc = function (callback) {
