@@ -126,6 +126,7 @@
                 },
                 playlistName: '',
                 action: 'wake',
+                sourceName: 'Radio',
                 time: ''
             };
             $scope.toggleDay = function toggleDay(dayOfWeek) {
