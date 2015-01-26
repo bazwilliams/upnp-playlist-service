@@ -140,8 +140,8 @@
                     days : newSchedule.days,
                     time: newSchedule.time,
                     action: newSchedule.action,
-                    playlistName: selectedSource.playlistName,
-                    sourceId: selectedSource.index
+                    playlistName: selectedSource ? selectedSource.playlistName : void 0,
+                    sourceId: selectedSource ? selectedSource.index : void 0
                 };
                 $http({
                     method: 'POST',
