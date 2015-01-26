@@ -59,7 +59,7 @@ mixin addSchedule
         label.col-sm-5.control-label What to Play
         div.col-sm-7
           select.form-control(ng-model='newSchedule.sourceName')
-            option(ng-repeat='whatToPlay in device.whatCanPlay | orderBy:"sourceName"', value='{{whatToPlay.sourceName}}') {{whatToPlay.sourceName}}
+            option(ng-selected='whatToPlay.sourceName === newSchedule.sourceName', ng-repeat='whatToPlay in device.whatCanPlay | orderBy:"sourceName"', value='{{whatToPlay.sourceName}}') {{whatToPlay.sourceName}}
     div.pull-right
       button.btn.btn-success(ng-click='addWakeUp(newSchedule)',ng-key-select='addWakeUp(newSchedule)') Add
 
