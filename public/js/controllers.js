@@ -66,10 +66,11 @@
                 setTimeout(function autoremoveAlert() {
                     var indexToRemove = $scope.alerts.indexOf(alert);
                     $scope.closeAlert(indexToRemove);
-                }, 3000);
+                }, 4000);
             };
             $scope.closeAlert = function(index) {
                 $scope.alerts.splice(index, 1);
+                $scope.$apply();
             };
             $scope.storePlaylist = function storePlaylist(playlistName) {
                 if (!playlistName) {
