@@ -14,7 +14,7 @@ mixin device
           datalist#playlists
             option(ng-repeat='playlist in playlists | orderBy',value='{{playlist}}')
         div.row
-          div.col-sm-12
+          div.col-sm-12(ng-model='alerts')
             alert(ng-repeat="alert in alerts",type="{{alert.type}}",close="closeAlert($index)") {{alert.msg}}
         div.hidden-xs.clearfix
           div.pull-right

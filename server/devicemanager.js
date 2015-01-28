@@ -15,16 +15,24 @@ function parseUuid (usn, st) {
 }
 
 function toDevice(result, callback) {
-    device = {
-        name: result.root.device.friendlyName,
-        urlRoot: result.root.URLBase,
-        serviceList: result.root.device.serviceList.service,
-        ds: new Ds(result.root.URLBase)
-    };
-    if (result.root.device.iconList) {
-        device.icon = result.root.device.iconList.icon;
-    }
-    callback(null, device);
+    var ds = new Ds(result.root.URLBase);
+    ds.getSources(function (err, results) {
+        if (err) {
+            callback(err);
+        } else {
+            device = {
+                name: result.root.device.friendlyName,
+                urlRoot: result.root.URLBase,
+                serviceList: result.root.device.serviceList.service,
+                sourceList: results,
+                ds: ds
+            };
+            if (result.root.device.iconList) {
+                device.icon = result.root.device.iconList.icon;
+            }
+            callback(null, device); 
+        }
+    });
 }
 
 function processDevice(location, callback) {

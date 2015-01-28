@@ -51,7 +51,7 @@ function toScheduleResourceUsingNamedSources(sourceList) {
                 }]
             };
         }
-    }
+    };
 }
 function toSourceResource(source, index) {
     if (source && source.Visible === 'true') {
@@ -105,7 +105,7 @@ function createDeviceModel(uuid, callback) {
         sources: function listSources(iterCallback) {
             var device = manager.getDevice(uuid);
             if (device) {
-                device.ds.getSources(iterCallback);
+                iterCallback(null, device.sourceList);
             }
         }
     }, function (err, results) {

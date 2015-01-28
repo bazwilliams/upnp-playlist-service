@@ -21,7 +21,7 @@
                     });
                 });
             }
-        })
+        });
     }
     function getDeviceRefresh(scope, http) {
         return function () {
@@ -61,7 +61,12 @@
             var dsPlaymusic = _.findWhere($scope.device.links, { 'rel' : 'play-music' });
             $scope.alerts = [];
             $scope.addAlert = function addAlert(type, message) {
-                $scope.alerts.push({ type: type, msg: message });
+                var alert = { type: type, msg: message };
+                $scope.alerts.push(alert);
+                setTimeout(function autoremoveAlert() {
+                    var indexToRemove = $scope.alerts.indexOf(alert);
+                    $scope.closeAlert(indexToRemove);
+                }, 3000);
             };
             $scope.closeAlert = function(index) {
                 $scope.alerts.splice(index, 1);
