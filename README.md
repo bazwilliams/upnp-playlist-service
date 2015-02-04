@@ -32,6 +32,8 @@ module.exports = config;
 
 For Linux, a template upstart script has been included in `etc/init/ds-service.conf` which assumes you have cloned the repository into `/opt/upnp-playlist-service` it also assumes you have node.js installed and have a user called `nodejs` which has read and write privileges to the `/opt/upnp-playlist-service/persist` folder. Modify and copy this into your `/etc/init/` folder to enable you to start the service at boot automatically. 
 
+There is also a monit configuration in `etc/init/etc/monit/conf.d/ds-service` which will automatically restart your node process should the process crash or not start for any reason. 
+
 ## Running
 
 Start node by running `node server\app.js`

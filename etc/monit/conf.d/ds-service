@@ -1,0 +1,10 @@
+set logfile /var/log/monit.log
+
+check process node with pidfile /var/run/ds-service.pid
+
+start program = "/sbin/start ds-service"
+stop program = "/sbin/start ds-service"
+if failed port 18080 protocol HTTP
+    request /
+    with timeout 10 seconds
+    then restart
