@@ -21,23 +21,14 @@ const UPNP_NTS_EVENTS = {
   'ssdp:update': 'DeviceUpdate'
 };
 
-var debug;
-if (process.env.NODE_DEBUG && /upnp/.test(process.env.NODE_DEBUG)) {
-  debug = function(x) { console.error('UPNP: %s', x); };
-
-} else {
-  debug = function() { };
-}
-
 function ControlPoint() {
   events.EventEmitter.call(this);
-  this.server = dgram.createSocket('udp4');
-  var self = this;
-  this.server.on('message', function(msg, rinfo) {self.onRequestMessage(msg, rinfo);});
-  this._initParsers();
-  this.server.bind(SSDP_PORT, function () {
-    self.server.addMembership(BROADCAST_ADDR);
-  });
+  // var self = this;
+  // this.server.on('message', function(msg, rinfo) {self.onRequestMessage(msg, rinfo);});
+  // this._initParsers();
+  // this.server.bind(SSDP_PORT, function () {
+    // self.server.addMembership(BROADCAST_ADDR);
+  // });
 }
 util.inherits(ControlPoint, events.EventEmitter);
 exports.ControlPoint = ControlPoint;
@@ -45,61 +36,61 @@ exports.ControlPoint = ControlPoint;
 /**
  * Message handler for HTTPU request.
  */
-ControlPoint.prototype.onRequestMessage = function(msg, rinfo) {
-  var ret = this.requestParser.execute(msg, 0, msg.length);
-  if (!(ret instanceof Error)) {
-    var req = this.requestParser.incoming;
-    switch (req.method) {
-      case 'NOTIFY':
-        debug('NOTIFY ' + req.headers.nts + ' NT=' + req.headers.nt + ' USN=' + req.headers.usn);
-        var event = UPNP_NTS_EVENTS[req.headers.nts];
-        if (event) {
-          this.emit(event, req.headers);
-        }
-        break;
-    };
+// ControlPoint.prototype.onRequestMessage = function(msg, rinfo) {
+//   var ret = this.requestParser.execute(msg, 0, msg.length);
+//   if (!(ret instanceof Error)) {
+//     var req = this.requestParser.incoming;
+//     switch (req.method) {
+//       case 'NOTIFY':
+//         debug('NOTIFY ' + req.headers.nts + ' NT=' + req.headers.nt + ' USN=' + req.headers.usn);
+//         var event = UPNP_NTS_EVENTS[req.headers.nts];
+//         if (event) {
+//           this.emit(event, req.headers);
+//         }
+//         break;
+//     };
+//   }
+// };
+
+// /**
+//  * Initialize HTTPU response and request parsers.
+//  */
+// ControlPoint.prototype._initParsers = function() {
+//   var self = this;
+//   if (!self.requestParser) {
+//     self.requestParser = http.parsers.alloc();
+//     self.requestParser.reinitialize('request');
+//     self.requestParser.onIncoming = function(req) {
+
+//     };
+//   }
+// };
+
+function messageHeaders(msg) {
+  return msg.toString('ascii').split('\r\n');
+}
+
+function splitHeader(header) {
+  var result, tuple = header.split(': ');
+  if (tuple[1]) {
+    var result = {};
+    result[tuple[0].toLowerCase()] = tuple[1];
   }
-};
+  return result;
+}
 
-/**
- * Initialize HTTPU response and request parsers.
- */
-ControlPoint.prototype._initParsers = function() {
-  var self = this;
-  if (!self.requestParser) {
-    self.requestParser = http.parsers.alloc();
-    self.requestParser.reinitialize('request');
-    self.requestParser.onIncoming = function(req) {
-
-    };
-  }
-};
-
-/**
- * Message handler for MSEARCH HTTPU response.
- */
 ControlPoint.prototype.onMSearchResponseMessage = function(msg, rinfo) {
-    var device = {},
-        headers = msg.toString('ascii').split('\r\n');
+    var headers = messageHeaders(msg);
     if (headers[0] === 'HTTP/1.1 200 OK') {
-      _.each(headers,  function (header) {
-        var tuple = header.split(': ');
-        if (tuple[1]) {
-          device[tuple[0].toLowerCase()] = tuple[1]
-        }
-      });
+      var device = _.chain(headers)
+        .map(splitHeader)
+        .compact()
+        .reduce(function (memo, object) { return _.extend(memo, object); })
+        .value();
+      this.emit("DeviceFound", device);
     }
-    this.emit("DeviceFound", device);
-};
+}
 
-/**
- * Send an SSDP search request.
- * 
- * Listen for the <code>DeviceFound</code> event to catch found devices or services.
- * 
- * @param String st
- *  The search target for the request (optional, defaults to "ssdp:all"). 
- */
 ControlPoint.prototype.search = function(st) {
   if (typeof st !== 'string') {
     st = SSDP_ALL;
@@ -111,9 +102,9 @@ ControlPoint.prototype.search = function(st) {
     "ST:"+st+"\r\n"+
     "Man:\"ssdp:discover\"\r\n"+
     "MX:2\r\n\r\n",
-    client = dgram.createSocket("udp4"),
-    server = dgram.createSocket('udp4'),
-    self = this;
+    self = this,
+    client = dgram.createSocket({ type: 'udp4', reuseAddr: true }),
+    server = dgram.createSocket({ type: 'udp4', reuseAddr: true });
 
   server.on('message', function(msg, rinfo) {
     self.onMSearchResponseMessage(msg, rinfo);
@@ -137,7 +128,7 @@ ControlPoint.prototype.search = function(st) {
   }, 3000);
 }
 
-var soapRequest = function (deviceUrlRoot, path, service, fnName, fnParams, callback) {
+function soapRequest(deviceUrlRoot, path, service, fnName, fnParams, callback) {
     var deviceUrl = url.parse(deviceUrlRoot);
 
     var bodyString = '<?xml version="1.0"?>';
@@ -171,42 +162,41 @@ var soapRequest = function (deviceUrlRoot, path, service, fnName, fnParams, call
 exports.soapRequest = soapRequest;
 
 //TODO - Need to handle incoming requests more usefully attributing them to their subscription and device
-var httpSubscriptionResponseServer = http.createServer();
-httpSubscriptionResponseServer.listen(22333);
+// var httpSubscriptionResponseServer = http.createServer();
+// httpSubscriptionResponseServer.listen(22333);
 
-httpSubscriptionResponseServer.on('request', function(request, response) {
-  var body = '';
-  request.setEncoding('utf8');
-  request.on('data', function (chunk) {
-      body += chunk;
-  });
-  request.on('end', function () {
-    console.log(body);
-  });
-});
+// httpSubscriptionResponseServer.on('request', function(request, response) {
+//   var body = '';
+//   request.setEncoding('utf8');
+//   request.on('data', function (chunk) {
+//       body += chunk;
+//   });
+//   request.on('end', function () {
+//     console.log(body);
+//   });
+// });
 //End todo bit...
 
-var subscribe = function(host, port, eventSub) {
-  var timeout = 30;
+// var subscribe = function(host, port, eventSub) {
+//   var timeout = 30;
 
-  http.request({
-    host: host,
-    port: port,
-    path: eventSub,
-    method: 'SUBSCRIBE',
-    headers: {
-      'CALLBACK': "<http://" + ip.address() + ':' + 22333 + ">",
-      'NT': 'upnp:event',
-      'TIMEOUT': 'Second-'+timeout
-    }
-  }).end();
-}
-exports.subscribe = subscribe;
+//   http.request({
+//     host: host,
+//     port: port,
+//     path: eventSub,
+//     method: 'SUBSCRIBE',
+//     headers: {
+//       'CALLBACK': "<http://" + ip.address() + ':' + 22333 + ">",
+//       'NT': 'upnp:event',
+//       'TIMEOUT': 'Second-'+timeout
+//     }
+//   }).end();
+// }
+// exports.subscribe = subscribe;
 
 /**
  * Terminates this ControlPoint.
  */
 ControlPoint.prototype.close = function() {
   this.server.close();
-  http.parsers.free(this.requestParser);
 }
