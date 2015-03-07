@@ -74,50 +74,16 @@ function announceDevice(emitter) {
 }
 
 function Upnp() {
-    events.EventEmitter.call(this);
+  events.EventEmitter.call(this);
 
-    var udpServer = dgram.createSocket({ type: 'udp4', reuseAddr: true });
+  var udpServer = dgram.createSocket({ type: 'udp4', reuseAddr: true }, announceDevice(this));
+  udpServer.bind(SSDP_PORT, function onConnected() {
+    udpServer.addMembership(BROADCAST_ADDR);
+  });
 
-    udpServer.bind(SSDP_PORT, function () {
-      udpServer.addMembership(BROADCAST_ADDR);
-    });
-    udpServer.on('message', announceDevice(this)) ;
-
-    this.close = function() {
-      udpServer.close();
-    }
-
-    this.soapRequest = function(deviceUrlRoot, path, service, fnName, fnParams, callback) {
-      var deviceUrl = url.parse(deviceUrlRoot);
-
-      var bodyString = '<?xml version="1.0"?>';
-      bodyString += '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">';
-      bodyString += '  <s:Body s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">';
-      bodyString += '    <u:' + fnName + ' xmlns:u="' + service + '">';
-      bodyString += '      ' + fnParams;
-      bodyString += '    </u:' + fnName + '>';
-      bodyString += '  </s:Body>';
-      bodyString += '</s:Envelope>';
-
-      var buffer = new Buffer(bodyString);
-
-      var req = http.request({
-          host: deviceUrl.hostname,
-          port: 80,
-          path: path,
-          method: 'POST',
-          headers: {
-              'Content-Type': 'text/xml',
-              'Accept': 'text/xml',
-              'SOAPAction': service + '#' + fnName,
-              'Content-length': buffer.length
-          }
-      }, callback);
-      req.write(buffer);
-      req.end();
-
-      return req;
-  };
+  this.close = function() {
+    udpServer.close();
+  }
 
   this.mSearch = function(st) {
     if (typeof st !== 'string') {
@@ -131,25 +97,57 @@ function Upnp() {
       "Man:\"ssdp:discover\"\r\n"+
       "MX:2\r\n\r\n";
     
-    var server = dgram.createSocket({ type: 'udp4', reuseAddr: true }, announceDiscoveredDevice(this));
-    var client = dgram.createSocket({ type: 'udp4', reuseAddr: true });
+    var mSearchListener = dgram.createSocket({ type: 'udp4', reuseAddr: true }, announceDiscoveredDevice(this));
+    var mSearchRequester = dgram.createSocket({ type: 'udp4', reuseAddr: true });
 
-    server.on('listening', function () {
-      client.send(new Buffer(message, "ascii"), 0, message.length, SSDP_PORT, BROADCAST_ADDR, function () {
-        client.close();
+    mSearchListener.on('listening', function () {
+      mSearchRequester.send(new Buffer(message, "ascii"), 0, message.length, SSDP_PORT, BROADCAST_ADDR, function closeMSearchRequester() {
+        mSearchRequester.close();
       });
     });
 
     client.on('listening', function () {
-      server.bind(client.address().port);
+      mSearchRequester.bind(client.address().port);
     });
 
     client.bind();
 
     // MX is set to 2, wait for 1 additional sec. before closing the server
     setTimeout(function(){
-      server.close();
+      mSearchListener.close();
     }, 3000);
+  };
+
+  this.soapRequest = function(deviceUrlRoot, path, service, fnName, fnParams, callback) {
+    var deviceUrl = url.parse(deviceUrlRoot);
+
+    var bodyString = '<?xml version="1.0"?>';
+    bodyString += '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">';
+    bodyString += '  <s:Body s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">';
+    bodyString += '    <u:' + fnName + ' xmlns:u="' + service + '">';
+    bodyString += '      ' + fnParams;
+    bodyString += '    </u:' + fnName + '>';
+    bodyString += '  </s:Body>';
+    bodyString += '</s:Envelope>';
+
+    var buffer = new Buffer(bodyString);
+
+    var req = http.request({
+        host: deviceUrl.hostname,
+        port: 80,
+        path: path,
+        method: 'POST',
+        headers: {
+            'Content-Type': 'text/xml',
+            'Accept': 'text/xml',
+            'SOAPAction': service + '#' + fnName,
+            'Content-length': buffer.length
+        }
+    }, callback);
+    req.write(buffer);
+    req.end();
+
+    return req;
   };
 }
 
