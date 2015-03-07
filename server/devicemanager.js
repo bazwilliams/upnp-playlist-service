@@ -4,7 +4,6 @@ var _ = require('underscore');
 var url = require('url');
 var Ds = require('./ds.js').Ds;
 var responseParsers = require('./responseparsers.js');
-var controlPoint = new upnp.ControlPoint();
 var devices = {};
 
 const playlistService = 'urn:av-openhome-org:service:Playlist:1';
@@ -45,7 +44,6 @@ function toDeviceUsingLocation(location) {
 }
 
 function processDevice(location, callback) {
-    console.log(location);
     http.get(location, responseParsers.xml(toDeviceUsingLocation(location), callback)).on('error', callback);
 }
 
@@ -63,7 +61,7 @@ exports.subscribe = function subscribe(device, serviceType) {
     }
 };
 
-controlPoint.on("DeviceAvailable", function onDeviceAvailable(res) {
+upnp.on("DeviceAvailable", function onDeviceAvailable(res) {
     if (res.nt === playlistService)
     {
         var uuid = parseUuid(res.usn, res.nt);
@@ -72,31 +70,34 @@ controlPoint.on("DeviceAvailable", function onDeviceAvailable(res) {
                 console.log("Problem processing device: " + err);
             } else {
                 devices[uuid] = device;
+                console.log("Available: " + device.name);
             }
         });
     }
 });
 
-controlPoint.on("DeviceUnavailable", function onDeviceUnavailable(res) {
+upnp.on("DeviceUnavailable", function onDeviceUnavailable(res) {
     if (res.nt === playlistService)
     {
         var uuid = parseUuid(res.usn, res.nt);
         if (devices[uuid]) {
             var device = devices[uuid];
+            console.log("Removing: " + device.name);
             delete devices[uuid];
         }
     }
 });
 
-controlPoint.on("DeviceFound", function onDeviceFound(res) {
+upnp.on("DeviceFound", function onDeviceFound(res) {
     var uuid = parseUuid(res.usn, res.st);
     processDevice(res.location, function makeDeviceAvailable(err, device) {
         if (err) {
             console.log("Problem processing device: " + err);
         } else {
             devices[uuid] = device;
+            console.log("Found: " + device.name);
         }
     });
 });
 
-controlPoint.search(linnSources);
+upnp.mSearch(linnSources);
