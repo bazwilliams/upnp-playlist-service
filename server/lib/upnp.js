@@ -106,11 +106,11 @@ function Upnp() {
       });
     });
 
-    client.on('listening', function () {
-      mSearchRequester.bind(client.address().port);
+    mSearchRequester.on('listening', function () {
+      mSearchListener.bind(mSearchRequester.address().port);
     });
 
-    client.bind();
+    mSearchRequester.bind();
 
     // MX is set to 2, wait for 1 additional sec. before closing the server
     setTimeout(function(){
