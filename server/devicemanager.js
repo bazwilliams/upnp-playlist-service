@@ -1,4 +1,4 @@
-var ssdp = require("../node-ssdp");
+var ssdp = require("node-upnp-ssdp");
 var http = require('http');
 var _ = require('underscore');
 var url = require('url');
