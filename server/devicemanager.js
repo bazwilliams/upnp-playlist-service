@@ -1,4 +1,4 @@
-var upnp = require("./lib/upnp.js");
+var ssdp = require("../node-ssdp");
 var http = require('http');
 var _ = require('underscore');
 var url = require('url');
@@ -6,7 +6,6 @@ var Ds = require('./ds.js').Ds;
 var responseParsers = require('./responseparsers.js');
 var devices = {};
 
-const playlistService = 'urn:av-openhome-org:service:Playlist:1';
 const linnSources = 'urn:linn-co-uk:device:Source:1';
 
 function parseUuid (usn, st) {
@@ -53,42 +52,29 @@ exports.getDevices = function getDevices() {
 exports.getDevice = function getDevice(uuid) {
     return devices[uuid];
 };
-exports.subscribe = function subscribe(device, serviceType) {
-    var urlRoot = url.parse(device.urlRoot);
-    var service = _.findWhere(device.serviceList, { serviceType : serviceType });
-    if (service) {
-        upnp.subscribe(urlRoot.hostname, urlRoot.port, service.eventSubURL);
-    }
-};
 
-upnp.on("DeviceAvailable", function onDeviceAvailable(res) {
-    if (res.nt === playlistService)
-    {
-        var uuid = parseUuid(res.usn, res.nt);
-        processDevice(res.location, function makeDeviceAvailable(err, device) {
-            if (err) {
-                console.log("Problem processing device: " + err);
-            } else {
-                devices[uuid] = device;
-                console.log("Available: " + device.name);
-            }
-        });
-    }
-});
-
-upnp.on("DeviceUnavailable", function onDeviceUnavailable(res) {
-    if (res.nt === playlistService)
-    {
-        var uuid = parseUuid(res.usn, res.nt);
-        if (devices[uuid]) {
-            var device = devices[uuid];
-            console.log("Removing: " + device.name);
-            delete devices[uuid];
+ssdp.on("DeviceAvailable:urn:av-openhome-org:service:Playlist:1", function onDeviceAvailable(res) {
+    var uuid = parseUuid(res.usn, res.nt);
+    processDevice(res.location, function makeDeviceAvailable(err, device) {
+        if (err) {
+            console.log("Problem processing device: " + err);
+        } else {
+            devices[uuid] = device;
+            console.log("Available: " + device.name);
         }
+    });
+});
+
+ssdp.on("DeviceUnavailable:urn:av-openhome-org:service:Playlist:1", function onDeviceUnavailable(res) {
+    var uuid = parseUuid(res.usn, res.nt);
+    if (devices[uuid]) {
+        var device = devices[uuid];
+        console.log("Removing: " + device.name);
+        delete devices[uuid];
     }
 });
 
-upnp.on("DeviceFound", function onDeviceFound(res) {
+ssdp.on("DeviceFound", function onDeviceFound(res) {
     var uuid = parseUuid(res.usn, res.st);
     processDevice(res.location, function makeDeviceAvailable(err, device) {
         if (err) {
@@ -100,4 +86,4 @@ upnp.on("DeviceFound", function onDeviceFound(res) {
     });
 });
 
-upnp.mSearch(linnSources);
+ssdp.mSearch(linnSources);

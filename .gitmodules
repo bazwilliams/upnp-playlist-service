@@ -1,0 +1,3 @@
+[submodule "node-ssdp"]
+	path = node-ssdp
+	url = git://github.com/bazwilliams/node-ssdp
