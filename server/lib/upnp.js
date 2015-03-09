@@ -15,9 +15,9 @@ function soapRequest(deviceUrlRoot, path, service, fnName, fnParams, callback) {
 
     var buffer = new Buffer(bodyString);
 
-    var req = http.request({
+    var params = {
         host: deviceUrl.hostname,
-        port: 80,
+        port: deviceUrl.port,
         path: path,
         method: 'POST',
         headers: {
@@ -26,7 +26,9 @@ function soapRequest(deviceUrlRoot, path, service, fnName, fnParams, callback) {
             'SOAPAction': service + '#' + fnName,
             'Content-length': buffer.length
         }
-    }, callback);
+    };
+
+    var req = http.request(params, callback);
     req.write(buffer);
     req.end();
 

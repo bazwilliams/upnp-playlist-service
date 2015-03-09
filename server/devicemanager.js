@@ -6,7 +6,7 @@ var Ds = require('./ds.js').Ds;
 var responseParsers = require('./responseparsers.js');
 var devices = {};
 
-const linnSources = 'urn:linn-co-uk:device:Source:1';
+const searchType = 'urn:av-openhome-org:service:Product:1';
 
 function parseUuid (usn, st) {
     return (/uuid:(.*)?::.*/).exec(usn)[1];
@@ -15,6 +15,7 @@ function parseUuid (usn, st) {
 function toDeviceUsingLocation(location) {
     return function toDevice(result, callback) {
         var ds = new Ds(location);
+        console.log('Getting sources at '+location);
         ds.getSources(function (err, results) {
             if (err) {
                 callback(err);
@@ -57,7 +58,8 @@ ssdp.on("DeviceAvailable:urn:av-openhome-org:service:Playlist:1", function onDev
     var uuid = parseUuid(res.usn, res.nt);
     processDevice(res.location, function makeDeviceAvailable(err, device) {
         if (err) {
-            console.log("Problem processing device: " + err);
+            console.log('Problem processing device at ' + res.location);
+            console.log(err);
         } else {
             devices[uuid] = device;
             console.log("Available: " + device.name);
@@ -78,7 +80,8 @@ ssdp.on("DeviceFound", function onDeviceFound(res) {
     var uuid = parseUuid(res.usn, res.st);
     processDevice(res.location, function makeDeviceAvailable(err, device) {
         if (err) {
-            console.log("Problem processing device: " + err);
+            console.log('Problem processing device at ' + res.location);
+            console.log(err);
         } else {
             devices[uuid] = device;
             console.log("Found: " + device.name);
@@ -86,4 +89,4 @@ ssdp.on("DeviceFound", function onDeviceFound(res) {
     });
 });
 
-ssdp.mSearch(linnSources);
+ssdp.mSearch(searchType);

@@ -25,7 +25,7 @@ function binaryIdArrayToIntList(result, callback) {
     callback(null, arrayList); 
 }
 function toSourceList(result, callback) {
-    if (result['s:Envelope']['s:Body']['u:SourceXmlResponse']) {
+    if (result && result['s:Envelope']['s:Body']['u:SourceXmlResponse']) {
             xmlParser.parseString(result['s:Envelope']['s:Body']['u:SourceXmlResponse'].Value, function (err, result) {
             callback(null, result.SourceList.Source)
         });
