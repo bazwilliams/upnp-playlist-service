@@ -18,27 +18,33 @@ function toDeviceUsingLocation(location) {
         console.log('Getting sources at '+location);
         ds.getSources(function (err, results) {
             if (err) {
-                callback(err);
+                console.log(err);
+                sourceList = [{
+                    Name: "Playlist",
+                    Type: "Playlist",
+                    Visible: 'true'
+                }]
             } else {
-                device = {
-                    name: result.root.device.friendlyName,
-                    urlRoot: location,
-                    serviceList: result.root.device.serviceList.service,
-                    sourceList: results,
-                    ds: ds
-                };
-                if (result.root.device.iconList) {
-                    var icon = _.isArray(result.root.device.iconList.icon) ? result.root.device.iconList.icon[0] : result.root.device.iconList.icon;
-                    device.icon = {
-                        mimetype: icon.mimetype,
-                        width: icon.width,
-                        height: icon.height,
-                        depth: icon.depth,
-                        url: url.resolve(location, icon.url)
-                    }
-                }
-                callback(null, device); 
+                sourceList = results;
             }
+            device = {
+                name: result.root.device.friendlyName,
+                urlRoot: location,
+                serviceList: result.root.device.serviceList.service,
+                sourceList: sourceList,
+                ds: ds
+            };
+            if (result.root.device.iconList) {
+                var icon = _.isArray(result.root.device.iconList.icon) ? result.root.device.iconList.icon[0] : result.root.device.iconList.icon;
+                device.icon = {
+                    mimetype: icon.mimetype,
+                    width: icon.width,
+                    height: icon.height,
+                    depth: icon.depth,
+                    url: url.resolve(location, icon.url)
+                }
+            }
+            callback(null, device);
         });
     }
 }
