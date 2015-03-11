@@ -77,11 +77,11 @@ function ensureStatusCode(expectedStatusCode, taskMessage, callback) {
         }
     };
 }
-exports.Ds = function(deviceUrlRoot) {
+exports.Ds = function(deviceUrlRoot, serviceList) {
     this.currentTrackDetails = function(callback) {
         upnp.soapRequest(
             deviceUrlRoot,
-            'Ds/Info',
+            serviceList['urn:av-openhome-org:service:Info:1'].controlUrl,
             'urn:av-openhome-org:service:Info:1',
             'Track',
             '',
@@ -92,8 +92,8 @@ exports.Ds = function(deviceUrlRoot) {
         var idArrayString = _.reduce(idArray, function (memo, num) { return memo + num + ' '; }, '');
         upnp.soapRequest(
             deviceUrlRoot,
-            'Ds/Playlist',
-            'urn:av-openhome.org:service:Playlist:1',
+            serviceList['urn:av-openhome-org:service:Playlist:1'].controlUrl,
+            'urn:av-openhome-org:service:Playlist:1',
             'ReadList',
             '<IdList>' + idArrayString + '</IdList>',
             responseParsers.xml(readListResponseToTracks, callback)
@@ -102,8 +102,8 @@ exports.Ds = function(deviceUrlRoot) {
     this.getTrackIds = function(callback) {
         upnp.soapRequest(
             deviceUrlRoot,
-            'Ds/Playlist',
-            'urn:av-openhome.org:service:Playlist:1',
+            serviceList['urn:av-openhome-org:service:Playlist:1'].controlUrl,
+            'urn:av-openhome-org:service:Playlist:1',
             'IdArray',
             '',
             responseParsers.xml(binaryIdArrayToIntList, callback)
@@ -112,8 +112,8 @@ exports.Ds = function(deviceUrlRoot) {
     this.deleteAll = function(callback) {
         upnp.soapRequest(
             deviceUrlRoot,
-            'Ds/Playlist',
-            'urn:av-openhome.org:service:Playlist:1',
+            serviceList['urn:av-openhome-org:service:Playlist:1'].controlUrl,
+            'urn:av-openhome-org:service:Playlist:1',
             'DeleteAll',
             '',
             ensureStatusCode(200, "Delete", callback)
@@ -138,8 +138,8 @@ exports.Ds = function(deviceUrlRoot) {
                         .replace(/"/g, "&quot;");
                     upnp.soapRequest(
                         deviceUrlRoot,
-                        'Ds/Playlist',
-                        'urn:av-openhome.org:service:Playlist:1',
+                        serviceList['urn:av-openhome-org:service:Playlist:1'].controlUrl,
+                        'urn:av-openhome-org:service:Playlist:1',
                         'Insert',
                         '<AfterId>' + afterId + '</AfterId><Uri>' + trackUri + '</Uri><Metadata>' + metadata + '</Metadata>',
                         responseParsers.xml(parseNewId, callback)
@@ -151,8 +151,8 @@ exports.Ds = function(deviceUrlRoot) {
     this.getSources = function (callback) {
         upnp.soapRequest(
             deviceUrlRoot,
-            'Ds/Product/control',
-            'urn:av-openhome.org:service:Product:1',
+            serviceList['urn:av-openhome-org:service:Product:1'].controlUrl,
+            'urn:av-openhome-org:service:Product:1',
             'SourceXml',
             '',
             responseParsers.xml(toSourceList, callback)
@@ -161,8 +161,8 @@ exports.Ds = function(deviceUrlRoot) {
     this.changeSource = function (source, callback) {
         upnp.soapRequest(
             deviceUrlRoot,
-            'Ds/Product/control',
-            'urn:av-openhome.org:service:Product:1',
+            serviceList['urn:av-openhome-org:service:Product:1'].controlUrl,
+            'urn:av-openhome-org:service:Product:1',
             'SetSourceIndex',
             '<Value>'+source+'</Value>',
             ensureStatusCode(200, "Change Source", callback)
@@ -171,8 +171,8 @@ exports.Ds = function(deviceUrlRoot) {
     this.standbyState = function (callback) {
         upnp.soapRequest(
             deviceUrlRoot,
-            'Ds/Product/control',
-            'urn:av-openhome.org:service:Product:1',
+            serviceList['urn:av-openhome-org:service:Product:1'].controlUrl,
+            'urn:av-openhome-org:service:Product:1',
             'Standby',
             '',
             responseParsers.xml(parseStandbyResponse, callback)
@@ -181,8 +181,8 @@ exports.Ds = function(deviceUrlRoot) {
     this.powerOn = function (callback) {
         upnp.soapRequest(
             deviceUrlRoot,
-            'Ds/Product/control',
-            'urn:av-openhome.org:service:Product:1',
+            serviceList['urn:av-openhome-org:service:Product:1'].controlUrl,
+            'urn:av-openhome-org:service:Product:1',
             'SetStandby',
             '<Value>0</Value>',
             ensureStatusCode(200, "Power On", callback)
@@ -191,8 +191,8 @@ exports.Ds = function(deviceUrlRoot) {
     this.powerOff = function (callback) {
         upnp.soapRequest(
             deviceUrlRoot,
-            'Ds/Product/control',
-            'urn:av-openhome.org:service:Product:1',
+            serviceList['urn:av-openhome-org:service:Product:1'].controlUrl,
+            'urn:av-openhome-org:service:Product:1',
             'SetStandby',
             '<Value>1</Value>',
             ensureStatusCode(200, "Power Off", callback)
@@ -201,8 +201,8 @@ exports.Ds = function(deviceUrlRoot) {
     this.playRadio = function (callback) {
         upnp.soapRequest(
             deviceUrlRoot,
-            'Ds/Radio/control',
-            'urn:av-openhome.org:service:Radio:1',
+            serviceList['urn:av-openhome-org:service:Radio:1'].controlUrl,
+            'urn:av-openhome-org:service:Radio:1',
             'Play',
             '',
             ensureStatusCode(200, "Play Radio", callback)
@@ -211,8 +211,8 @@ exports.Ds = function(deviceUrlRoot) {
     this.enableShuffle = function (callback) {
         upnp.soapRequest(
             deviceUrlRoot,
-            'Ds/Playlist',
-            'urn:av-openhome.org:service:Playlist:1',
+            serviceList['urn:av-openhome-org:service:Playlist:1'].controlUrl,
+            'urn:av-openhome-org:service:Playlist:1',
             'SetShuffle',
             '<Value>1</Value>',
             ensureStatusCode(200, "Enable Shuffle", callback)
@@ -221,8 +221,8 @@ exports.Ds = function(deviceUrlRoot) {
     this.disableShuffle = function (callback) {
         upnp.soapRequest(
             deviceUrlRoot,
-            'Ds/Playlist',
-            'urn:av-openhome.org:service:Playlist:1',
+            serviceList['urn:av-openhome-org:service:Playlist:1'].controlUrl,
+            'urn:av-openhome-org:service:Playlist:1',
             'SetShuffle',
             '<Value>0</Value>',
             ensureStatusCode(200, "Disable Shuffle", callback)
@@ -231,8 +231,8 @@ exports.Ds = function(deviceUrlRoot) {
     this.playFromPlaylistIndex = function (index, callback) {
         upnp.soapRequest(
             deviceUrlRoot,
-            'Ds/Playlist',
-            'urn:av-openhome.org:service:Playlist:1',
+            serviceList['urn:av-openhome-org:service:Playlist:1'].controlUrl,
+            'urn:av-openhome-org:service:Playlist:1',
             'SeekIndex',
             '<Value>' + index + '</Value>',
             ensureStatusCode(200, "Play Playlist From Index " + index, callback)
@@ -241,8 +241,8 @@ exports.Ds = function(deviceUrlRoot) {
     this.playPlaylist = function (callback) {
         upnp.soapRequest(
             deviceUrlRoot,
-            'Ds/Playlist',
-            'urn:av-openhome.org:service:Playlist:1',
+            serviceList['urn:av-openhome-org:service:Playlist:1'].controlUrl,
+            'urn:av-openhome-org:service:Playlist:1',
             'Play',
             '',
             ensureStatusCode(200, "Play Playlist", callback)
@@ -251,8 +251,8 @@ exports.Ds = function(deviceUrlRoot) {
     this.volumeInc = function (callback) {
         upnp.soapRequest(
             deviceUrlRoot,
-            'Ds/Volume',
-            'urn:av-openhome.org:service:Volume:1',
+            serviceList['urn:av-openhome-org:service:Volume:1'].controlUrl,
+            'urn:av-openhome-org:service:Volume:1',
             'VolumeInc',
             '',
             ensureStatusCode(200, "Volume Increase", callback)
@@ -261,8 +261,8 @@ exports.Ds = function(deviceUrlRoot) {
     this.volumeDec = function (callback) {
         upnp.soapRequest(
             deviceUrlRoot,
-            'Ds/Volume',
-            'urn:av-openhome.org:service:Volume:1',
+            serviceList['urn:av-openhome-org:service:Volume:1'].controlUrl,
+            'urn:av-openhome-org:service:Volume:1',
             'VolumeDec',
             '',
             ensureStatusCode(200, "Volume Increase", callback)

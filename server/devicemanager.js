@@ -12,39 +12,52 @@ function parseUuid (usn, st) {
     return (/uuid:(.*)?::.*/).exec(usn)[1];
 }
 
+function processServiceListArray(serviceList) {
+    return _.reduce(serviceList, function (memo, item) {
+        memo[item.serviceType] = {
+            serviceId: item.serviceId,
+            scpdurl: item.SCPDURL,
+            controlUrl: item.controlURL,
+            eventSubUrl: item.eventSubURL
+        };
+        return memo;
+    }, {});
+}
+
+function fetchIcon(icon) {
+    var iconArray = _.isArray(icon) ? icon : [icon];
+    return _.chain(iconArray)
+        .reject(function (item) { return item.height > 50; })
+        .first()
+        .value();
+}
+
 function toDeviceUsingLocation(location) {
     return function toDevice(result, callback) {
-        var ds = new Ds(location);
+        var ds = new Ds(location, processServiceListArray(result.root.device.serviceList.service));
         console.log('Getting sources at '+location);
         ds.getSources(function (err, results) {
             if (err) {
-                console.log(err);
-                sourceList = [{
-                    Name: "Playlist",
-                    Type: "Playlist",
-                    Visible: 'true'
-                }]
+                callback(err);
             } else {
-                sourceList = results;
-            }
-            device = {
-                name: result.root.device.friendlyName,
-                urlRoot: location,
-                serviceList: result.root.device.serviceList.service,
-                sourceList: sourceList,
-                ds: ds
-            };
-            if (result.root.device.iconList) {
-                var icon = _.isArray(result.root.device.iconList.icon) ? result.root.device.iconList.icon[0] : result.root.device.iconList.icon;
-                device.icon = {
-                    mimetype: icon.mimetype,
-                    width: icon.width,
-                    height: icon.height,
-                    depth: icon.depth,
-                    url: url.resolve(location, icon.url)
+                device = {
+                    name: result.root.device.friendlyName,
+                    urlRoot: location,
+                    sourceList: results,
+                    ds: ds
+                };
+                if (result.root.device.iconList) {
+                    var icon = fetchIcon(result.root.device.iconList.icon);
+                    device.icon = {
+                        mimetype: icon.mimetype,
+                        width: icon.width,
+                        height: icon.height,
+                        depth: icon.depth,
+                        url: url.resolve(location, icon.url)
+                    }
                 }
+                callback(null, device);
             }
-            callback(null, device);
         });
     }
 }
