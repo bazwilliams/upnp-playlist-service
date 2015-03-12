@@ -131,8 +131,8 @@
                     'sun' : false
                 },
                 playlistName: '',
-                action: 'wake',
-                sourceName: $scope.device.whatCanPlay[0].sourceName,
+                action: $scope.device.whatCanPlay.length ? 'wake' : 'sleep',
+                sourceName: $scope.device.whatCanPlay.length ? $scope.device.whatCanPlay[0].sourceName : void 0,
                 time: ''
             };
             $scope.toggleDay = function toggleDay(dayOfWeek) {
@@ -147,8 +147,8 @@
                     days : newSchedule.days,
                     time: newSchedule.time,
                     action: newSchedule.action,
-                    playlistName: selectedSource ? selectedSource.playlistName : void 0,
-                    sourceId: selectedSource ? selectedSource.index : void 0
+                    playlistName: selectedSource && newSchedule.action === "wake" ? selectedSource.playlistName : void 0,
+                    sourceId: selectedSource && newSchedule.action === "wake" ? selectedSource.index : void 0
                 };
                 $http({
                     method: 'POST',
