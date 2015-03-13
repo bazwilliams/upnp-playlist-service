@@ -11,7 +11,7 @@
     "mkdirp": "~0.3.5",
     "morgan": "^1.5.0",
     "node-schedule": "~0.1.13",
-    "node-upnp-ssdp": "0.0.1",
+    "node-upnp-ssdp": "~0.0.3",
     "node-uuid": "~1.4.1",
     "q": "~1.1.1",
     "underscore": ">= 1.6.0",
