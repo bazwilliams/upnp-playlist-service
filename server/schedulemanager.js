@@ -26,7 +26,7 @@ function actionsTasks(uuid, actions, callback) {
             if (actions.setStandby) {
                 device.ds.powerOff(callback);
             } else {
-                recipes.play(device.ds, actions.sourceId, actions.playlistName, false, callback);
+                recipes.play(device.ds, actions.sourceId, actions.playlistName, true, callback);
             }
         } else {
             callback(new Error("Device with UUID (" + uuid + ") not found"));
