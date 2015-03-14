@@ -59,6 +59,12 @@ http://localhost:18080/playlists
 ![Existing Playlist for a DS](https://raw.githubusercontent.com/bazwilliams/upnp-playlist-service/master/docs/playlist-ui-screenshot.png)
 ![Creating Playlist for a DS](https://raw.githubusercontent.com/bazwilliams/upnp-playlist-service/master/docs/playlist-ui-create-screenshot.png)
 
+*Existing m3u playlists*
+
+If you want to use an existing m3u playlist, you'll need to have configured both `musicRoot` and `playlistPath` and be running Minimserver on the same machine as the Upnp playlist service. You'll need to use Minimserver to load your playlist into your media player which you can then reexport using the playlist service. 
+
+If everything is configured correctly, playlist items for which a file is discovered will be written back into the m3u file as relative path which Minimserver can still serve back up - along with other players which support m3u files. 
+
 ## API
 
 GET `/api/devices` to see a list of all discovered devices on your network, all wake up schedules will be included under `device.schedules`. Each of which will include a link-rel to delete that wake up by sending a DELETE to it. 
