@@ -202,6 +202,12 @@ If you include a value within the playlistName attribute of the javascript objec
 
 ## Credits
 
+*Font Awsome*
+
+Font Awesome by Dave Gandy: http://fontawesome.io
+
+*Icons*
+
 Radio Icon: https://www.iconfinder.com/icons/111101/radio_icon
 
 Playlist Icon: https://www.iconfinder.com/icons/111102/music_nodes_icon
@@ -209,4 +215,4 @@ Playlist Icon: https://www.iconfinder.com/icons/111102/music_nodes_icon
 Standby Icon: https://www.iconfinder.com/icons/111007/cable_icon
 
 Icons licenced as Creative Commons (Attribution-Share Alike 3.0 Unported) 
-http://creativecommons.org/licenses/by-sa/3.0/    
+http://creativecommons.org/licenses/by-sa/3.0/

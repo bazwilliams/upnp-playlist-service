@@ -7,3 +7,7 @@ form.add-schedule {
 .block-margin {
 	margin-bottom: 7.5px !important;
 }
+
+body {
+	padding-top: 70px;
+}
