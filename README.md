@@ -214,5 +214,7 @@ Playlist Icon: https://www.iconfinder.com/icons/111102/music_nodes_icon
 
 Standby Icon: https://www.iconfinder.com/icons/111007/cable_icon
 
+Speaker Icon: https://www.iconfinder.com/icons/111100/speaker_icon
+
 Icons licenced as Creative Commons (Attribution-Share Alike 3.0 Unported) 
 http://creativecommons.org/licenses/by-sa/3.0/
