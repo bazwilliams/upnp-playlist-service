@@ -265,7 +265,7 @@ exports.Ds = function(deviceUrlRoot, serviceList) {
             'urn:av-openhome-org:service:Volume:1',
             'VolumeDec',
             '',
-            ensureStatusCode(200, "Volume Increase", callback)
+            ensureStatusCode(200, "Volume Decrease", callback)
         ).on('error', callback);
     };
 };
