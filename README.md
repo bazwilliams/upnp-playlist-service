@@ -190,17 +190,21 @@ You can have multiple schedules for a single UUID or multiple UUIDs.
 
 If you include a value within the playlistName attribute of the javascript object, then this playlist will be loaded into the DS and started from the beginning. If it is empty, the radio is assumed. 
 
-## Future Plans
+### Sleep Timer
 
-- [X] Playlist builder (add currently playing track to a specific playlist).
-- [X] Provide list of existing playlist when loading into DS.
-- [X] Provide feedback through the UI when a playlist is stored.
-- [X] Support shuffle playback
-- [X] Add device toggle standby API
-- [X] Permit overwriting existing playlists.
-- [ ] Ability to decide which radio station to play.
-- [ ] Skip standby mode if the source has changed (i.e. someone interacted between wakeup and sleep)
-- [ ] Easy installation on windows, mac, linux and nas drives.
+To set a sleep timer where the device will automatically go to sleep after a given number of minutes perform a POST to `/api/devices/{uuid}/sleep-timer` with a `Content-Type` of `application/json` with the following body where minutes is an integer for the number of minutes you want the device to stay awake for:
+
+```javascript
+{
+    "minutes" : {minutes}
+}
+```
+
+If a timer existed already, you will see a 200 response, 201 if a timer was new. 
+
+You can delete an existing sleep timer by sending a DELETE to `/api/devices/{uuid}/sleep-timer`. You will always receive a 204 response. 
+
+To put the device to sleep immediately, you can set the number of minutes to be 0 or negative. 
 
 ## Credits
 

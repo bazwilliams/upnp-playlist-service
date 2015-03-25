@@ -94,6 +94,9 @@ function toDeviceResource(deviceModel, callback) {
         },{
             rel: 'volume-down',
             href: '/api/devices/' + deviceModel.uuid + '/volume-down'
+        },{
+            rel: 'sleep-timer',
+            href: '/api/devices/' + deviceModel.uuid + '/sleep-timer'
         }]
     });
 }
@@ -161,3 +164,26 @@ exports.list = function list(req, res) {
         }
     ], responseHandler(res));
 };
+exports.setSleepTimer = function setDeviceSleepTimeout(req, res) {
+    var uuid = req.params.uuid;
+    var device = manager.getDevice(uuid);
+    var sleepTime = (req.body.minutes || 0) * 60000;
+    var returnStatus = device.timeout ? 200 : 201;
+    device.timeout = setTimeout(function () {
+        device.ds.powerOff(function toSleep(err, data) {
+            if (err) {
+                console.log(err);
+            }
+        });
+    }, sleepTime);
+    res.sendStatus(returnStatus);
+};
+exports.clearSleepTimer = function clearDeviceSleepTimeout(req, res) {
+    var uuid = req.params.uuid;
+    var device = manager.getDevice(uuid);
+    if (device.timeout) {
+        clearTimeout(device.timeout);
+        delete device.timeout;
+    }
+    res.sendStatus(204);
+}
