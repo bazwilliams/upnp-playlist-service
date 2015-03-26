@@ -43,6 +43,7 @@ app.post('/api/devices/:uuid/sleep-timer', api.device.setSleepTimer);
 app.delete('/api/devices/:uuid/sleep-timer', api.device.clearSleepTimer);
 app.post('/api/devices/:uuid/volume-up', api.device.volumeUp);
 app.post('/api/devices/:uuid/volume-down', api.device.volumeDown);
+app.get('/api/devices/:uuid/radio-stations', api.device.listRadioStations);
 
 /**
  * Start Server

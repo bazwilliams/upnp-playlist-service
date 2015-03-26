@@ -124,6 +124,15 @@ function createDeviceModel(uuid, callback) {
         }
     });
 }
+exports.listRadioStations = function listRadioStations(req, res) {
+    var uuid = req.params.uuid;
+    var device = manager.getDevice(uuid);
+    if (device) {
+        recipes.listRadioStations(device.ds, responseHandler(res));
+    } else {
+        res.sendStatus(404);
+    }
+};
 exports.volumeUp = function volumeUp(req, res) {
     var uuid = req.params.uuid;
     var device = manager.getDevice(uuid);

@@ -81,3 +81,6 @@ exports.play = function play(ds, sourceId, playlistName, shuffle, callback) {
 
     async.waterfall(pipeline, callback);
 };
+exports.listRadioStations = function listRadioStations(ds, callback) {
+    async.waterfall([ds.getRadioIdArray, ds.retrieveRadioStationDetails], callback)
+};
