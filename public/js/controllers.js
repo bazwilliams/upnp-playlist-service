@@ -1,24 +1,51 @@
 (function() {
     "use strict";
     var refreshDevices, refreshPlaylists;
-    function updateDeviceSources(scope) {
+    function updateDeviceSources(scope, http) {
         _.each(scope.devices, function(device) {
-            var playlistSource = _.findWhere(device.sources, { 'type' : 'Playlist' });
-            device.whatCanPlay = [];
-            _.each(device.sources, function (source, index) {
-                device.whatCanPlay.push({
-                    index: source.index,
-                    sourceName: source.name,
-                    playlistName: ''
-                });
-            });
-            if (playlistSource && scope.playlists) {
-                _.each(scope.playlists, function (playlistName) {
-                    device.whatCanPlay.push({
-                        index: playlistSource.index,
-                        sourceName: playlistSource.name + ': ' + playlistName,
-                        playlistName: playlistName
+            var dsRadioChannelist = _.findWhere(device.links, { 'rel' : 'radio-stations' });
+            if (dsRadioChannelist) {
+                device.whatCanPlay = [];
+                http({
+                    method: 'GET',
+                    url: dsRadioChannelist.href
+                }).success(function (data, status, headers, config) {
+                    var playlistSource = 
+                        _.findWhere(device.sources, { 'type' : 'Playlist' }) ||
+                        _.findWhere(device.sources, { 'type' : 'PlayList' });
+                    var radioSource = _.findWhere(device.sources, { 'type' : 'Radio' });
+                    device.whatCanPlay = [];
+                    _.each(device.sources, function (source, index) {
+                        device.whatCanPlay.push({
+                            index: source.index,
+                            sourceName: source.name,
+                            playlistName: '',
+                            radioChannel: {}
+                        });
                     });
+                    if (playlistSource && scope.playlists) {
+                        _.each(scope.playlists, function (playlistName) {
+                            device.whatCanPlay.push({
+                                index: playlistSource.index,
+                                sourceName: playlistSource.name + ': ' + playlistName,
+                                playlistName: playlistName,
+                                radioChannel: {}
+                            });
+                        });
+                    }
+                    if (radioSource && data) {
+                        _.each(data, function (channel) {
+                            device.whatCanPlay.push({
+                                index: radioSource.index,
+                                sourceName: radioSource.name + ': ' + channel.title,
+                                playlistName: '',
+                                radioChannel: {
+                                    id: channel.id,
+                                    uri: channel.uri
+                                }
+                            });
+                        });
+                    }
                 });
             }
         });
@@ -30,7 +57,7 @@
                 url: '/api/devices'
             }).success(function (data, status, headers, config) {
                 scope.devices = data;
-                updateDeviceSources(scope);
+                updateDeviceSources(scope, http);
             });
         };
     }
@@ -41,7 +68,7 @@
                 url: '/api/playlists'
             }).success(function (data, status, headers, config) {
                 scope.playlists = data;
-                updateDeviceSources(scope);
+                updateDeviceSources(scope, http);
             });
         };
     }
@@ -148,7 +175,8 @@
                     time: newSchedule.time,
                     action: newSchedule.action,
                     playlistName: selectedSource && newSchedule.action === "wake" ? selectedSource.playlistName : void 0,
-                    sourceId: selectedSource && newSchedule.action === "wake" ? selectedSource.index : void 0
+                    sourceId: selectedSource && newSchedule.action === "wake" ? selectedSource.index : void 0,
+                    radioChannel: selectedSource && newSchedule.action === "wake" ? selectedSource.radioChannel : void 0
                 };
                 $http({
                     method: 'POST',

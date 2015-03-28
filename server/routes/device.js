@@ -97,6 +97,9 @@ function toDeviceResource(deviceModel, callback) {
         },{
             rel: 'sleep-timer',
             href: '/api/devices/' + deviceModel.uuid + '/sleep-timer'
+        },{
+            rel: 'radio-stations',
+            href: '/api/devices/' + deviceModel.uuid + '/radio-stations'
         }]
     });
 }

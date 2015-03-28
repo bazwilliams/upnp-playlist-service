@@ -72,6 +72,15 @@ function readTrackListResponseToTracks(result, callback) {
         }
     });
 }
+function processChannelListEntry(channelListEntry, callback) {
+    xmlParser.parseString(channelListEntry.Metadata, function (err, result) {
+        callback(null, {
+            title: _.isObject(result['DIDL-Lite']['item']['dc:title']) ? result['DIDL-Lite']['item']['dc:title']._ : result['DIDL-Lite']['item']['dc:title'],
+            artwork: _.isObject(result['DIDL-Lite']['item']['upnp:albumArtURI']) ? result['DIDL-Lite']['item']['upnp:albumArtURI']._ : result['DIDL-Lite']['item']['upnp:albumArtURI'],
+            uri: _.isObject(result['DIDL-Lite']['item']['res']) ? result['DIDL-Lite']['item']['res']._ : result['DIDL-Lite']['item']['res']
+        });
+    });
+}
 function readChannelListResponseToTracks(result, callback) {
     xmlParser.parseString(result['s:Envelope']['s:Body']['u:ReadListResponse'].ChannelList, function (err, result) {
         if (err) {
@@ -80,16 +89,24 @@ function readChannelListResponseToTracks(result, callback) {
             var channelList = [];
             if (_.isArray(result.ChannelList.Entry)) {
                 _.each(result.ChannelList.Entry, function (channel) {
-                    channelList.push({
-                        id: channel.Id,
-                        metadata: channel.Metadata
+                    processChannelListEntry(channel, function(err, data) {
+                        channelList.push({
+                            id: channel.Id,
+                            uri: data.uri,
+                            title: data.title,
+                            artwork: data.artwork
+                        });  
                     });
                 });
             } else {
                 if (result.ChannelList.Entry) {
-                    channelList.push({
-                        id: result.ChannelList.Entry.Id,
-                        metadata: result.ChannelList.Entry.Metadata
+                    processChannelListEntry(result.ChannelList.Entry, function(err, data) {
+                        channelList.push({
+                            id: result.ChannelList.Entry.Id,
+                            uri: data.uri,
+                            title: data.title,
+                            artwork: data.artwork
+                        });
                     });
                 }
             }
