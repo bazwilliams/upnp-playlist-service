@@ -53,17 +53,19 @@ exports.toggleStandby = function toggleStandby(ds, callback) {
         }
     ], callback);
 };
-exports.play = function play(ds, sourceId, playlistName, shuffle, callback) {
+exports.play = function play(ds, sourceId, playlistName, shuffle, radioChannel, callback) {
     var pipeline = [
         ensureOn(ds),
         function changeSource(iterCallback) {
             ds.changeSource(sourceId, iterCallback);
         }
     ];
-    if (sourceId === 1) {
+    if (radioChannel) {
+        pipeline.push(function setRadioChannel(iterCallback) {
+            ds.setRadioChannel(radioChannel, iterCallback);
+        });
         pipeline.push(ds.playRadio);
-    }
-    if (playlistName) {
+    } else if (playlistName) {
         pipeline.push(shuffle ? ds.enableShuffle : ds.disableShuffle);
         pipeline.push(function replacePlaylist(iterCallback) {
             playlists.replacePlaylist(ds, playlistName, iterCallback);
@@ -75,8 +77,6 @@ exports.play = function play(ds, sourceId, playlistName, shuffle, callback) {
                 ds.playFromPlaylistIndex(0, iterCallback);
             }
         });
-    } else if (sourceId === 0) {
-        pipeline.push(ds.playPlaylist);    
     }
 
     async.waterfall(pipeline, callback);
