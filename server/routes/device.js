@@ -43,7 +43,7 @@ function toScheduleResourceUsingNamedSources(sourceList) {
                 days: days,
                 time: zpad(schedule.schedule.hour) + ':' + zpad(schedule.schedule.minute),
                 action: schedule.actions.setStandby ? 'sleep' : 'wake',
-                playlistName: schedule.actions.playlistName,
+                actionDescription: schedule.actions.playlistName || (schedule.actions.radioChannel ? schedule.actions.radioChannel.id : void 0),
                 sourceName: sourceList[schedule.actions.sourceId] ? sourceList[schedule.actions.sourceId].Name : void 0,
                 links: [{
                     rel: 'delete',
