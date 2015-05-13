@@ -311,7 +311,7 @@ exports.Ds = function(deviceUrlRoot, serviceList) {
             serviceList['urn:av-openhome-org:service:Radio:1'].controlUrl,
             'urn:av-openhome-org:service:Radio:1',
             'SetId',
-            '<Value>' + radioChannel.id + '</Value><Uri>' + radioChannel.uri + '</Uri>',
+            '<Value>' + radioChannel.id + '</Value><Uri>' + encode(radioChannel.uri) + '</Uri>',
             ensureStatusCode(200, "Set Radio Channel", callback)
         ).on('error', callback);
     };
