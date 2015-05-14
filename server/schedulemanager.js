@@ -26,7 +26,7 @@ function actionsTasks(uuid, actions, callback) {
             if (actions.setStandby) {
                 device.ds.powerOff(callback);
             } else {
-                recipes.play(device.ds, actions.sourceId, actions.playlistName, true, callback);
+                recipes.play(device.ds, actions.sourceId, actions.playlistName, true, actions.radioChannel, callback);
             }
         } else {
             callback(new Error("Device with UUID (" + uuid + ") not found"));
@@ -83,7 +83,8 @@ exports.addSchedule = function addSchedule(uuid, schedule, callback) {
                     actions: {
                         setStandby: schedule.isStandby,
                         sourceId: schedule.sourceId,
-                        playlistName: schedule.playlistName
+                        playlistName: schedule.playlistName,
+                        radioChannel: schedule.radioChannel
                     },
                     schedule: {            
                         dayOfWeek: schedule.dayOfWeek,

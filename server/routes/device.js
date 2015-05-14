@@ -43,7 +43,7 @@ function toScheduleResourceUsingNamedSources(sourceList) {
                 days: days,
                 time: zpad(schedule.schedule.hour) + ':' + zpad(schedule.schedule.minute),
                 action: schedule.actions.setStandby ? 'sleep' : 'wake',
-                playlistName: schedule.actions.playlistName,
+                actionDescription: schedule.actions.playlistName || (schedule.actions.radioChannel ? schedule.actions.radioChannel.id : void 0),
                 sourceName: sourceList[schedule.actions.sourceId] ? sourceList[schedule.actions.sourceId].Name : void 0,
                 links: [{
                     rel: 'delete',
@@ -97,6 +97,9 @@ function toDeviceResource(deviceModel, callback) {
         },{
             rel: 'sleep-timer',
             href: '/api/devices/' + deviceModel.uuid + '/sleep-timer'
+        },{
+            rel: 'radio-stations',
+            href: '/api/devices/' + deviceModel.uuid + '/radio-stations'
         }]
     });
 }
@@ -124,6 +127,15 @@ function createDeviceModel(uuid, callback) {
         }
     });
 }
+exports.listRadioStations = function listRadioStations(req, res) {
+    var uuid = req.params.uuid;
+    var device = manager.getDevice(uuid);
+    if (device) {
+        recipes.listRadioStations(device.ds, responseHandler(res));
+    } else {
+        res.sendStatus(404);
+    }
+};
 exports.volumeUp = function volumeUp(req, res) {
     var uuid = req.params.uuid;
     var device = manager.getDevice(uuid);

@@ -18,7 +18,8 @@ function convertToSchedule(data) {
             minute: parseInt(data.time.split(':')[1],10),
             sourceId: parseInt(data.sourceId),
             playlistName: data.playlistName,
-            isStandby: data.action === 'sleep'
+            isStandby: data.action === 'sleep',
+            radioChannel: data.radioChannel
         };
     }
 }
