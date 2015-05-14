@@ -2,7 +2,7 @@
 
 Node.js based system for monitoring a suite of UPNP renderers on a network. It is intended to run all the time so it can discover your renderers and partially control them. 
 
-A wake up and sleep system exists which can be configured to wake, change the source to radio and start playing; play a named saved playlist; or put to sleep a specific DS.  
+A wake up and sleep system exists which can be configured to wake, change the source; change to a radio preset and start playing; play a named saved playlist on random; or put to sleep a specific DS.  
 
 The playlist functionality has been optimised for mobile use. 
 
