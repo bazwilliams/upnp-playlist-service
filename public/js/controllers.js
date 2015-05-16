@@ -80,6 +80,13 @@
             }).success(function (data, status, headers, config) {
                 $scope.configuration = data;
             });
+            $scope.storeConfiguration = function storeConfiguration() {
+                $http({
+                    method: 'PUT',
+                    url: '/api/configuration',
+                    data: $scope.configuration
+                });
+            };
         }])
         .controller('AppCtrl', ['$scope', '$http', function ($scope, $http) {
             if (!$scope.playlists) { 

@@ -49,6 +49,7 @@ app.post('/api/devices/:uuid/volume-up', api.device.volumeUp);
 app.post('/api/devices/:uuid/volume-down', api.device.volumeDown);
 app.get('/api/devices/:uuid/radio-stations', api.device.listRadioStations);
 app.get('/api/configuration', api.configuration.list);
+app.put('/api/configuration', api.configuration.store);
 
 /**
  * Start Server
