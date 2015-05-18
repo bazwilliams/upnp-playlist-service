@@ -1,9 +1,11 @@
-var config = require('../../config.js');
+var configManager = require('../configmanager.js');
 
 exports.list = function listConfiguration(req, res) {
-	res.status(200).send(config);
+	res.status(200).send(configManager.config());
 };
 
 exports.store = function storeConfiguration(req, res) {
-	res.sendStatus(200);
+	configManager.storeConfiguration(req.body, function (err, data) {
+		res.sendStatus(200);
+	});
 };

@@ -1,15 +1,15 @@
 ﻿var _ = require('underscore');
 var fs = require('fs');
-var config = require('../config.js');
+var configManager = require('./configmanager.js');
 var path = require('path');
 var async = require('async');
 
 function playlistFile(playlistName) {
-    return path.join(path.normalize(config.playlistPath), playlistName + '.m3u');
+    return path.join(path.normalize(configManager.config().playlistPath), playlistName + '.m3u');
 }
 
 function relative(track) {
-    return path.relative(path.normalize(config.playlistPath), track);
+    return path.relative(path.normalize(configManager.config().playlistPath), track);
 }
 
 function combine(lines, callback) {
@@ -19,7 +19,7 @@ function combine(lines, callback) {
 }
 
 exports.list = function list(callback) {
-    fs.readdir(path.normalize(config.playlistPath), function processPlaylistFiles(err, files) {
+    fs.readdir(path.normalize(configManager.config().playlistPath), function processPlaylistFiles(err, files) {
         if (err) {
             callback(err);
         } else {
