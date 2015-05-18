@@ -27,9 +27,12 @@ html(ng-app="upnpApp")
                     a(href="/playlists") Playlists
             ul.nav.navbar-nav.navbar-right
                 li
+                    a(href="/configuration")
+                        i.fa.fa-cog.fa-lg
+                li
                     a(href="https://github.com/bazwilliams/upnp-playlist-service")
                         i.fa.fa-github.fa-lg 
-                        |  Star me on Github
+                        |  Star me on Github &nbsp;
     block body
     script(src='bower_components/angular/angular.js')
     script(src='bower_components/angular-bootstrap/ui-bootstrap.min.js')

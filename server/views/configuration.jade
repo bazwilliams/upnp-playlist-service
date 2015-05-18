@@ -1,0 +1,14 @@
+extend layout
+
+block body
+  div(ng-controller='ConfigCtrl')
+    form
+      div.form-group
+        label(for='musicRoot') Path for local media files
+        input.form-control#musicRoot(ng-model='configuration.musicRoot')
+        span.help-block This would should be the same path as where your media server looks for music files. It's used to create a relative path from your playlist folder location to your music files. 
+      div.form-group
+        label(for='playlistPath') Path for storing playlist files
+        input.form-control#playlistPath(ng-model='configuration.playlistPath')
+        span.help-block This is where you wish to store m3u playlist files created by this service. 
+      button.btn.btn-success(type='submit',ng-click='storeConfiguration()') Submit
