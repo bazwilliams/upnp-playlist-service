@@ -1,8 +1,15 @@
 # DS Service
 
-Node.js based system for monitoring a suite of UPNP renderers on a network. It is intended to run all the time so it can discover your renderers and partially control them. 
+Node.js based system for monitoring a suite of UPNP renderers on a network. It is intended to run all the time so it can discover your renderers and provides the following control features:
 
-A wake up and sleep system exists which can be configured to wake, change the source; change to a radio preset and start playing; play a named saved playlist on random; or put to sleep a specific DS.  
+* Scheduled wake up to specified playlist, radio station or input source
+* Scheduled sleep
+* Save a playlist on a DS and store for later replay
+* Build a new playlist from currently playing track on any Upnp device
+* Append currently playing track on any Upnp device to any existing playlist
+* Webpage to configure scheduled wakeup and sleep
+* Webpage to manipulate and playback stored playlists
+* Create m3u files from playlists containing locally served tracks from minimserver. 
 
 The playlist functionality has been optimised for mobile use. 
 
