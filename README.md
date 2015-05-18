@@ -29,23 +29,21 @@ There is also a monit configuration in `etc/init/etc/monit/conf.d/ds-service` wh
 
 ## Running
 
-Start node by running `node server\app.js`
+Start node by running `node server\app.js` or using a service script. 
 
-Once running click on the following URL to configure the service
-
-### Configuration
+### Configure
 
 http://localhost:18080/configuration
 
 You can configure the path to the root of your music (should be the same as your minimserver content directory) and specify a full path to a folder containing your minimserver served playlists. 
 
-### Schedules
+### Schedule
 
 Use the following URL to view your devices and manage schedules. 
 
 http://localhost:18080/
 
-### Playlists
+### Playlist
 
 To view playlists.
 
