@@ -21,22 +21,6 @@ A playlist builder function exists to add tracks from any playing DS onto any pl
 
 Clone this repository onto your server and perform an `npm install` which will install all the dependencies. 
 
-You can configure the path to the root of your music (should be the same as your minimserver content directory) and specify a full path to a folder containing your minimserver served playlists. These are both configured within the `config.js` file. An example configuration file is included under `docs/example-config.js` which should be copied to `config.js`. It should look a bit like this:
-
-```javascript
-var config = {};
-
-// Unix locations
-//config.musicRoot = '/mnt/media/music';
-//config.playlistPath = '/mnt/media/music/Playlists';
-
-// Windows locations
-config.musicRoot = 'C:\\Users\\barry\\Dropbox';
-config.playlistPath = 'C:\\Users\\barry\\Dropbox\\playlists\\';
-
-module.exports = config;
-```
-
 For Linux, a template upstart script has been included in `etc/init/ds-service.conf` which assumes you have cloned the repository into `/opt/upnp-playlist-service` it also assumes you have node.js installed and have a user called `nodejs` which has read and write privileges to the `/opt/upnp-playlist-service/persist` folder. Modify and copy this into your `/etc/init/` folder to enable you to start the service at boot automatically. 
 
 An SysV script is also included in `etc/init.d/upnp-playlist-service` with the same assumptions as above. 
@@ -47,9 +31,21 @@ There is also a monit configuration in `etc/init/etc/monit/conf.d/ds-service` wh
 
 Start node by running `node server\app.js`
 
-Once running click on the following URL to view your devices and manage schedules. 
+Once running click on the following URL to configure the service
+
+### Configuration
+
+http://localhost:18080/configuration
+
+You can configure the path to the root of your music (should be the same as your minimserver content directory) and specify a full path to a folder containing your minimserver served playlists. 
+
+### Schedules
+
+Use the following URL to view your devices and manage schedules. 
 
 http://localhost:18080/
+
+### Playlists
 
 To view playlists.
 
