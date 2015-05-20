@@ -22,7 +22,6 @@ build
 obj
 bin
 deb-src
-*.deb
 
 # Dependency directory
 # Deployed apps should consider commenting this line out:
