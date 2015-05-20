@@ -1,12 +1,15 @@
 #!/bin/bash
 
+rm -rf deb-src
+rm upnp-playlist-service-*.deb
+
 SYSROOT=deb-src/sysroot
 TARGET_DIR=${SYSROOT}/opt/upnp-playlist-service
 DEBIAN=deb-src/DEBIAN
 
 BRANCH=${1}
 
-GIT_COMMIT=`git ls-remote https://github.com/bazwilliams/upnp-playlist-service.git ${BRANCH} | cut -f 1`
+GIT_COMMIT=`git ls-remote git@github.com:bazwilliams/upnp-playlist-service.git ${BRANCH} | cut -f 1`
 TIMESTAMP=`date --utc +%FT%TZ`
 PACKAGE_NAME="upnp-playlist-service"
 PACKAGE_VERSION="0.0.1"
@@ -28,11 +31,16 @@ mkdir -p ${SYSROOT}/etc/init.d
 
 # Get files for Deb file
 echo "Packaging Template"
-git archive --format=tar --remote=https://github.com/bazwilliams/upnp-playlist-service.git ${BRANCH} | tar --directory=${TARGET_DIR} -xf -
+git archive --format=tar ${BRANCH} | tar --directory=${TARGET_DIR} -xf -
 
-echo "Copying Cloud Exakt Populator Init Script"
-git archive --format=tar --remote=https://github.com/bazwilliams/upnp-playlist-service.git ${BRANCH}:etc/init.d ds-service | tar --directory=${SYSROOT}/etc/init.d/ -xf -
+echo "Copying Init Script"
+git archive --format=tar ${BRANCH}:etc/init.d upnp-playlist-service | tar --directory=${SYSROOT}/etc/init.d/ -xf -
 chmod +x ${SYSROOT}/etc/init.d/upnp-playlist-service
+
+echo "Install Libraries"
+pushd ${TARGET_DIR}
+npm install
+popd
 
 echo "Create preinst file"
 echo "if [ -e /etc/init.d/upnp-playlist-service ]" >> ${DEBIAN}/preinst
