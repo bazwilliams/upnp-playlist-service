@@ -1,4 +1,17 @@
 {
+  "name": "upnp-playlist-service",
+  "version": "0.0.1",
+  "description": "Playlist and Alarm Function for Linn Ds and other Upnp compatible devices",
+  "author": "Barry John Williams <barry@bjw.me.uk>",
+  "readme": "README.md",
+  "scripts": {
+    "start": "node server/app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bazwilliams/upnp-playlist-service.git"
+  },
+  "license": "MIT",
   "dependencies": {
     "angularjs": "0.0.1",
     "async": "^0.9.0",

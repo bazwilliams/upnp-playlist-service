@@ -39,7 +39,7 @@ chmod +x ${SYSROOT}/etc/init.d/upnp-playlist-service
 
 echo "Install Libraries"
 pushd ${TARGET_DIR}
-npm install
+npm install --production
 popd
 
 echo "Create preinst file"
