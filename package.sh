@@ -1,7 +1,14 @@
 #!/bin/bash
 
-rm -rf deb-src
-rm upnp-playlist-service-*.deb
+if [ -e deb-src ];
+then
+  sudo rm -rf deb-src
+fi
+
+if [ -e upnp-playlist-service-*.deb ];
+then
+  sudo rm upnp-playlist-service-*.deb
+fi
 
 SYSROOT=deb-src/sysroot
 TARGET_DIR=${SYSROOT}/opt/upnp-playlist-service
@@ -37,9 +44,14 @@ echo "Copying Init Script"
 git archive --format=tar ${BRANCH}:etc/init.d upnp-playlist-service | tar --directory=${SYSROOT}/etc/init.d/ -xf -
 chmod +x ${SYSROOT}/etc/init.d/upnp-playlist-service
 
-echo "Install Libraries"
 pushd ${TARGET_DIR}
+
+echo "Install Libraries"
 npm install --production
+
+echo "Remove package.json and bower.json"
+rm -f package.json
+rm -f bower.json
 popd
 
 echo "Create preinst file"
@@ -47,6 +59,14 @@ echo "if [ -e /etc/init.d/upnp-playlist-service ]" >> ${DEBIAN}/preinst
 echo "then" >> ${DEBIAN}/preinst
 echo "/etc/init.d/upnp-playlist-service stop" >> ${DEBIAN}/preinst
 echo "fi" >> ${DEBIAN}/preinst
+
+echo "Create postinst file"
+echo "adduser --system nodejs" >> ${DEBIAN}/postinst
+echo "if [ ! -d /opt/upnp-playlist-service/persist ]" >> ${DEBIAN}/postinst
+echo "then" >> ${DEBIAN}/postinst
+echo "mkdir /opt/upnp-playlist-service/persist" >> ${DEBIAN}/postinst
+echo "fi" >> ${DEBIAN}/postinst
+echo "chown -R nodejs:nodejs /opt/upnp-playlist-service/persist" >> ${DEBIAN}/postinst
 
 echo "Copy preinst file to prerm to stop service when uninstalling"
 cp ${DEBIAN}/preinst ${DEBIAN}/prerm
@@ -63,17 +83,26 @@ echo "Depends: nodejs (>= 0.12)" >> ${DEBIAN}/control
 echo "Maintainer: Barry John Williams  <barry@bjw.me.uk>" >> ${DEBIAN}/control
 echo "Description: Playlist and Alarm Function for Linn Ds and other Upnp compatible devices" >> ${DEBIAN}/control
 
+echo "Make debian-binary file"
+pushd deb-src
+echo 2.0 > debian-binary
+popd
+
+echo "Setting Permissions"
+sudo chown -R root:root deb-src
+
 echo "Creating deb package"
 pushd deb-src
 
 pushd sysroot/
-tar czf ../data.tar.gz *
+sudo tar czf ../data.tar.gz *
 popd
 
 pushd DEBIAN/
-tar czf ../control.tar.gz *
+sudo tar czf ../control.tar.gz *
 popd
 
-echo 2.0 > debian-binary
-ar r ../upnp-playlist-service-${PACKAGE_VERSION}.deb debian-binary control.tar.gz data.tar.gz
+sudo ar r ../upnp-playlist-service-${PACKAGE_VERSION}.deb debian-binary control.tar.gz data.tar.gz
+sudo rm -f data.tar.gz control.tar.gz
 popd
+
