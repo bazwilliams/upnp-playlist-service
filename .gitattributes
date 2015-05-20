@@ -1,0 +1,22 @@
+# used to remove files from deployment using `git archive`
+
+# git files
+.gitattributes export-ignore
+.gitignore export-ignore
+
+# Webstorm
+.idea export-ignore
+
+# configuration
+.jshintrc export-ignore
+
+# scripts
+etc export-ignore
+
+# readme
+README.md export-ignore
+docs export-ignore
+package.sh export-ignore
+
+# test
+test export-ignore
