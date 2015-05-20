@@ -19,31 +19,42 @@ A playlist builder function exists to add tracks from any playing DS onto any pl
 
 ## Installation
 
+### Debian
+
+Download the .deb file from https://github.com/bazwilliams/upnp-playlist-service/raw/master/packages/upnp-playlist-service-0.0.1.deb and install as normal. 
+
+You can run the service using
+`/etc/init.d/upnp-playlist-service start`
+
+### Windows
+
 Clone this repository onto your server and perform an `npm install` which will install all the dependencies. 
 
-For Linux, a template upstart script has been included in `etc/init/ds-service.conf` which assumes you have cloned the repository into `/opt/upnp-playlist-service` it also assumes you have node.js installed and have a user called `nodejs` which has read and write privileges to the `/opt/upnp-playlist-service/persist` folder. Modify and copy this into your `/etc/init/` folder to enable you to start the service at boot automatically. 
+I've had reports running this application as a Windows service using Winser works well http://jfromaniello.github.io/winser/.
 
-An SysV script is also included in `etc/init.d/upnp-playlist-service` with the same assumptions as above. 
+Alternatively, `npm start` within the repository in a command prompt. 
 
-There is also a monit configuration in `etc/init/etc/monit/conf.d/ds-service` which will automatically restart your node process should the process crash or not start for any reason. 
+### Other Linux Distributions
 
-## Running
+Clone this repository onto your server and perform an `npm install` which will install all the dependencies. 
 
-Start node by running `node server\app.js` or using a service script. 
+For Linux, SysV script is also included in `etc/init.d/upnp-playlist-service` which assumes you have cloned the repository into `/opt/upnp-playlist-service` it also assumes you have node.js installed and have a user called `nodejs` which has read and write privileges to the `/opt/upnp-playlist-service/persist` folder. Modify and copy this into your `/etc/init/` folder to enable you to start the service at boot automatically. 
 
-### Configure
+Run `npm start` within the repository or using the service script `/etc/init.d/upnp-playlist-service start`. 
+
+## Configure
 
 http://localhost:18080/configuration
 
 You can configure the path to the root of your music (should be the same as your minimserver content directory) and specify a full path to a folder containing your minimserver served playlists. 
 
-### Schedule
+## Schedule
 
 Use the following URL to view your devices and manage schedules. 
 
 http://localhost:18080/
 
-### Playlist
+## Playlist
 
 To view playlists.
 
