@@ -37,6 +37,34 @@ describe('Ds', function () {
         mockery.deregisterAll();
         mockery.disable();
     });
+    describe('When getting track id list of radio stations', function () {
+        var trackIds;
+        beforeEach(function (done) {
+            soapObject = { 
+                's:Envelope': { 
+                    's:Body' : { 
+                        'u:IdArrayResponse' : {
+                            'Token' : 4,
+                            'Array' : 'AAAAFwAAABgAAAAZAAAAGgAAABsAAAAcAAAAHQAAAB4AAAAfAAAAIAAAACEAAAAiAAAAIwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=='
+                        }
+                    }
+                }
+            };
+            ds.getRadioIdArray(function (err, data) {
+                trackIds = data;
+                done();
+            });
+            soapRequestCb({
+                setEncoding: sinon.spy()
+            });
+        });
+        it('Radio station list should be an array with 1 item', function () {
+            expect(trackIds).to.be.an('array').and.have.length(13);
+        });
+        it('Radio station list should contain the correct station ids', function () {
+            expect(trackIds).to.eql([23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35]);
+        });
+    });
     describe('When getting list of radio stations', function () {
         var radioStations;
         beforeEach(function (done) {

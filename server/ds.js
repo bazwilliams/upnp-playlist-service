@@ -29,7 +29,7 @@ function binaryIdArrayToIntList(result, callback) {
     _.each(_.range(buffer.length / 4), function () {
         arrayList.push(binaryList.word32bu('a').vars.a);
     });
-    callback(null, arrayList); 
+    callback(null, _.reject(arrayList, function (num) { return num === 0 })); 
 }
 function toSourceList(result, callback) {
     if (result && result['s:Envelope']['s:Body']['u:SourceXmlResponse']) {
