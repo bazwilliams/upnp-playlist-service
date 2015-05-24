@@ -37,7 +37,8 @@ describe('Ds', function () {
             'urn:av-openhome-org:service:Info:1' : { controlUrl: '/control' },
             'urn:av-openhome-org:service:Radio:1' : { controlUrl: '/radio' },
             'urn:av-openhome-org:service:Product:1' : { controlUrl: '/product' },
-            'urn:av-openhome-org:service:Playlist:1' : { controlUrl: '/playlist' }
+            'urn:av-openhome-org:service:Playlist:1' : { controlUrl: '/playlist' },
+            'urn:av-openhome-org:service:Volume:1' : { controlUrl: '/volume' }
         });
     });
     afterEach(function () {
@@ -188,6 +189,111 @@ describe('Ds', function () {
         });
         it('Should send formatted source id soap request', function () {
             expect(soapRequestArgs[4]).to.be.eql('<Value>11</Value>');
+        });
+    });
+    describe('When getting sleep state', function() {
+        var standbyState;
+        beforeEach(function (done) {
+            soapObject = { 
+                's:Envelope': { 
+                    's:Body' : { 
+                        'u:StandbyResponse' : {
+                            Value: 1
+                        }
+                    }
+                }
+            };
+            ds.standbyState(function (err, data) {
+                expect(err).to.be.null;
+                standbyState = data;
+                done();
+            });
+            soapRequestCb({
+                statusCode: 200,
+                setEncoding: sinon.spy()
+            });
+        });
+        it('Should use the product control uri', function () {
+            expect(soapRequestArgs[1]).to.be.eql('/product');
+        });
+        it('Standby state should be correct', function () {
+            expect(standbyState).to.be.eql(1);
+        });
+    });
+    describe('When putting to sleep', function() {
+        beforeEach(function (done) {
+            ds.powerOff(function (err, data) {
+                done();
+            });
+            soapRequestCb({
+                statusCode: 200,
+                setEncoding: sinon.spy()
+            });
+        });
+        it('Should use the product control uri', function () {
+            expect(soapRequestArgs[1]).to.be.eql('/product');
+        });
+        it('Should send formatted set sleep value to 1', function () {
+            expect(soapRequestArgs[4]).to.be.eql('<Value>1</Value>');
+        });
+    });
+    describe('When waking up from sleep', function() {
+        beforeEach(function (done) {
+            ds.powerOn(function (err, data) {
+                done();
+            });
+            soapRequestCb({
+                statusCode: 200,
+                setEncoding: sinon.spy()
+            });
+        });
+        it('Should use the product control uri', function () {
+            expect(soapRequestArgs[1]).to.be.eql('/product');
+        });
+        it('Should send formatted set sleep value to 0', function () {
+            expect(soapRequestArgs[4]).to.be.eql('<Value>0</Value>');
+        });
+    });
+    describe('When playing the radio', function () {
+        beforeEach(function (done) {
+            ds.playRadio(function (err, data) {
+                done();
+            });
+            soapRequestCb({
+                statusCode: 200,
+                setEncoding: sinon.spy()
+            });
+        });
+        it('Should use the radio control uri', function () {
+            expect(soapRequestArgs[1]).to.be.eql('/radio');
+        });
+    });
+    describe('When increasing the volume', function () {
+        beforeEach(function (done) {
+            ds.volumeInc(function (err, data) {
+                done();
+            });
+            soapRequestCb({
+                statusCode: 200,
+                setEncoding: sinon.spy()
+            });
+        });
+        it('Should use the volume control uri', function () {
+            expect(soapRequestArgs[1]).to.be.eql('/volume');
+        });
+    });
+    describe('When decreasing the volume', function () {
+        beforeEach(function (done) {
+            ds.volumeDec(function (err, data) {
+                done();
+            });
+            soapRequestCb({
+                statusCode: 200,
+                setEncoding: sinon.spy()
+            });
+        });
+        it('Should use the volume control uri', function () {
+            expect(soapRequestArgs[1]).to.be.eql('/volume');
         });
     });
     describe('When queuing', function () {
