@@ -6,10 +6,13 @@ var expect = chai.expect;
 chai.use(sinonChai);
 
 describe('Ds', function () {
-    var ds, upnpMock, soapRequestCb, responseParserMock, soapObject;
+    var ds, upnpMock, soapRequestCb, responseParserMock, soapObject, soapRequestArgs;
     beforeEach(function () {
+        soapRequestArgs = {};
+        soapRequestCb = void 0;
         upnpMock = {
             soapRequest: function (deviceUrlRoot, path, service, fnName, fnParams, callback) {
+                soapRequestArgs = arguments;
                 soapRequestCb = callback;
                 return {
                     on: function () {}
@@ -18,7 +21,9 @@ describe('Ds', function () {
         };
         responseParserMock = {
             xml: function (parser, callback) {
-                parser(soapObject, callback);
+                return function (res) {
+                    parser(soapObject, callback);
+                }
             }
         };
         mockery.enable({
@@ -29,8 +34,9 @@ describe('Ds', function () {
         
         var Ds = require('../server/ds.js').Ds;
         ds = new Ds('/test', {
-            'urn:av-openhome-org:service:Info:1' : '/control',
-            'urn:av-openhome-org:service:Radio:1' : '/control'
+            'urn:av-openhome-org:service:Info:1' : { controlUrl: '/control' },
+            'urn:av-openhome-org:service:Radio:1' : { controlUrl: '/radio' },
+            'urn:av-openhome-org:service:Product:1' : { controlUrl: '/product' }
         });
     });
     afterEach(function () {
@@ -55,10 +61,14 @@ describe('Ds', function () {
                 done();
             });
             soapRequestCb({
+                statusCode: 200,
                 setEncoding: sinon.spy()
             });
         });
-        it('Radio station list should be an array with 1 item', function () {
+        it('Should use the control uri', function () {
+            expect(soapRequestArgs[1]).to.be.eql('/radio');
+        });
+        it('Radio station list should be an array with 13 item', function () {
             expect(trackIds).to.be.an('array').and.have.length(13);
         });
         it('Radio station list should contain the correct station ids', function () {
@@ -77,13 +87,20 @@ describe('Ds', function () {
                     }
                 }
             };
-            ds.retrieveRadioStationDetails('23 34', function (err, data) {
+            ds.retrieveRadioStationDetails([23, 34], function (err, data) {
                 radioStations = data;
                 done();
             });
             soapRequestCb({
+                statusCode: 200,
                 setEncoding: sinon.spy()
             });
+        });
+        it('Should use the control uri', function () {
+            expect(soapRequestArgs[1]).to.be.eql('/radio');
+        });
+        it('Should send formatted track list in soap request', function () {
+            expect(soapRequestArgs[4]).to.be.eql('<IdList>23 34</IdList>');
         });
         it('Radio station list should be an array with 1 item', function () {
             expect(radioStations).to.be.an('array').and.have.length(1);
@@ -119,8 +136,12 @@ describe('Ds', function () {
                 done();
             });
             soapRequestCb({
+                statusCode: 200,
                 setEncoding: sinon.spy()
             });
+        });
+        it('Should use the control uri', function () {
+            expect(soapRequestArgs[1]).to.be.eql('/control');
         });
         it('Track should be correct', function () {
             expect(trackDetails.track).to.be.eql('http://track/test');
@@ -129,4 +150,43 @@ describe('Ds', function () {
             expect(trackDetails.metadata).to.be.eql('Metadata');
         });
     });
+    describe('When setting the radio channel', function () {
+        beforeEach(function (done) {
+            var radioChannel = {
+                "id": "5",
+                "uri": "http:\/\/opml.radiotime.com\/Tune.ashx?id=s44491&formats=mp3,wma,aac,wmvideo,ogg,hls&partnerId=ah2rjr68&username=bazwilliams&c=ebrowse"
+            };
+            ds.setRadioChannel(radioChannel, function (err, data) {
+                done();
+            });
+            soapRequestCb({
+                statusCode: 200,
+                setEncoding: sinon.spy()
+            });
+        });
+        it('Should use the control uri', function () {
+            expect(soapRequestArgs[1]).to.be.eql('/radio');
+        });
+        it('Should send formatted radio id and uri in soap request', function () {
+            expect(soapRequestArgs[4]).to.be.eql('<Value>5</Value><Uri>http://opml.radiotime.com/Tune.ashx?id=s44491&amp;formats=mp3,wma,aac,wmvideo,ogg,hls&amp;partnerId=ah2rjr68&amp;username=bazwilliams&amp;c=ebrowse</Uri>');
+        });
+    })
+    describe('When changing the source', function () {
+        beforeEach(function (done) {
+            var sourceId = 11;
+            ds.changeSource(sourceId, function (err, data) {
+                done();
+            });
+            soapRequestCb({
+                statusCode: 200,
+                setEncoding: sinon.spy()
+            });
+        });
+        it('Should use the control uri', function () {
+            expect(soapRequestArgs[1]).to.be.eql('/product');
+        });
+        it('Should send formatted source id soap request', function () {
+            expect(soapRequestArgs[4]).to.be.eql('<Value>11</Value>');
+        });
+    })
 });

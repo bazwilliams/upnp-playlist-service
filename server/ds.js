@@ -295,7 +295,7 @@ exports.Ds = function(deviceUrlRoot, serviceList) {
         ).on('error', callback);
     };
     this.retrieveRadioStationDetails = function(idArray, callback) {
-        var idArrayString = _.reduce(idArray, function (memo, num) { return memo + num + ' '; }, '');
+        var idArrayString = _.reduce(idArray, function (memo, num) { return memo + num + ' '; }, '').trim();
         upnp.soapRequest(
             deviceUrlRoot,
             serviceList['urn:av-openhome-org:service:Radio:1'].controlUrl,
