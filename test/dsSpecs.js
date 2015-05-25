@@ -60,6 +60,7 @@ describe('Ds', function () {
                 }
             };
             ds.getRadioIdArray(function (err, data) {
+                expect(err).to.not.exist;
                 trackIds = data;
                 done();
             });
@@ -92,6 +93,7 @@ describe('Ds', function () {
                     }
                 };
                 ds.retrieveRadioStationDetails([23, 34], function (err, data) {
+                    expect(err).to.not.exist;
                     radioStations = data;
                     done();
                 });
@@ -135,7 +137,7 @@ describe('Ds', function () {
                     }
                 };
                 ds.retrieveRadioStationDetails([23], function (err, data) {
-                    expect(err).to.be.null;
+                    expect(err).to.not.exist;
                     radioStations = data;
                     done();
                 });
@@ -181,6 +183,7 @@ describe('Ds', function () {
                 }
             };
             ds.currentTrackDetails(function (err, data) {
+                expect(err).to.not.exist;
                 trackDetails = data;
                 done();
             });
@@ -206,6 +209,7 @@ describe('Ds', function () {
                 "uri": "http:\/\/opml.radiotime.com\/Tune.ashx?id=s44491&formats=mp3,wma,aac,wmvideo,ogg,hls&partnerId=ah2rjr68&username=bazwilliams&c=ebrowse"
             };
             ds.setRadioChannel(radioChannel, function (err, data) {
+                expect(err).to.not.exist;
                 done();
             });
             soapRequestCb({
@@ -224,6 +228,7 @@ describe('Ds', function () {
         beforeEach(function (done) {
             var sourceId = 11;
             ds.changeSource(sourceId, function (err, data) {
+                expect(err).to.not.exist;
                 done();
             });
             soapRequestCb({
@@ -251,7 +256,7 @@ describe('Ds', function () {
                 }
             };
             ds.standbyState(function (err, data) {
-                expect(err).to.be.null;
+                expect(err).to.not.exist;
                 standbyState = data;
                 done();
             });
@@ -270,6 +275,7 @@ describe('Ds', function () {
     describe('When putting to sleep', function() {
         beforeEach(function (done) {
             ds.powerOff(function (err, data) {
+                expect(err).to.not.exist;
                 done();
             });
             soapRequestCb({
@@ -287,6 +293,7 @@ describe('Ds', function () {
     describe('When waking up from sleep', function() {
         beforeEach(function (done) {
             ds.powerOn(function (err, data) {
+                expect(err).to.not.exist;
                 done();
             });
             soapRequestCb({
@@ -304,6 +311,7 @@ describe('Ds', function () {
     describe('When playing the radio', function () {
         beforeEach(function (done) {
             ds.playRadio(function (err, data) {
+                expect(err).to.not.exist;
                 done();
             });
             soapRequestCb({
@@ -315,9 +323,43 @@ describe('Ds', function () {
             expect(soapRequestArgs[1]).to.be.eql('/radio');
         });
     });
+    describe('When playing the playlist', function () {
+        beforeEach(function (done) {
+            ds.playPlaylist(function (err, data) {
+                expect(err).to.not.exist;
+                done();
+            });
+            soapRequestCb({
+                statusCode: 200,
+                setEncoding: sinon.spy()
+            });
+        });
+        it('Should use the playlist control uri', function () {
+            expect(soapRequestArgs[1]).to.be.eql('/playlist');
+        });
+    });
+    describe('When playing the playlist from specific index', function () {
+        beforeEach(function (done) {
+            ds.playFromPlaylistIndex(69, function (err, data) {
+                expect(err).to.not.exist;
+                done();
+            });
+            soapRequestCb({
+                statusCode: 200,
+                setEncoding: sinon.spy()
+            });
+        });
+        it('Should use the playlist control uri', function () {
+            expect(soapRequestArgs[1]).to.be.eql('/playlist');
+        });
+        it('Should send requested index in soap request', function () {
+            expect(soapRequestArgs[4]).to.be.eql('<Value>69</Value>');
+        });
+    });
     describe('When increasing the volume', function () {
         beforeEach(function (done) {
             ds.volumeInc(function (err, data) {
+                expect(err).to.not.exist;
                 done();
             });
             soapRequestCb({
@@ -332,6 +374,7 @@ describe('Ds', function () {
     describe('When decreasing the volume', function () {
         beforeEach(function (done) {
             ds.volumeDec(function (err, data) {
+                expect(err).to.not.exist;
                 done();
             });
             soapRequestCb({
@@ -359,7 +402,7 @@ describe('Ds', function () {
                 };
                 var afterId = 12;
                 ds.queueTrack(trackDetailsXml, afterId, function (err, data) {
-                    expect(err).to.be.null;
+                    expect(err).to.not.exist;
                     newTrackId = data;
                     done();
                 });
@@ -393,7 +436,7 @@ describe('Ds', function () {
                 };
                 var afterId = 12;
                 ds.queueTrack(trackDetailsXml, afterId, function (err, data) {
-                    expect(err).to.be.null;
+                    expect(err).to.not.exist;
                     newTrackId = data;
                     done();
                 });
@@ -427,7 +470,7 @@ describe('Ds', function () {
                 }
             };
             ds.getSources(function (err, data) {
-                expect(err).to.be.null;
+                expect(err).to.not.exist;
                 sources = data;
                 done();
             });
