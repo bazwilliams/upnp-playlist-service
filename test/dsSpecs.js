@@ -105,6 +105,9 @@ describe('Ds', function () {
             it('Should use the radio control uri', function () {
                 expect(soapRequestArgs[1]).to.be.eql('/radio');
             });
+            it('Should use ReadList command', function () {
+                expect(soapRequestArgs[3]).to.be.eql('ReadList');
+            });
             it('Should send formatted track list in soap request', function () {
                 expect(soapRequestArgs[4]).to.be.eql('<IdList>23 34</IdList>');
             });
@@ -148,6 +151,9 @@ describe('Ds', function () {
             });
             it('Should use the radio control uri', function () {
                 expect(soapRequestArgs[1]).to.be.eql('/radio');
+            });
+            it('Should use ReadList command', function () {
+                expect(soapRequestArgs[3]).to.be.eql('ReadList');
             });
             it('Should send formatted track list in soap request', function () {
                 expect(soapRequestArgs[4]).to.be.eql('<IdList>23</IdList>');
@@ -195,6 +201,9 @@ describe('Ds', function () {
         it('Should use the control control uri', function () {
             expect(soapRequestArgs[1]).to.be.eql('/control');
         });
+        it('Should use Track command', function () {
+            expect(soapRequestArgs[3]).to.be.eql('Track');
+        });
         it('Track should be correct', function () {
             expect(trackDetails.track).to.be.eql('http://track/test');
         });
@@ -220,6 +229,9 @@ describe('Ds', function () {
         it('Should use the radio control uri', function () {
             expect(soapRequestArgs[1]).to.be.eql('/radio');
         });
+        it('Should use SetId command', function () {
+            expect(soapRequestArgs[3]).to.be.eql('SetId');
+        });
         it('Should send formatted radio id and uri in soap request', function () {
             expect(soapRequestArgs[4]).to.be.eql('<Value>5</Value><Uri>http://opml.radiotime.com/Tune.ashx?id=s44491&amp;formats=mp3,wma,aac,wmvideo,ogg,hls&amp;partnerId=ah2rjr68&amp;username=bazwilliams&amp;c=ebrowse</Uri>');
         });
@@ -238,6 +250,9 @@ describe('Ds', function () {
         });
         it('Should use the product control uri', function () {
             expect(soapRequestArgs[1]).to.be.eql('/product');
+        });
+        it('Should use SetSourceIndex command', function () {
+            expect(soapRequestArgs[3]).to.be.eql('SetSourceIndex');
         });
         it('Should send formatted source id soap request', function () {
             expect(soapRequestArgs[4]).to.be.eql('<Value>11</Value>');
@@ -268,6 +283,9 @@ describe('Ds', function () {
         it('Should use the product control uri', function () {
             expect(soapRequestArgs[1]).to.be.eql('/product');
         });
+        it('Should use Standby command', function () {
+            expect(soapRequestArgs[3]).to.be.eql('Standby');
+        });
         it('Standby state should be correct', function () {
             expect(standbyState).to.be.eql(1);
         });
@@ -285,6 +303,9 @@ describe('Ds', function () {
         });
         it('Should use the product control uri', function () {
             expect(soapRequestArgs[1]).to.be.eql('/product');
+        });
+        it('Should use SetStandby command', function () {
+            expect(soapRequestArgs[3]).to.be.eql('SetStandby');
         });
         it('Should send formatted set sleep value to 1', function () {
             expect(soapRequestArgs[4]).to.be.eql('<Value>1</Value>');
@@ -304,8 +325,71 @@ describe('Ds', function () {
         it('Should use the product control uri', function () {
             expect(soapRequestArgs[1]).to.be.eql('/product');
         });
+        it('Should use SetStandby command', function () {
+            expect(soapRequestArgs[3]).to.be.eql('SetStandby');
+        });
         it('Should send formatted set sleep value to 0', function () {
             expect(soapRequestArgs[4]).to.be.eql('<Value>0</Value>');
+        });
+    });
+    describe('When enabling shuffle', function() {
+        beforeEach(function (done) {
+            ds.enableShuffle(function (err, data) {
+                expect(err).to.not.exist;
+                done();
+            });
+            soapRequestCb({
+                statusCode: 200,
+                setEncoding: sinon.spy()
+            });
+        });
+        it('Should use the playlist control uri', function () {
+            expect(soapRequestArgs[1]).to.be.eql('/playlist');
+        });
+        it('Should use SetShuffle command', function () {
+            expect(soapRequestArgs[3]).to.be.eql('SetShuffle');
+        });
+        it('Should send formatted set shuffle value to 1', function () {
+            expect(soapRequestArgs[4]).to.be.eql('<Value>1</Value>');
+        });
+    });
+    describe('When disabling shuffle', function() {
+        beforeEach(function (done) {
+            ds.disableShuffle(function (err, data) {
+                expect(err).to.not.exist;
+                done();
+            });
+            soapRequestCb({
+                statusCode: 200,
+                setEncoding: sinon.spy()
+            });
+        });
+        it('Should use the playlist control uri', function () {
+            expect(soapRequestArgs[1]).to.be.eql('/playlist');
+        });
+        it('Should use SetShuffle command', function () {
+            expect(soapRequestArgs[3]).to.be.eql('SetShuffle');
+        });
+        it('Should send formatted set shuffle value to 0', function () {
+            expect(soapRequestArgs[4]).to.be.eql('<Value>0</Value>');
+        });
+    });
+    describe('When clearing the playlist', function() {
+        beforeEach(function (done) {
+            ds.deleteAll(function (err, data) {
+                expect(err).to.not.exist;
+                done();
+            });
+            soapRequestCb({
+                statusCode: 200,
+                setEncoding: sinon.spy()
+            });
+        });
+        it('Should use the playlist control uri', function () {
+            expect(soapRequestArgs[1]).to.be.eql('/playlist');
+        });
+        it('Should use DeleteAll command', function () {
+            expect(soapRequestArgs[3]).to.be.eql('DeleteAll');
         });
     });
     describe('When playing the radio', function () {
@@ -322,6 +406,9 @@ describe('Ds', function () {
         it('Should use the radio control uri', function () {
             expect(soapRequestArgs[1]).to.be.eql('/radio');
         });
+        it('Should use Play command', function () {
+            expect(soapRequestArgs[3]).to.be.eql('Play');
+        });
     });
     describe('When playing the playlist', function () {
         beforeEach(function (done) {
@@ -337,6 +424,9 @@ describe('Ds', function () {
         it('Should use the playlist control uri', function () {
             expect(soapRequestArgs[1]).to.be.eql('/playlist');
         });
+        it('Should use Play command', function () {
+            expect(soapRequestArgs[3]).to.be.eql('Play');
+        });
     });
     describe('When playing the playlist from specific index', function () {
         beforeEach(function (done) {
@@ -351,6 +441,9 @@ describe('Ds', function () {
         });
         it('Should use the playlist control uri', function () {
             expect(soapRequestArgs[1]).to.be.eql('/playlist');
+        });
+        it('Should use SeekIndex command', function () {
+            expect(soapRequestArgs[3]).to.be.eql('SeekIndex');
         });
         it('Should send requested index in soap request', function () {
             expect(soapRequestArgs[4]).to.be.eql('<Value>69</Value>');
@@ -370,6 +463,9 @@ describe('Ds', function () {
         it('Should use the volume control uri', function () {
             expect(soapRequestArgs[1]).to.be.eql('/volume');
         });
+        it('Should use VolumeInc command', function () {
+            expect(soapRequestArgs[3]).to.be.eql('VolumeInc');
+        });
     });
     describe('When decreasing the volume', function () {
         beforeEach(function (done) {
@@ -384,6 +480,9 @@ describe('Ds', function () {
         });
         it('Should use the volume control uri', function () {
             expect(soapRequestArgs[1]).to.be.eql('/volume');
+        });
+        it('Should use VolumeDec command', function () {
+            expect(soapRequestArgs[3]).to.be.eql('VolumeDec');
         });
     });
     describe('When queuing', function () {
@@ -413,6 +512,9 @@ describe('Ds', function () {
             })
             it('Should use the playlist control uri', function () {
                 expect(soapRequestArgs[1]).to.be.eql('/playlist');
+            });
+            it('Should use Insert command', function () {
+                expect(soapRequestArgs[3]).to.be.eql('Insert');
             });
             it('Should send formatted source id soap request', function () {
                 expect(soapRequestArgs[4]).to.be.eql('<AfterId>12</AfterId><Uri>http://192.168.1.126:9790/minimserver/*/music/Albums/Joe*20Stilgoe*20-*20New*20Songs*20For*20Old*20Souls/01*20-*20Totally.flac</Uri><Metadata>&lt;DIDL-Lite xmlns=&quot;urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/&quot;&gt;&lt;item&gt;&lt;dc:title xmlns:dc=&quot;http://purl.org/dc/elements/1.1/&quot;&gt;Totally&lt;/dc:title&gt;&lt;upnp:class xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot;&gt;object.item.audioItem.musicTrack&lt;/upnp:class&gt;&lt;upnp:albumArtURI xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot;&gt;http://192.168.1.126:9790/minimserver/*/music/Albums/Joe*20Stilgoe*20-*20New*20Songs*20For*20Old*20Souls/01*20-*20Totally.flac/$!picture-299-6806038.png&lt;/upnp:albumArtURI&gt;&lt;upnp:album xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot;&gt;New Songs For Old Souls (Digital Deluxe Version)&lt;/upnp:album&gt;&lt;upnp:artist xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot;&gt;Joe Stilgoe&lt;/upnp:artist&gt;&lt;upnp:artist role=&quot;AlbumArtist&quot; xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot;&gt;Joe Stilgoe&lt;/upnp:artist&gt;&lt;dc:date xmlns:dc=&quot;http://purl.org/dc/elements/1.1/&quot;&gt;2015-01-01&lt;/dc:date&gt;&lt;upnp:genre xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot;&gt;Jazz&lt;/upnp:genre&gt;&lt;res sampleFrequency=&quot;96000&quot; bitsPerSample=&quot;24&quot; bitrate=&quot;576000&quot; protocolInfo=&quot;http-get:*:audio/x-flac:*&quot;&gt;http://192.168.1.126:9790/minimserver/*/music/Albums/Joe*20Stilgoe*20-*20New*20Songs*20For*20Old*20Souls/01*20-*20Totally.flac&lt;/res&gt;&lt;/item&gt;&lt;/DIDL-Lite&gt;</Metadata>');
@@ -448,6 +550,9 @@ describe('Ds', function () {
             it('Should use the playlist control uri', function () {
                 expect(soapRequestArgs[1]).to.be.eql('/playlist');
             });
+            it('Should use Insert command', function () {
+                expect(soapRequestArgs[3]).to.be.eql('Insert');
+            });
             it('Should send formatted source id soap request', function () {
                 expect(soapRequestArgs[4]).to.be.eql('<AfterId>12</AfterId><Uri>http://192.168.1.126:9790/minimserver/*/music/Albums/Joe*20Stilgoe*20-*20New*20Songs*20For*20Old*20Souls/01*20-*20Totally.flac</Uri><Metadata>&lt;DIDL-Lite xmlns=&quot;urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/&quot;&gt;&lt;item&gt;&lt;dc:title xmlns:dc=&quot;http://purl.org/dc/elements/1.1/&quot;&gt;Totally&lt;/dc:title&gt;&lt;upnp:class xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot;&gt;object.item.audioItem.musicTrack&lt;/upnp:class&gt;&lt;upnp:albumArtURI xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot;&gt;http://192.168.1.126:9790/minimserver/*/music/Albums/Joe*20Stilgoe*20-*20New*20Songs*20For*20Old*20Souls/01*20-*20Totally.flac/$!picture-299-6806038.png&lt;/upnp:albumArtURI&gt;&lt;upnp:album xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot;&gt;New Songs For Old Souls (Digital Deluxe Version)&lt;/upnp:album&gt;&lt;upnp:artist xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot;&gt;Joe Stilgoe&lt;/upnp:artist&gt;&lt;upnp:artist role=&quot;AlbumArtist&quot; xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot;&gt;Joe Stilgoe&lt;/upnp:artist&gt;&lt;dc:date xmlns:dc=&quot;http://purl.org/dc/elements/1.1/&quot;&gt;2015-01-01&lt;/dc:date&gt;&lt;upnp:genre xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot;&gt;Jazz&lt;/upnp:genre&gt;&lt;res sampleFrequency=&quot;96000&quot; bitsPerSample=&quot;24&quot; bitrate=&quot;576000&quot; protocolInfo=&quot;http-get:*:audio/x-flac:*&quot;&gt;http://192.168.1.126:9790/minimserver/*/music/Albums/Joe*20Stilgoe*20-*20New*20Songs*20For*20Old*20Souls/01*20-*20Totally.flac&lt;/res&gt;&lt;res sampleFrequency=&quot;96000&quot; bitsPerSample=&quot;24&quot; bitrate=&quot;576000&quot; protocolInfo=&quot;http-get:*:audio/x-flac:*&quot;&gt;http://192.168.1.126:9790/minimserver/*/music/Albums/Joe*20Stilgoe*20-*20New*20Songs*20For*20Old*20Souls/01*20-*20TotallyRepeated.flac&lt;/res&gt;&lt;/item&gt;&lt;/DIDL-Lite&gt;</Metadata>');
             });
@@ -481,6 +586,9 @@ describe('Ds', function () {
         })
         it('Should use the product control uri', function () {
             expect(soapRequestArgs[1]).to.be.eql('/product');
+        });
+        it('Should use SourceXml command', function () {
+            expect(soapRequestArgs[3]).to.be.eql('SourceXml');
         });
         it('Should return correct number of sources', function () {
             expect(sources).to.be.an('array').and.have.length(20);
