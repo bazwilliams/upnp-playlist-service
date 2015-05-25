@@ -35,7 +35,7 @@ describe('Ds', function () {
         
         var Ds = require('../server/ds.js').Ds;
         ds = new Ds('/test', {
-            'urn:av-openhome-org:service:Info:1' : { controlUrl: '/control' },
+            'urn:av-openhome-org:service:Info:1' : { controlUrl: '/info' },
             'urn:av-openhome-org:service:Radio:1' : { controlUrl: '/radio' },
             'urn:av-openhome-org:service:Product:1' : { controlUrl: '/product' },
             'urn:av-openhome-org:service:Playlist:1' : { controlUrl: '/playlist' },
@@ -45,6 +45,134 @@ describe('Ds', function () {
     afterEach(function () {
         mockery.deregisterAll();
         mockery.disable();
+    });
+    describe('When getting track id list of playlist items', function () {
+        var trackIds;
+        beforeEach(function (done) {
+            soapObject = { 
+                's:Envelope': { 
+                    's:Body' : { 
+                        'u:IdArrayResponse' : {
+                            'Token' : 12,
+                            'Array' : 'AAAAFQAAAAQAAAAFAAAACAAAABkAAAAWAAAAGAAAAAwAAAATAAAAFw=='
+                        }
+                    }
+                }
+            };
+            ds.getTrackIds(function (err, data) {
+                expect(err).to.not.exist;
+                trackIds = data;
+                done();
+            });
+            soapRequestCb({
+                statusCode: 200,
+                setEncoding: sinon.spy()
+            });
+        });
+        it('Should use the playlist control uri', function () {
+            expect(soapRequestArgs[1]).to.be.eql('/playlist');
+        });
+        it('Should use playlist service urn', function () {
+            expect(soapRequestArgs[2]).to.be.eql('urn:av-openhome-org:service:Playlist:1');
+        });
+        it('Should use IdArray command', function () {
+            expect(soapRequestArgs[3]).to.be.eql('IdArray');
+        });
+        it('Track Ids should be an array with 10 item', function () {
+            expect(trackIds).to.be.an('array').and.have.length(10);
+        });
+        it('Track Ids should contain the correct station ids', function () {
+            expect(trackIds).to.eql([21, 4, 5, 8, 25, 22, 24, 12, 19, 23]);
+        });
+    });
+    describe('When getting track details', function () {
+        var tracks;
+        describe('where 1 id submitted', function() {
+            beforeEach(function (done) {
+                soapObject = { 
+                    's:Envelope': { 
+                        's:Body' : { 
+                            'u:ReadListResponse' : {
+                                'TrackList' : '<TrackList><Entry><Id>21</Id><Uri>tidal://track?version=1&amp;trackId=29512950</Uri><Metadata>&lt;DIDL-Lite xmlns=&quot;urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/&quot;&gt;&lt;item&gt;&lt;dc:title xmlns:dc=&quot;http://purl.org/dc/elements/1.1/&quot;&gt;Pulsing (feat. Nina K)&lt;/dc:title&gt;&lt;upnp:class xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot;&gt;object.item.audioItem.musicTrack&lt;/upnp:class&gt;&lt;upnp:albumArtURI xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot;&gt;http://images.tidalhifi.com/im/im?w=250&amp;amp;h=250&amp;amp;albumid=29512948&lt;/upnp:albumArtURI&gt;&lt;upnp:album xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot;&gt;Love Me&lt;/upnp:album&gt;&lt;upnp:artist xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot;&gt;Tomas Barfod&lt;/upnp:artist&gt;&lt;res protocolInfo=&quot;http-get:*:*:*&quot;&gt;tidal://track?version=1&amp;amp;trackId=29512950&lt;/res&gt;&lt;/item&gt;&lt;/DIDL-Lite&gt;</Metadata></Entry></TrackList>'
+                            }
+                        }
+                    }
+                };
+                ds.retrieveTrackDetails([21], function (err, data) {
+                    expect(err).to.not.exist;
+                    tracks = data;
+                    done();
+                });
+                soapRequestCb({
+                    statusCode: 200,
+                    setEncoding: sinon.spy()
+                });
+            });
+            it('Should use the playlist control uri', function () {
+                expect(soapRequestArgs[1]).to.be.eql('/playlist');
+            });
+            it('Should use playlist service urn', function () {
+                expect(soapRequestArgs[2]).to.be.eql('urn:av-openhome-org:service:Playlist:1');
+            });
+            it('Should use ReadList command', function () {
+                expect(soapRequestArgs[3]).to.be.eql('ReadList');
+            });
+            it('Should send formatted track list in soap request', function () {
+                expect(soapRequestArgs[4]).to.be.eql('<IdList>21</IdList>');
+            });
+            it('Track details list should be an array with 1 items', function () {
+                expect(tracks).to.be.an('array').and.have.length(1);
+            });
+            it('Track Uri should be correct', function () {
+                expect(tracks[0].track).to.be.eql('tidal://track?version=1&trackId=29512950');
+            });
+            it('Track Metadata should be correct', function () {
+                expect(tracks[0].metadata).to.be.eql('<DIDL-Lite xmlns="urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/"><item><dc:title xmlns:dc="http://purl.org/dc/elements/1.1/">Pulsing (feat. Nina K)</dc:title><upnp:class xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">object.item.audioItem.musicTrack</upnp:class><upnp:albumArtURI xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">http://images.tidalhifi.com/im/im?w=250&amp;h=250&amp;albumid=29512948</upnp:albumArtURI><upnp:album xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">Love Me</upnp:album><upnp:artist xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">Tomas Barfod</upnp:artist><res protocolInfo="http-get:*:*:*">tidal://track?version=1&amp;trackId=29512950</res></item></DIDL-Lite>');
+            });
+        });
+        describe('where multiple ids submitted', function() {
+            beforeEach(function (done) {
+                soapObject = { 
+                    's:Envelope': { 
+                        's:Body' : { 
+                            'u:ReadListResponse' : {
+                                'TrackList' : '<TrackList><Entry><Id>21</Id><Uri>tidal://track?version=1&amp;trackId=29512950</Uri><Metadata>&lt;DIDL-Lite xmlns=&quot;urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/&quot;&gt;&lt;item&gt;&lt;dc:title xmlns:dc=&quot;http://purl.org/dc/elements/1.1/&quot;&gt;Pulsing (feat. Nina K)&lt;/dc:title&gt;&lt;upnp:class xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot;&gt;object.item.audioItem.musicTrack&lt;/upnp:class&gt;&lt;upnp:albumArtURI xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot;&gt;http://images.tidalhifi.com/im/im?w=250&amp;amp;h=250&amp;amp;albumid=29512948&lt;/upnp:albumArtURI&gt;&lt;upnp:album xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot;&gt;Love Me&lt;/upnp:album&gt;&lt;upnp:artist xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot;&gt;Tomas Barfod&lt;/upnp:artist&gt;&lt;res protocolInfo=&quot;http-get:*:*:*&quot;&gt;tidal://track?version=1&amp;amp;trackId=29512950&lt;/res&gt;&lt;/item&gt;&lt;/DIDL-Lite&gt;</Metadata></Entry><Entry><Id>4</Id><Uri>tidal://track?version=1&amp;trackId=34835954</Uri><Metadata>&lt;DIDL-Lite xmlns=&quot;urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/&quot;&gt;&lt;item&gt;&lt;dc:title xmlns:dc=&quot;http://purl.org/dc/elements/1.1/&quot;&gt;Gun&lt;/dc:title&gt;&lt;upnp:class xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot;&gt;object.item.audioItem.musicTrack&lt;/upnp:class&gt;&lt;upnp:albumArtURI xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot;&gt;http://images.tidalhifi.com/im/im?w=250&amp;amp;h=250&amp;amp;albumid=34835951&lt;/upnp:albumArtURI&gt;&lt;upnp:album xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot;&gt;The Bones Of What You Believe (Special Edition)&lt;/upnp:album&gt;&lt;upnp:artist xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot;&gt;CHVRCHES&lt;/upnp:artist&gt;&lt;res protocolInfo=&quot;http-get:*:*:*&quot;&gt;tidal://track?version=1&amp;amp;trackId=34835954&lt;/res&gt;&lt;/item&gt;&lt;/DIDL-Lite&gt;</Metadata></Entry></TrackList>'
+                            }
+                        }
+                    }
+                };
+                ds.retrieveTrackDetails([21, 4], function (err, data) {
+                    expect(err).to.not.exist;
+                    tracks = data;
+                    done();
+                });
+                soapRequestCb({
+                    statusCode: 200,
+                    setEncoding: sinon.spy()
+                });
+            });
+            it('Should use the playlist control uri', function () {
+                expect(soapRequestArgs[1]).to.be.eql('/playlist');
+            });
+            it('Should use playlist service urn', function () {
+                expect(soapRequestArgs[2]).to.be.eql('urn:av-openhome-org:service:Playlist:1');
+            });
+            it('Should use ReadList command', function () {
+                expect(soapRequestArgs[3]).to.be.eql('ReadList');
+            });
+            it('Should send formatted track list in soap request', function () {
+                expect(soapRequestArgs[4]).to.be.eql('<IdList>21 4</IdList>');
+            });
+            it('Track details list should be an array with 2 items', function () {
+                expect(tracks).to.be.an('array').and.have.length(2);
+            });
+            it('Second Track Uri should be correct', function () {
+                expect(tracks[1].track).to.be.eql('tidal://track?version=1&trackId=34835954');
+            });
+            it('Second Track Metadata should be correct', function () {
+                expect(tracks[1].metadata).to.be.eql('<DIDL-Lite xmlns="urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/"><item><dc:title xmlns:dc="http://purl.org/dc/elements/1.1/">Gun</dc:title><upnp:class xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">object.item.audioItem.musicTrack</upnp:class><upnp:albumArtURI xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">http://images.tidalhifi.com/im/im?w=250&amp;h=250&amp;albumid=34835951</upnp:albumArtURI><upnp:album xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">The Bones Of What You Believe (Special Edition)</upnp:album><upnp:artist xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">CHVRCHES</upnp:artist><res protocolInfo="http-get:*:*:*">tidal://track?version=1&amp;trackId=34835954</res></item></DIDL-Lite>');
+            });
+        });
     });
     describe('When getting track id list of radio stations', function () {
         var trackIds;
@@ -71,6 +199,12 @@ describe('Ds', function () {
         });
         it('Should use the radio control uri', function () {
             expect(soapRequestArgs[1]).to.be.eql('/radio');
+        });
+        it('Should use radio service urn', function () {
+            expect(soapRequestArgs[2]).to.be.eql('urn:av-openhome-org:service:Radio:1');
+        });
+        it('Should use IdArray command', function () {
+            expect(soapRequestArgs[3]).to.be.eql('IdArray');
         });
         it('Radio station list should be an array with 13 item', function () {
             expect(trackIds).to.be.an('array').and.have.length(13);
@@ -104,6 +238,9 @@ describe('Ds', function () {
             });
             it('Should use the radio control uri', function () {
                 expect(soapRequestArgs[1]).to.be.eql('/radio');
+            });
+            it('Should use radio service urn', function () {
+                expect(soapRequestArgs[2]).to.be.eql('urn:av-openhome-org:service:Radio:1');
             });
             it('Should use ReadList command', function () {
                 expect(soapRequestArgs[3]).to.be.eql('ReadList');
@@ -152,6 +289,9 @@ describe('Ds', function () {
             it('Should use the radio control uri', function () {
                 expect(soapRequestArgs[1]).to.be.eql('/radio');
             });
+            it('Should use radio service urn', function () {
+                expect(soapRequestArgs[2]).to.be.eql('urn:av-openhome-org:service:Radio:1');
+            });
             it('Should use ReadList command', function () {
                 expect(soapRequestArgs[3]).to.be.eql('ReadList');
             });
@@ -198,8 +338,11 @@ describe('Ds', function () {
                 setEncoding: sinon.spy()
             });
         });
-        it('Should use the control control uri', function () {
-            expect(soapRequestArgs[1]).to.be.eql('/control');
+        it('Should use the info control uri', function () {
+            expect(soapRequestArgs[1]).to.be.eql('/info');
+        });
+        it('Should use info service urn', function () {
+            expect(soapRequestArgs[2]).to.be.eql('urn:av-openhome-org:service:Info:1');
         });
         it('Should use Track command', function () {
             expect(soapRequestArgs[3]).to.be.eql('Track');
@@ -229,6 +372,9 @@ describe('Ds', function () {
         it('Should use the radio control uri', function () {
             expect(soapRequestArgs[1]).to.be.eql('/radio');
         });
+        it('Should use radio service urn', function () {
+            expect(soapRequestArgs[2]).to.be.eql('urn:av-openhome-org:service:Radio:1');
+        });
         it('Should use SetId command', function () {
             expect(soapRequestArgs[3]).to.be.eql('SetId');
         });
@@ -250,6 +396,9 @@ describe('Ds', function () {
         });
         it('Should use the product control uri', function () {
             expect(soapRequestArgs[1]).to.be.eql('/product');
+        });
+        it('Should use product service urn', function () {
+            expect(soapRequestArgs[2]).to.be.eql('urn:av-openhome-org:service:Product:1');
         });
         it('Should use SetSourceIndex command', function () {
             expect(soapRequestArgs[3]).to.be.eql('SetSourceIndex');
@@ -283,6 +432,9 @@ describe('Ds', function () {
         it('Should use the product control uri', function () {
             expect(soapRequestArgs[1]).to.be.eql('/product');
         });
+        it('Should use product service urn', function () {
+            expect(soapRequestArgs[2]).to.be.eql('urn:av-openhome-org:service:Product:1');
+        });
         it('Should use Standby command', function () {
             expect(soapRequestArgs[3]).to.be.eql('Standby');
         });
@@ -303,6 +455,9 @@ describe('Ds', function () {
         });
         it('Should use the product control uri', function () {
             expect(soapRequestArgs[1]).to.be.eql('/product');
+        });
+        it('Should use product service urn', function () {
+            expect(soapRequestArgs[2]).to.be.eql('urn:av-openhome-org:service:Product:1');
         });
         it('Should use SetStandby command', function () {
             expect(soapRequestArgs[3]).to.be.eql('SetStandby');
@@ -325,6 +480,9 @@ describe('Ds', function () {
         it('Should use the product control uri', function () {
             expect(soapRequestArgs[1]).to.be.eql('/product');
         });
+        it('Should use product service urn', function () {
+            expect(soapRequestArgs[2]).to.be.eql('urn:av-openhome-org:service:Product:1');
+        });
         it('Should use SetStandby command', function () {
             expect(soapRequestArgs[3]).to.be.eql('SetStandby');
         });
@@ -345,6 +503,9 @@ describe('Ds', function () {
         });
         it('Should use the playlist control uri', function () {
             expect(soapRequestArgs[1]).to.be.eql('/playlist');
+        });
+        it('Should use playlist service urn', function () {
+            expect(soapRequestArgs[2]).to.be.eql('urn:av-openhome-org:service:Playlist:1');
         });
         it('Should use SetShuffle command', function () {
             expect(soapRequestArgs[3]).to.be.eql('SetShuffle');
@@ -367,6 +528,9 @@ describe('Ds', function () {
         it('Should use the playlist control uri', function () {
             expect(soapRequestArgs[1]).to.be.eql('/playlist');
         });
+        it('Should use playlist service urn', function () {
+            expect(soapRequestArgs[2]).to.be.eql('urn:av-openhome-org:service:Playlist:1');
+        });
         it('Should use SetShuffle command', function () {
             expect(soapRequestArgs[3]).to.be.eql('SetShuffle');
         });
@@ -388,6 +552,9 @@ describe('Ds', function () {
         it('Should use the playlist control uri', function () {
             expect(soapRequestArgs[1]).to.be.eql('/playlist');
         });
+        it('Should use playlist service urn', function () {
+            expect(soapRequestArgs[2]).to.be.eql('urn:av-openhome-org:service:Playlist:1');
+        });
         it('Should use DeleteAll command', function () {
             expect(soapRequestArgs[3]).to.be.eql('DeleteAll');
         });
@@ -405,6 +572,9 @@ describe('Ds', function () {
         });
         it('Should use the radio control uri', function () {
             expect(soapRequestArgs[1]).to.be.eql('/radio');
+        });
+        it('Should use radio service urn', function () {
+            expect(soapRequestArgs[2]).to.be.eql('urn:av-openhome-org:service:Radio:1');
         });
         it('Should use Play command', function () {
             expect(soapRequestArgs[3]).to.be.eql('Play');
@@ -424,6 +594,9 @@ describe('Ds', function () {
         it('Should use the playlist control uri', function () {
             expect(soapRequestArgs[1]).to.be.eql('/playlist');
         });
+        it('Should use playlist service urn', function () {
+            expect(soapRequestArgs[2]).to.be.eql('urn:av-openhome-org:service:Playlist:1');
+        });
         it('Should use Play command', function () {
             expect(soapRequestArgs[3]).to.be.eql('Play');
         });
@@ -441,6 +614,9 @@ describe('Ds', function () {
         });
         it('Should use the playlist control uri', function () {
             expect(soapRequestArgs[1]).to.be.eql('/playlist');
+        });
+        it('Should use playlist service urn', function () {
+            expect(soapRequestArgs[2]).to.be.eql('urn:av-openhome-org:service:Playlist:1');
         });
         it('Should use SeekIndex command', function () {
             expect(soapRequestArgs[3]).to.be.eql('SeekIndex');
@@ -463,6 +639,9 @@ describe('Ds', function () {
         it('Should use the volume control uri', function () {
             expect(soapRequestArgs[1]).to.be.eql('/volume');
         });
+        it('Should use volume service urn', function () {
+            expect(soapRequestArgs[2]).to.be.eql('urn:av-openhome-org:service:Volume:1');
+        });
         it('Should use VolumeInc command', function () {
             expect(soapRequestArgs[3]).to.be.eql('VolumeInc');
         });
@@ -480,6 +659,9 @@ describe('Ds', function () {
         });
         it('Should use the volume control uri', function () {
             expect(soapRequestArgs[1]).to.be.eql('/volume');
+        });
+        it('Should use volume service urn', function () {
+            expect(soapRequestArgs[2]).to.be.eql('urn:av-openhome-org:service:Volume:1');
         });
         it('Should use VolumeDec command', function () {
             expect(soapRequestArgs[3]).to.be.eql('VolumeDec');
@@ -512,6 +694,9 @@ describe('Ds', function () {
             })
             it('Should use the playlist control uri', function () {
                 expect(soapRequestArgs[1]).to.be.eql('/playlist');
+            });
+            it('Should use playlist service urn', function () {
+                expect(soapRequestArgs[2]).to.be.eql('urn:av-openhome-org:service:Playlist:1');
             });
             it('Should use Insert command', function () {
                 expect(soapRequestArgs[3]).to.be.eql('Insert');
@@ -550,6 +735,9 @@ describe('Ds', function () {
             it('Should use the playlist control uri', function () {
                 expect(soapRequestArgs[1]).to.be.eql('/playlist');
             });
+            it('Should use playlist service urn', function () {
+                expect(soapRequestArgs[2]).to.be.eql('urn:av-openhome-org:service:Playlist:1');
+            });
             it('Should use Insert command', function () {
                 expect(soapRequestArgs[3]).to.be.eql('Insert');
             });
@@ -586,6 +774,9 @@ describe('Ds', function () {
         })
         it('Should use the product control uri', function () {
             expect(soapRequestArgs[1]).to.be.eql('/product');
+        });
+        it('Should use product service urn', function () {
+            expect(soapRequestArgs[2]).to.be.eql('urn:av-openhome-org:service:Product:1');
         });
         it('Should use SourceXml command', function () {
             expect(soapRequestArgs[3]).to.be.eql('SourceXml');

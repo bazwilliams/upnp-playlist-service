@@ -138,7 +138,7 @@ function ensureStatusCode(expectedStatusCode, taskMessage, callback) {
 }
 exports.Ds = function(deviceUrlRoot, serviceList) {
     this.retrieveTrackDetails = function(idArray, callback) {
-        var idArrayString = _.reduce(idArray, function (memo, num) { return memo + num + ' '; }, '');
+        var idArrayString = _.reduce(idArray, function (memo, num) { return memo + num + ' '; }, '').trim();
         upnp.soapRequest(
             deviceUrlRoot,
             serviceList['urn:av-openhome-org:service:Playlist:1'].controlUrl,
