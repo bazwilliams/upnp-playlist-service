@@ -54,11 +54,11 @@ function toScheduleResourceUsingNamedSources(sourceList) {
     };
 }
 function toSourceResource(source, index) {
-    if (source && source.Visible === 'true') {
+    if (source && source.visible) {
         return {
             index: index,
-            name: source.Name,
-            type: source.Type
+            name: source.name,
+            type: source.type
         };
     }
 }

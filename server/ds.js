@@ -33,8 +33,18 @@ function binaryIdArrayToIntList(result, callback) {
 }
 function toSourceList(result, callback) {
     if (result && result['s:Envelope']['s:Body']['u:SourceXmlResponse']) {
-            xmlParser.parseString(result['s:Envelope']['s:Body']['u:SourceXmlResponse'].Value, function (err, result) {
-            callback(null, result.SourceList.Source)
+        xmlParser.parseString(result['s:Envelope']['s:Body']['u:SourceXmlResponse'].Value, function (err, result) {
+            if (err) {
+                callback(err);
+            } else {
+                callback(null, _.map(result.SourceList.Source, function (source) {
+                    return {
+                        name: source.Name,
+                        type: source.Type,
+                        visible: source.Visible.toLowerCase() === 'true'
+                    }
+                }));
+            }
         });
     } else {
         callback(new Error('No sourceXml Found'));
