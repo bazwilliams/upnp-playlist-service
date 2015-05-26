@@ -23,7 +23,7 @@ module.exports = function(grunt) {
                         ui : 'bdd',
                         reporter : 'spec'                        
                     },
-                    reportFormats : ['html'], // other grunt-mocha-istanbul can be added here
+                    reportFormats : ['text'], // other grunt-mocha-istanbul can be added here
                     runCoverage : true // Run the unit test and generate coverage test
                 }
             }
