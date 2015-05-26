@@ -43,6 +43,7 @@
   },
   "scripts": {
     "start": "node server/app.js",
+    "test": "grunt",
     "postinstall": "bower install"
   }
 }

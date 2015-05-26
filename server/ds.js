@@ -29,7 +29,7 @@ function binaryIdArrayToIntList(result, callback) {
     _.each(_.range(buffer.length / 4), function () {
         arrayList.push(binaryList.word32bu('a').vars.a);
     });
-    callback(null, _.reject(arrayList, function (num) { return num === 0 })); 
+    callback(null, _.reject(arrayList, function (num) { return num === 0; })); 
 }
 function toSourceList(result, callback) {
     if (result && result['s:Envelope']['s:Body']['u:SourceXmlResponse']) {
@@ -42,7 +42,7 @@ function toSourceList(result, callback) {
                         name: source.Name,
                         type: source.Type,
                         visible: source.Visible.toLowerCase() === 'true'
-                    }
+                    };
                 }));
             }
         });
@@ -52,7 +52,7 @@ function toSourceList(result, callback) {
 }
 function parseNewId(result, callback) {
     if (result['s:Envelope']['s:Body']['u:InsertResponse']) {
-        callback(null, result['s:Envelope']['s:Body']['u:InsertResponse'].NewId)
+        callback(null, result['s:Envelope']['s:Body']['u:InsertResponse'].NewId);
     } else {
         callback(new Error('No NewId Found'));
     }
@@ -85,9 +85,9 @@ function readTrackListResponseToTracks(result, callback) {
 function processChannelListEntry(channelListEntry, callback) {
     xmlParser.parseString(channelListEntry.Metadata, function (err, result) {
         callback(null, {
-            title: _.isObject(result['DIDL-Lite']['item']['dc:title']) ? result['DIDL-Lite']['item']['dc:title']._ : result['DIDL-Lite']['item']['dc:title'],
-            artwork: _.isObject(result['DIDL-Lite']['item']['upnp:albumArtURI']) ? result['DIDL-Lite']['item']['upnp:albumArtURI']._ : result['DIDL-Lite']['item']['upnp:albumArtURI'],
-            uri: _.isObject(result['DIDL-Lite']['item']['res']) ? result['DIDL-Lite']['item']['res']._ : result['DIDL-Lite']['item']['res']
+            title: _.isObject(result['DIDL-Lite'].item['dc:title']) ? result['DIDL-Lite'].item['dc:title']._ : result['DIDL-Lite'].item['dc:title'],
+            artwork: _.isObject(result['DIDL-Lite'].item['upnp:albumArtURI']) ? result['DIDL-Lite'].item['upnp:albumArtURI']._ : result['DIDL-Lite'].item['upnp:albumArtURI'],
+            uri: _.isObject(result['DIDL-Lite'].item.res) ? result['DIDL-Lite'].item.res._ : result['DIDL-Lite'].item.res
         });
     });
 }
@@ -213,12 +213,8 @@ exports.Ds = function(deviceUrlRoot, serviceList) {
             if (err) {
                 callback(err);
             } else {
-                var resources = _.isArray(result['DIDL-Lite'].item.res)
-                    ? result['DIDL-Lite'].item.res[0]
-                    : result['DIDL-Lite'].item.res;
-                var res = _.isObject(resources)
-                    ? resources._
-                    : resources;
+                var resources = _.isArray(result['DIDL-Lite'].item.res) ? result['DIDL-Lite'].item.res[0] : result['DIDL-Lite'].item.res;
+                var res = _.isObject(resources) ? resources._ : resources;
                 if (!res) {
                     callback(new Error('Error adding ' + trackDetailsXml));
                 } else {
