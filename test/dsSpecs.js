@@ -53,7 +53,7 @@ describe('Ds', function () {
                 's:Envelope': { 
                     's:Body' : { 
                         'u:IdArrayResponse' : {
-                            'Token' : 12,
+                            'Token' : '12',
                             'Array' : 'AAAAFQAAAAQAAAAFAAAACAAAABkAAAAWAAAAGAAAAAwAAAATAAAAFw=='
                         }
                     }
@@ -181,7 +181,7 @@ describe('Ds', function () {
                 's:Envelope': { 
                     's:Body' : { 
                         'u:IdArrayResponse' : {
-                            'Token' : 4,
+                            'Token' : '4',
                             'Array' : 'AAAAFwAAABgAAAAZAAAAGgAAABsAAAAcAAAAHQAAAB4AAAAfAAAAIAAAACEAAAAiAAAAIwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=='
                         }
                     }
@@ -414,7 +414,7 @@ describe('Ds', function () {
                 's:Envelope': { 
                     's:Body' : { 
                         'u:StandbyResponse' : {
-                            Value: 1
+                            Value: '1'
                         }
                     }
                 }
@@ -439,7 +439,7 @@ describe('Ds', function () {
             expect(soapRequestArgs[3]).to.be.eql('Standby');
         });
         it('Standby state should be correct', function () {
-            expect(standbyState).to.be.eql(1);
+            expect(standbyState).to.be.eql('1');
         });
     });
     describe('When putting to sleep', function() {
@@ -676,7 +676,7 @@ describe('Ds', function () {
                     's:Envelope': { 
                         's:Body' : { 
                             'u:InsertResponse' : {
-                                NewId: 13,
+                                NewId: '13',
                             }
                         }
                     }
@@ -705,7 +705,7 @@ describe('Ds', function () {
                 expect(soapRequestArgs[4]).to.be.eql('<AfterId>12</AfterId><Uri>http://192.168.1.126:9790/minimserver/*/music/Albums/Joe*20Stilgoe*20-*20New*20Songs*20For*20Old*20Souls/01*20-*20Totally.flac</Uri><Metadata>&lt;DIDL-Lite xmlns=&quot;urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/&quot;&gt;&lt;item&gt;&lt;dc:title xmlns:dc=&quot;http://purl.org/dc/elements/1.1/&quot;&gt;Totally&lt;/dc:title&gt;&lt;upnp:class xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot;&gt;object.item.audioItem.musicTrack&lt;/upnp:class&gt;&lt;upnp:albumArtURI xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot;&gt;http://192.168.1.126:9790/minimserver/*/music/Albums/Joe*20Stilgoe*20-*20New*20Songs*20For*20Old*20Souls/01*20-*20Totally.flac/$!picture-299-6806038.png&lt;/upnp:albumArtURI&gt;&lt;upnp:album xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot;&gt;New Songs For Old Souls (Digital Deluxe Version)&lt;/upnp:album&gt;&lt;upnp:artist xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot;&gt;Joe Stilgoe&lt;/upnp:artist&gt;&lt;upnp:artist role=&quot;AlbumArtist&quot; xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot;&gt;Joe Stilgoe&lt;/upnp:artist&gt;&lt;dc:date xmlns:dc=&quot;http://purl.org/dc/elements/1.1/&quot;&gt;2015-01-01&lt;/dc:date&gt;&lt;upnp:genre xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot;&gt;Jazz&lt;/upnp:genre&gt;&lt;res sampleFrequency=&quot;96000&quot; bitsPerSample=&quot;24&quot; bitrate=&quot;576000&quot; protocolInfo=&quot;http-get:*:audio/x-flac:*&quot;&gt;http://192.168.1.126:9790/minimserver/*/music/Albums/Joe*20Stilgoe*20-*20New*20Songs*20For*20Old*20Souls/01*20-*20Totally.flac&lt;/res&gt;&lt;/item&gt;&lt;/DIDL-Lite&gt;</Metadata>');
             });
             it('Should return the new track id', function () {
-                expect(newTrackId).to.be.eql(13);
+                expect(newTrackId).to.be.eql('13');
             });
         });
         describe(' a track with multiple resources', function () {

@@ -1,11 +1,6 @@
 var async = require('async');
 var playlists = require('./playlists.js');
 
-function delay(milliseconds) {
-    return function (callback) {
-        setTimeout(callback, milliseconds);
-    };
-}
 function ensureOn(ds) {
     return function checkStandbyState(callback) {
         async.waterfall([
