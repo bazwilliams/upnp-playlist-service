@@ -1,33 +1,27 @@
 module.exports = function(grunt) {
-	grunt.loadNpmTasks('grunt-node-mocha');
 	grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-mocha-test');
 	grunt.initConfig({
     	pkg: grunt.file.readJSON('package.json'),
 	    watch: {
 		  scripts: {
 		    files: ['**/*.js', '**/*.json', '**/*.jade', '**/*.css'],
-		    tasks: ['node_mocha'],
+		    tasks: ['mochaTest'],
 		    options: {
-		      spawn: false,
+		      spawn: true,
 		    },
 		  },
-		},  
-		node_mocha: {
-            with_coverage: {
-                src : ['test'],
-                options : {
-                    mochaOptions : {
-                        globals : ['expect'],
-                        timeout : 3000,
-                        ignoreLeaks : false,
-                        ui : 'bdd',
-                        reporter : 'spec'                        
-                    },
-                    reportFormats : ['text'], // other grunt-mocha-istanbul can be added here
-                    runCoverage : true // Run the unit test and generate coverage test
-                }
+		},
+        mochaTest: {
+            test: {
+                options: {
+                    reporter: 'spec',
+                    quiet: false,
+                    clearRequireCache: false
+                },
+                src: ['test/**/*.js']
             }
-  		}
+        }
   	});
-	grunt.registerTask('default', ['node_mocha']);
+	grunt.registerTask('default', ['mochaTest']);
 };
