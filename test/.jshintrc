@@ -1,0 +1,24 @@
+{
+  "nonew": true,
+  "curly": true,
+  "noarg": true,
+  "forin": true,
+  "noempty": true,
+  "node": true,
+  "eqeqeq": true,
+  "strict": true,
+  "undef": true,
+  "bitwise": true,
+  "expr": true,
+  "predef": [
+    "describe",
+    "xdescribe",
+    "before",
+    "beforeEach",
+    "after",
+    "afterEach",
+    "it",
+    "xit",
+    "expect"
+  ]
+}
