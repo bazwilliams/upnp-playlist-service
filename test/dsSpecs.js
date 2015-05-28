@@ -17,14 +17,14 @@ describe('Ds', function () {
                 soapRequestCb = callback;
                 return {
                     on: function () {}
-                }
+                };
             }
         };
         responseParserMock = {
             xml: function (parser, callback) {
                 return function (res) {
                     parser(soapObject, callback);
-                }
+                };
             }
         };
         mockery.enable({
@@ -691,7 +691,7 @@ describe('Ds', function () {
                     statusCode: 200,
                     setEncoding: sinon.spy()
                 });
-            })
+            });
             it('Should use the playlist control uri', function () {
                 expect(soapRequestArgs[1]).to.be.eql('/playlist');
             });
@@ -747,7 +747,7 @@ describe('Ds', function () {
             it('Should return the new track id', function () {
                 expect(newTrackId).to.be.eql(13);
             });
-        })
+        });
     });
     describe('When getting sources', function () {
         var sources;
@@ -771,7 +771,7 @@ describe('Ds', function () {
                 statusCode: 200,
                 setEncoding: sinon.spy()
             });
-        })
+        });
         it('Should use the product control uri', function () {
             expect(soapRequestArgs[1]).to.be.eql('/product');
         });
@@ -791,5 +791,5 @@ describe('Ds', function () {
                 visible: true
             });
         });
-    })
+    });
 });
