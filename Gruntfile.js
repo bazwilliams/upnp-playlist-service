@@ -1,18 +1,8 @@
 module.exports = function(grunt) {
-	grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-mocha-test');
     grunt.loadNpmTasks('grunt-mocha-istanbul');
 	grunt.initConfig({
     	pkg: grunt.file.readJSON('package.json'),
-	    watch: {
-		  scripts: {
-		    files: ['**/*.js', '**/*.json', '**/*.jade', '**/*.css'],
-		    tasks: ['mochaTest'],
-		    options: {
-		      spawn: true,
-		    },
-		  },
-		},
         mochaTest: {
             test: {
                 options: {
@@ -27,6 +17,7 @@ module.exports = function(grunt) {
             coverage: {
                 src: 'test', // a folder works nicely
                 options: {
+                    reporter: 'progress',
                     reportFormats: ['text'],
                     mask: '*Specs.js'
                 }
