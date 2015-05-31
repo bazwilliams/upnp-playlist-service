@@ -34,3 +34,4 @@ persist
 
 # Node tools stuff
 .ntvs_analysis.dat*
+.idea/workspace.xml
