@@ -1,20 +1,30 @@
-var storage = require('./lib/node-persist.js');
+var storage = require('node-persist');
 
-var config = {};
+var dirty = true;
+var cachedConfig = {};
+
+function configFactory(musicRoot, playlistPath) {
+	return {
+		musicRoot: musicRoot,
+		playlistPath: playlistPath
+	};
+}
 
 exports.config = function() {
-	return config;
+	if (dirty) {
+		cachedConfig = storage.getItemSync('configuration.json');
+		dirty = false;
+	}
+	return cachedConfig;
 };
 
 exports.storeConfiguration = function(newConfig, callback) {
-	config = newConfig;
-	storage.setItem('configuration.json', newConfig, callback);
+	storage.setItem('configuration.json', configFactory(newConfig.musicRoot, newConfig.playlistPath), function(err, data) {
+		if (err) {
+			callback(err);
+		} else {
+			cachedConfig = newConfig;
+			dirty = false;
+		}
+	});
 }
-
-storage.getItem('configuration.json', function (err, data) {
-	if (err) {
-		console.err(err);
-	} else if (data) {
-		config = data;
-	}
-});

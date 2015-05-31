@@ -1,4 +1,4 @@
-var storage = require('./lib/node-persist.js');
+var storage = require('node-persist');
 var scheduler = require('node-schedule');
 var _ = require('underscore');
 var guid = require('node-uuid');
