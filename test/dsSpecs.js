@@ -5,7 +5,7 @@ var sinonChai = require("sinon-chai");
 var expect = chai.expect;
 chai.use(sinonChai);
 
-describe('Ds', function () {
+describe('ds', function () {
     var ds, upnpMock, soapRequestCb, responseParserMock, soapObject, soapRequestArgs;
     beforeEach(function () {
         soapObject = void 0;

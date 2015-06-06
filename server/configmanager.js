@@ -1,3 +1,5 @@
+"use strict";
+
 var storage = require('node-persist');
 
 var dirty = true;
@@ -19,12 +21,13 @@ exports.config = function() {
 };
 
 exports.storeConfiguration = function(newConfig, callback) {
-	storage.setItem('configuration.json', configFactory(newConfig.musicRoot, newConfig.playlistPath), function(err, data) {
+	storage.setItem('configuration.json', configFactory(newConfig.musicRoot, newConfig.playlistPath), function(err) {
 		if (err) {
 			callback(err);
 		} else {
 			cachedConfig = newConfig;
 			dirty = false;
+            callback();
 		}
 	});
-}
+};
