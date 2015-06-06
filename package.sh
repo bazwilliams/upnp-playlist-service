@@ -19,7 +19,7 @@ BRANCH=${1}
 GIT_COMMIT=`git ls-remote git@github.com:bazwilliams/upnp-playlist-service.git ${BRANCH} | cut -f 1`
 TIMESTAMP=`date --utc +%FT%TZ`
 PACKAGE_NAME="upnp-playlist-service"
-PACKAGE_VERSION="0.0.2"
+PACKAGE_VERSION="0.0.3"
 
 echo "*************************************"
 echo "*"

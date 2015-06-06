@@ -23,7 +23,7 @@ A playlist builder function exists to add tracks from any playing DS onto any pl
 
 ### Debian
 
-Download the .deb file from https://github.com/bazwilliams/upnp-playlist-service/raw/master/packages/upnp-playlist-service-0.0.2.deb and install as normal. 
+Download the .deb file from https://github.com/bazwilliams/upnp-playlist-service/raw/master/packages/upnp-playlist-service-0.0.3.deb and install as normal. 
 
 You can run the service using
 `/etc/init.d/upnp-playlist-service start`
