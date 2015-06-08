@@ -2,12 +2,12 @@
 
 if [ -e deb-src ];
 then
-  sudo rm -rf deb-src
+  rm -rf deb-src
 fi
 
 if [ -e upnp-playlist-service-*.deb ];
 then
-  sudo rm upnp-playlist-service-*.deb
+  rm upnp-playlist-service-*.deb
 fi
 
 SYSROOT=deb-src/sysroot
@@ -89,20 +89,20 @@ echo 2.0 > debian-binary
 popd
 
 echo "Setting Permissions"
-sudo chown -R root:root deb-src
+fakeroot -- chown -R root:root deb-src
 
 echo "Creating deb package"
 pushd deb-src
 
 pushd sysroot/
-sudo tar czf ../data.tar.gz *
+fakeroot -- tar czf ../data.tar.gz *
 popd
 
 pushd DEBIAN/
-sudo tar czf ../control.tar.gz *
+fakeroot -- tar czf ../control.tar.gz *
 popd
 
-sudo ar r ../upnp-playlist-service-${PACKAGE_VERSION}.deb debian-binary control.tar.gz data.tar.gz
-sudo rm -f data.tar.gz control.tar.gz
+fakeroot -- ar r ../upnp-playlist-service-${PACKAGE_VERSION}.deb debian-binary control.tar.gz data.tar.gz
+rm -f data.tar.gz control.tar.gz
 popd
 
