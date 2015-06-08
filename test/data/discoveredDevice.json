@@ -1,0 +1,6 @@
+{
+  "server": "RTEMS/4.7.99, UPnP/1.0, Linn UPnP Stack/2.0",
+  "location": "http://192.168.1.136:55178/Ds/device.xml",
+  "st": "urn:av-openhome-org:service:Product:1",
+  "usn": "uuid:4c494e4e-0026-0f21-cc9a-01320147013f::urn:av-openhome-org:service:Product:1"
+}

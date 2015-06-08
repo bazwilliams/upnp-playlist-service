@@ -1,0 +1,102 @@
+[
+  {
+    "name": "Playlist",
+    "type": "Playlist",
+    "visible": true
+  },
+  {
+    "name": "Radio",
+    "type": "Radio",
+    "visible": true
+  },
+  {
+    "name": "UPnP AV",
+    "type": "UpnpAv",
+    "visible": false
+  },
+  {
+    "name": "Songcast",
+    "type": "Receiver",
+    "visible": true
+  },
+  {
+    "name": "Net Aux",
+    "type": "NetAux",
+    "visible": false
+  },
+  {
+    "name": "Analog1",
+    "type": "Analog",
+    "visible": false
+  },
+  {
+    "name": "Analog2",
+    "type": "Analog",
+    "visible": false
+  },
+  {
+    "name": "Analog3",
+    "type": "Analog",
+    "visible": false
+  },
+  {
+    "name": "LP12",
+    "type": "Analog",
+    "visible": true
+  },
+  {
+    "name": "Front Aux",
+    "type": "Analog",
+    "visible": true
+  },
+  {
+    "name": "SPDIF1",
+    "type": "Digital",
+    "visible": false
+  },
+  {
+    "name": "SPDIF2",
+    "type": "Digital",
+    "visible": false
+  },
+  {
+    "name": "SPDIF3",
+    "type": "Digital",
+    "visible": false
+  },
+  {
+    "name": "TOSLINK1",
+    "type": "Digital",
+    "visible": false
+  },
+  {
+    "name": "TOSLINK2",
+    "type": "Digital",
+    "visible": false
+  },
+  {
+    "name": "TOSLINK3",
+    "type": "Digital",
+    "visible": false
+  },
+  {
+    "name": "Bluray",
+    "type": "Hdmi",
+    "visible": true
+  },
+  {
+    "name": "Tivo",
+    "type": "Hdmi",
+    "visible": true
+  },
+  {
+    "name": "HDMI3",
+    "type": "Hdmi",
+    "visible": false
+  },
+  {
+    "name": "Slimport",
+    "type": "Hdmi",
+    "visible": true
+  }
+]
