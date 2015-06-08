@@ -1,3 +1,5 @@
+"use strict";
+
 var ssdp = require("node-upnp-ssdp");
 var http = require('http');
 var _ = require('underscore');
@@ -6,9 +8,9 @@ var Ds = require('./ds.js').Ds;
 var responseParsers = require('./responseparsers.js');
 var devices = {};
 
-const searchType = 'urn:av-openhome-org:service:Product:1';
+var searchType = 'urn:av-openhome-org:service:Product:1';
 
-function parseUuid (usn, st) {
+function parseUuid (usn) {
     return (/uuid:(.*)?::.*/).exec(usn)[1];
 }
 
@@ -37,6 +39,7 @@ function toDeviceUsingLocation(location) {
         var ds = new Ds(location, processServiceListArray(result.root.device.serviceList.service));
         console.log('Getting sources at '+location);
         ds.getSources(function (err, results) {
+            var device;
             if (err) {
                 callback(err);
             } else {
@@ -54,12 +57,12 @@ function toDeviceUsingLocation(location) {
                         height: icon.height,
                         depth: icon.depth,
                         url: url.resolve(location, icon.url)
-                    }
+                    };
                 }
                 callback(null, device);
             }
         });
-    }
+    };
 }
 
 function processDevice(location, callback) {
@@ -69,6 +72,7 @@ function processDevice(location, callback) {
 exports.getDevices = function getDevices() {
     return _.keys(devices);
 };
+
 exports.getDevice = function getDevice(uuid) {
     return devices[uuid];
 };
