@@ -1,3 +1,8 @@
+"use strict";
+/* jshint -W024 */
+/* jshint -W079 */
+/* jshint expr:true */
+
 var chai = require('chai');
 var mockery = require('mockery');
 var sinon = require('sinon');
@@ -200,7 +205,7 @@ describe('m3u', function () {
     describe('When appending playlists', function () {
         describe('Where file does not exist locally', function () {
             beforeEach(function (done) {
-                track = {
+                var track = {
                     track: path.join('music', 'Skeleton Tiger.flac'),
                     metadata: '<DIDL-Lite>Metadata</DIDL-Lite>'
                 };
@@ -220,7 +225,7 @@ describe('m3u', function () {
         });
         describe('Where file exist locally', function () {
             beforeEach(function (done) {
-                track = {
+                var track = {
                     track: path.join('music', 'Skeleton Tiger.flac'),
                     metadata: '<DIDL-Lite>Metadata</DIDL-Lite>'
                 };

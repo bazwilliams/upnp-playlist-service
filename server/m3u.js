@@ -1,4 +1,6 @@
-﻿var _ = require('underscore');
+﻿"use strict";
+
+var _ = require('underscore');
 var fs = require('fs');
 var configManager = require('./configmanager.js');
 var path = require('path');

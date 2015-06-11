@@ -1,4 +1,7 @@
 "use strict";
+/* jshint -W024 */
+/* jshint -W079 */
+/* jshint expr:true */
 
 var chai = require('chai');
 var mockery = require('mockery');
@@ -51,7 +54,7 @@ describe('devicemanager', function () {
             nock('http://192.168.1.136:55178')
                 .post('/Ds/Product/control')
                 .reply(200, data.sources);
-            var cb = eventCallbacks['DeviceFound'];
+            var cb = eventCallbacks.DeviceFound;
 
             cb(discoveredDevice);
 

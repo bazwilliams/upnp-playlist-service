@@ -1,4 +1,7 @@
 "use strict";
+/* jshint -W024 */
+/* jshint -W079 */
+/* jshint expr:true */
 
 var chai = require('chai');
 var mockery = require('mockery');

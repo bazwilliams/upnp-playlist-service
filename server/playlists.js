@@ -1,3 +1,5 @@
+"use strict";
+
 var async = require('async');
 var m3u = require('./m3u.js');
 var trackProcessor = require('./trackprocessor.js');

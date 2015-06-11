@@ -1,3 +1,8 @@
+"use strict";
+/* jshint -W024 */
+/* jshint -W079 */
+/* jshint expr:true */
+
 var chai = require('chai');
 var mockery = require('mockery');
 var sinon = require('sinon');
@@ -28,7 +33,7 @@ describe('recipes', function () {
             var volumeInc = sinon.spy(function(callback) { callback(); });
             dsFake = {
                 volumeInc: volumeInc
-            }
+            };
             sut.volumeUp(dsFake, 5, done);
         });
         it('Should call DS volume inc 5 times', function () {
@@ -41,7 +46,7 @@ describe('recipes', function () {
             var volumeDec = sinon.spy(function(callback) { callback(); });
             dsFake = {
                 volumeDec: volumeDec
-            }
+            };
             sut.volumeDown(dsFake, 5, done);
         });
         it('Should call DS volume dec 5 times', function () {
@@ -79,6 +84,7 @@ describe('recipes', function () {
             });
         });
         describe('When DS is currently off', function () {
+            var result;
             beforeEach(function (done) {
                 dsFake.standbyState = function (callback) { callback(null, '1'); };
                 sut.toggleStandby(dsFake, function(err, data) {
@@ -138,7 +144,7 @@ describe('recipes', function () {
                         expect(dsFake.enableShuffle).to.have.been.called;
                     });
                     it('Should start playback', function () {
-                        expect(dsFake.playFromPlaylistIndex).to.have.been.calledWith(trackIds.length + 1);;
+                        expect(dsFake.playFromPlaylistIndex).to.have.been.calledWith(trackIds.length + 1);
                     });
                     it('Should not play the radio', function () {
                         expect(dsFake.playRadio).not.to.have.been.called;
