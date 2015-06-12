@@ -19,7 +19,7 @@ BRANCH=${1}
 GIT_COMMIT=`git ls-remote git@github.com:bazwilliams/upnp-playlist-service.git ${BRANCH} | cut -f 1`
 TIMESTAMP=`date --utc +%FT%TZ`
 PACKAGE_NAME="upnp-playlist-service"
-PACKAGE_VERSION="0.0.3"
+PACKAGE_VERSION="0.0.4"
 
 echo "*************************************"
 echo "*"
@@ -99,7 +99,7 @@ pushd DEBIAN/
 fakeroot -- tar czf ../control.tar.gz *
 popd
 
-fakeroot -- ar r ../upnp-playlist-service-${PACKAGE_VERSION}.deb debian-binary control.tar.gz data.tar.gz
+fakeroot -- ar r ../packages/upnp-playlist-service-${PACKAGE_VERSION}.deb debian-binary control.tar.gz data.tar.gz
 rm -f data.tar.gz control.tar.gz
 popd
 

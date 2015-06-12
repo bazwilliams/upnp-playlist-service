@@ -21,3 +21,6 @@ package.sh export-ignore
 # test
 Gruntfile.js export-ignore
 test export-ignore
+
+# packages
+*.deb export-ignore

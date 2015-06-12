@@ -1,6 +1,6 @@
 {
   "name": "upnp-playlist-service",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Playlist and Alarm Function for Linn Ds and other Upnp compatible devices",
   "author": "Barry John Williams <barry@bjw.me.uk>",
   "readme": "README.md",
