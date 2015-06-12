@@ -88,9 +88,6 @@ pushd deb-src
 echo 2.0 > debian-binary
 popd
 
-echo "Setting Permissions"
-fakeroot -- chown -R root:root deb-src
-
 echo "Creating deb package"
 pushd deb-src
 
