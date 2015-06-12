@@ -17,7 +17,7 @@ exports.config = function() {
 		cachedConfig = storage.getItemSync('configuration.json');
 		dirty = false;
 	}
-	return cachedConfig;
+	return cachedConfig || {};
 };
 
 exports.storeConfiguration = function(newConfig, callback) {

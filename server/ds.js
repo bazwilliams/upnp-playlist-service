@@ -37,13 +37,21 @@ function toSourceList(result, callback) {
             if (err) {
                 callback(err);
             } else {
-                callback(null, _.map(result.SourceList.Source, function (source) {
-                    return {
-                        name: source.Name,
-                        type: source.Type,
-                        visible: source.Visible.toLowerCase() === 'true'
-                    };
-                }));
+                if (_.isArray(result.SourceList.Source)) {
+                    callback(null, _.map(result.SourceList.Source, function (source) {
+                        return {
+                            name: source.Name,
+                            type: source.Type,
+                            visible: source.Visible.toLowerCase() === 'true'
+                        };
+                    }));
+                } else {
+                    callback(null, [{
+                        name: result.SourceList.Source.Name,
+                        type: result.SourceList.Source.Type,
+                        visible: result.SourceList.Source.Visible.toLowerCase() === 'true'
+                    }]);
+                }
             }
         });
     } else {
@@ -291,14 +299,20 @@ exports.Ds = function(deviceUrlRoot, serviceList) {
         ).on('error', callback);
     };
     this.getRadioIdArray = function(callback) {
-        upnp.soapRequest(
-            deviceUrlRoot,
-            serviceList['urn:av-openhome-org:service:Radio:1'].controlUrl,
-            'urn:av-openhome-org:service:Radio:1',
-            'IdArray',
-            '',
-            responseParsers.xml(binaryIdArrayToIntList, callback)
-        ).on('error', callback);
+        if(!serviceList['urn:av-openhome-org:service:Radio:1']) {
+            var error = new Error('No Radio Service');
+            error.statusCode = 404;
+            callback(error);
+        } else {
+            upnp.soapRequest(
+                deviceUrlRoot,
+                serviceList['urn:av-openhome-org:service:Radio:1'].controlUrl,
+                'urn:av-openhome-org:service:Radio:1',
+                'IdArray',
+                '',
+                responseParsers.xml(binaryIdArrayToIntList, callback)
+            ).on('error', callback);
+        }
     };
     this.retrieveRadioStationDetails = function(idArray, callback) {
         var idArrayString = _.reduce(idArray, function (memo, num) { return memo + num + ' '; }, '').trim();

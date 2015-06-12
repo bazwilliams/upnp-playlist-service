@@ -6,6 +6,8 @@ var _ = require('underscore');
 var url = require('url');
 var Ds = require('./ds.js').Ds;
 var responseParsers = require('./responseparsers.js');
+var logger = require('./logger.js');
+
 var devices = {};
 
 var searchType = 'urn:av-openhome-org:service:Product:1';
@@ -37,7 +39,7 @@ function fetchIcon(icon) {
 function toDeviceUsingLocation(location) {
     return function toDevice(result, callback) {
         var ds = new Ds(location, processServiceListArray(result.root.device.serviceList.service));
-        console.log('Getting sources at '+location);
+        logger.debug('Getting sources at '+location);
         ds.getSources(function (err, results) {
             var device;
             if (err) {
@@ -81,11 +83,11 @@ ssdp.on("DeviceAvailable:urn:av-openhome-org:service:Playlist:1", function onDev
     var uuid = parseUuid(res.usn, res.nt);
     processDevice(res.location, function makeDeviceAvailable(err, device) {
         if (err) {
-            console.log('Problem processing device at ' + res.location);
-            console.log(err);
+            logger.warn('Problem processing device at ' + res.location);
+            logger.warn(err);
         } else {
             devices[uuid] = device;
-            console.log("Available: " + device.name);
+            logger.info("Available: " + device.name);
         }
     });
 });
@@ -94,7 +96,7 @@ ssdp.on("DeviceUnavailable:urn:av-openhome-org:service:Playlist:1", function onD
     var uuid = parseUuid(res.usn, res.nt);
     if (devices[uuid]) {
         var device = devices[uuid];
-        console.log("Removing: " + device.name);
+        logger.info("Removing: " + device.name);
         delete devices[uuid];
     }
 });
@@ -103,11 +105,11 @@ ssdp.on("DeviceFound", function onDeviceFound(res) {
     var uuid = parseUuid(res.usn, res.st);
     processDevice(res.location, function makeDeviceAvailable(err, device) {
         if (err) {
-            console.log('Problem processing device at ' + res.location);
-            console.log(err);
+            logger.warn('Problem processing device at ' + res.location);
+            logger.warn(err);
         } else {
             devices[uuid] = device;
-            console.log("Found: " + device.name);
+            logger.info("Found: " + device.name);
         }
     });
 });

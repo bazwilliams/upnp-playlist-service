@@ -4,6 +4,7 @@ var _ = require('underscore');
 var guid = require('node-uuid');
 var devices = require('./devicemanager.js');
 var recipes = require('./recipes.js');
+var logger = require('./logger.js');
 
 var jobs = [];
 
@@ -36,7 +37,7 @@ function actionsTasks(uuid, actions, callback) {
 function scheduleJobs() {
     function callback(err) {
         if (err) {
-            console.log(err);
+            logger.error(err);
         }
     }
     _.each(jobs, function (job) {

@@ -4,6 +4,7 @@ var _ = require('underscore');
 var zpad = require('zpad');
 var async = require('async');
 var recipes = require('../recipes.js');
+var logger = require('../logger.js');
 
 function responseHandler(res) {
     return function handler(err, results) {
@@ -184,7 +185,7 @@ exports.setSleepTimer = function setDeviceSleepTimeout(req, res) {
     device.timeout = setTimeout(function () {
         device.ds.powerOff(function toSleep(err, data) {
             if (err) {
-                console.log(err);
+                logger.error(err);
             }
         });
     }, sleepTime);

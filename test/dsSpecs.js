@@ -37,11 +37,10 @@ describe('ds', function () {
         });
         mockery.registerMock('./lib/upnp.js', upnpMock);
         mockery.registerMock('./responseparsers.js', responseParserMock);
-        
+
         var Ds = require('../server/ds.js').Ds;
         ds = new Ds('/test', {
             'urn:av-openhome-org:service:Info:1' : { controlUrl: '/info' },
-            'urn:av-openhome-org:service:Radio:1' : { controlUrl: '/radio' },
             'urn:av-openhome-org:service:Product:1' : { controlUrl: '/product' },
             'urn:av-openhome-org:service:Playlist:1' : { controlUrl: '/playlist' },
             'urn:av-openhome-org:service:Volume:1' : { controlUrl: '/volume' }
@@ -50,6 +49,41 @@ describe('ds', function () {
     afterEach(function () {
         mockery.deregisterAll();
         mockery.disable();
+    });
+describe('with no radio service', function () {
+    beforeEach(function () {
+        var Ds = require('../server/ds.js').Ds;
+        ds = new Ds('/test', {
+            'urn:av-openhome-org:service:Info:1' : { controlUrl: '/info' },
+            'urn:av-openhome-org:service:Product:1' : { controlUrl: '/product' },
+            'urn:av-openhome-org:service:Playlist:1' : { controlUrl: '/playlist' },
+            'urn:av-openhome-org:service:Volume:1' : { controlUrl: '/volume' }
+        });
+    });
+    describe('When requesting radio stations', function () {
+        var error;
+        beforeEach(function (done) {
+            ds.getRadioIdArray(function (err, data) {
+                error = err;
+                done();
+            });
+        });
+        it('Should set error object', function () {
+            expect(error).to.exist;
+            expect(error.statusCode).to.be.eql(404);
+        });
+    });
+});
+describe('with radio service', function () {
+    beforeEach(function () {
+        var Ds = require('../server/ds.js').Ds;
+        ds = new Ds('/test', {
+            'urn:av-openhome-org:service:Info:1' : { controlUrl: '/info' },
+            'urn:av-openhome-org:service:Radio:1' : { controlUrl: '/radio' },
+            'urn:av-openhome-org:service:Product:1' : { controlUrl: '/product' },
+            'urn:av-openhome-org:service:Playlist:1' : { controlUrl: '/playlist' },
+            'urn:av-openhome-org:service:Volume:1' : { controlUrl: '/volume' }
+        });
     });
     describe('When getting track id list of playlist items', function () {
         var trackIds;
@@ -756,45 +790,81 @@ describe('ds', function () {
     });
     describe('When getting sources', function () {
         var sources;
-        beforeEach(function (done) {
-            var sourceXml = '<SourceList><Source><Name>Playlist</Name><Type>Playlist</Type><Visible>true</Visible></Source><Source><Name>Radio</Name><Type>Radio</Type><Visible>true</Visible></Source><Source><Name>UPnP AV</Name><Type>UpnpAv</Type><Visible>false</Visible></Source><Source><Name>Songcast</Name><Type>Receiver</Type><Visible>true</Visible></Source><Source><Name>Net Aux</Name><Type>NetAux</Type><Visible>false</Visible></Source><Source><Name>Analog1</Name><Type>Analog</Type><Visible>false</Visible></Source><Source><Name>Analog2</Name><Type>Analog</Type><Visible>false</Visible></Source><Source><Name>Analog3</Name><Type>Analog</Type><Visible>false</Visible></Source><Source><Name>LP12</Name><Type>Analog</Type><Visible>true</Visible></Source><Source><Name>Front Aux</Name><Type>Analog</Type><Visible>true</Visible></Source><Source><Name>SPDIF1</Name><Type>Digital</Type><Visible>false</Visible></Source><Source><Name>SPDIF2</Name><Type>Digital</Type><Visible>false</Visible></Source><Source><Name>SPDIF3</Name><Type>Digital</Type><Visible>false</Visible></Source><Source><Name>TOSLINK1</Name><Type>Digital</Type><Visible>false</Visible></Source><Source><Name>TOSLINK2</Name><Type>Digital</Type><Visible>false</Visible></Source><Source><Name>TOSLINK3</Name><Type>Digital</Type><Visible>false</Visible></Source><Source><Name>Bluray</Name><Type>Hdmi</Type><Visible>true</Visible></Source><Source><Name>Tivo</Name><Type>Hdmi</Type><Visible>true</Visible></Source><Source><Name>HDMI3</Name><Type>Hdmi</Type><Visible>false</Visible></Source><Source><Name>Slimport</Name><Type>Hdmi</Type><Visible>true</Visible></Source></SourceList>';
-            soapObject = { 
-                's:Envelope': { 
-                    's:Body' : { 
-                        'u:SourceXmlResponse' : {
-                            Value: sourceXml,
+        describe('When populated', function () {
+            beforeEach(function (done) {
+                var sourceXml = '<SourceList><Source><Name>Playlist</Name><Type>Playlist</Type><Visible>true</Visible></Source><Source><Name>Radio</Name><Type>Radio</Type><Visible>true</Visible></Source><Source><Name>UPnP AV</Name><Type>UpnpAv</Type><Visible>false</Visible></Source><Source><Name>Songcast</Name><Type>Receiver</Type><Visible>true</Visible></Source><Source><Name>Net Aux</Name><Type>NetAux</Type><Visible>false</Visible></Source><Source><Name>Analog1</Name><Type>Analog</Type><Visible>false</Visible></Source><Source><Name>Analog2</Name><Type>Analog</Type><Visible>false</Visible></Source><Source><Name>Analog3</Name><Type>Analog</Type><Visible>false</Visible></Source><Source><Name>LP12</Name><Type>Analog</Type><Visible>true</Visible></Source><Source><Name>Front Aux</Name><Type>Analog</Type><Visible>true</Visible></Source><Source><Name>SPDIF1</Name><Type>Digital</Type><Visible>false</Visible></Source><Source><Name>SPDIF2</Name><Type>Digital</Type><Visible>false</Visible></Source><Source><Name>SPDIF3</Name><Type>Digital</Type><Visible>false</Visible></Source><Source><Name>TOSLINK1</Name><Type>Digital</Type><Visible>false</Visible></Source><Source><Name>TOSLINK2</Name><Type>Digital</Type><Visible>false</Visible></Source><Source><Name>TOSLINK3</Name><Type>Digital</Type><Visible>false</Visible></Source><Source><Name>Bluray</Name><Type>Hdmi</Type><Visible>true</Visible></Source><Source><Name>Tivo</Name><Type>Hdmi</Type><Visible>true</Visible></Source><Source><Name>HDMI3</Name><Type>Hdmi</Type><Visible>false</Visible></Source><Source><Name>Slimport</Name><Type>Hdmi</Type><Visible>true</Visible></Source></SourceList>';
+                soapObject = {
+                    's:Envelope': {
+                        's:Body': {
+                            'u:SourceXmlResponse': {
+                                Value: sourceXml,
+                            }
                         }
                     }
-                }
-            };
-            ds.getSources(function (err, data) {
-                expect(err).to.not.exist;
-                sources = data;
-                done();
+                };
+                ds.getSources(function (err, data) {
+                    expect(err).to.not.exist;
+                    sources = data;
+                    done();
+                });
+                soapRequestCb({
+                    statusCode: 200,
+                    setEncoding: sinon.spy()
+                });
             });
-            soapRequestCb({
-                statusCode: 200,
-                setEncoding: sinon.spy()
+            it('Should use the product control uri', function () {
+                expect(soapRequestArgs[1]).to.be.eql('/product');
+            });
+            it('Should use product service urn', function () {
+                expect(soapRequestArgs[2]).to.be.eql('urn:av-openhome-org:service:Product:1');
+            });
+            it('Should use SourceXml command', function () {
+                expect(soapRequestArgs[3]).to.be.eql('SourceXml');
+            });
+            it('Should return correct number of sources', function () {
+                expect(sources).to.be.an('array').and.have.length(20);
+            });
+            it('Should have correct sources', function () {
+                expect(sources[0]).to.be.eql({
+                    name: 'Playlist',
+                    type: 'Playlist',
+                    visible: true
+                });
             });
         });
-        it('Should use the product control uri', function () {
-            expect(soapRequestArgs[1]).to.be.eql('/product');
-        });
-        it('Should use product service urn', function () {
-            expect(soapRequestArgs[2]).to.be.eql('urn:av-openhome-org:service:Product:1');
-        });
-        it('Should use SourceXml command', function () {
-            expect(soapRequestArgs[3]).to.be.eql('SourceXml');
-        });
-        it('Should return correct number of sources', function () {
-            expect(sources).to.be.an('array').and.have.length(20);
-        });
-        it('Should have correct sources', function () {
-            expect(sources[0]).to.be.eql({
-                name: 'Playlist',
-                type: 'Playlist',
-                visible: true
+        describe('When source list has one item', function () {
+            beforeEach(function (done) {
+                var sourceXml = '<SourceList><Source><Name>Disc</Name><Type>Disc</Type><Visible>true</Visible></Source></SourceList>';
+                soapObject = {
+                    's:Envelope': {
+                        's:Body': {
+                            'u:SourceXmlResponse': {
+                                Value: sourceXml,
+                            }
+                        }
+                    }
+                };
+                ds.getSources(function (err, data) {
+                    expect(err).to.not.exist;
+                    sources = data;
+                    done();
+                });
+                soapRequestCb({
+                    statusCode: 200,
+                    setEncoding: sinon.spy()
+                });
+            });
+            it('Should return correct number of sources', function () {
+                expect(sources).to.be.an('array').and.have.length(1);
+            });
+            it('Should have correct sources', function () {
+                expect(sources[0]).to.be.eql({
+                    name: 'Disc',
+                    type: 'Disc',
+                    visible: true
+                });
             });
         });
     });
+});
 });

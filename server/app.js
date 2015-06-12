@@ -4,6 +4,8 @@ var app = module.exports = express();
 var port = process.env.PORT || 18080;
 var morgan = require('morgan');
 var api = require('./routes');
+var logger = require('./logger.js');
+
 /**
  * Configuration
  */
@@ -13,7 +15,7 @@ app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
 
 app.use(bodyParser.json());
-app.use(morgan('dev'));
+app.use(morgan(':remote-addr :method :url :status :response-time', { stream: logger.stream }));
 app.use('/', express.static(__dirname +  '/../public'));
 app.use('/bower_components',  express.static(__dirname + '/../bower_components'));
 
@@ -55,5 +57,5 @@ app.put('/api/configuration', api.configuration.store);
  * Start Server
  */
 app.listen(port, function () {
-    console.log('Express server listening on port ' + port);
+    logger.info('Express server listening on port ' + port);
 });

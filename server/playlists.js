@@ -24,7 +24,7 @@ function storePlaylist(tracks, playlistName, callback) {
 function queueAllTracks(ds) {
     return function queueAllTracksGivenDs(tracks, callback) {
         async.mapSeries(
-            tracks.reverse(),
+            _.clone(tracks).reverse(),
             function queueTrackAtFront(trackXml, iterCallback) {
                 ds.queueTrack(trackXml, 0, iterCallback);
             },

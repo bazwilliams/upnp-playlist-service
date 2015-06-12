@@ -21,18 +21,26 @@ function combine(lines, callback) {
 }
 
 exports.list = function list(callback) {
-    fs.readdir(path.normalize(configManager.config().playlistPath), function processPlaylistFiles(err, files) {
-        if (err) {
-            callback(err);
-        } else {
-            callback(null, 
-                _.chain(files)
-                    .filter(function (filename) { return filename.match(/\.m3u$/); })
-                    .map(function (filename) { return filename.slice(0,-4); })
-                    .compact()
-                    .value());
-        }
-    });
+    if (!configManager.config().playlistPath) {
+        callback(new Error('No PlaylistPath Set'));
+    } else {
+        fs.readdir(path.normalize(configManager.config().playlistPath), function processPlaylistFiles(err, files) {
+            if (err) {
+                callback(err);
+            } else {
+                callback(null,
+                    _.chain(files)
+                        .filter(function (filename) {
+                            return filename.match(/\.m3u$/);
+                        })
+                        .map(function (filename) {
+                            return filename.slice(0, -4);
+                        })
+                        .compact()
+                        .value());
+            }
+        });
+    }
 };
 
 exports.read = function read(playlistName, callback) {

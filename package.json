@@ -24,6 +24,7 @@
     "node-upnp-ssdp": "~0.0.3",
     "node-uuid": "~1.4.1",
     "underscore": ">= 1.6.0",
+    "winston": "^1.0.0",
     "xml2js": ">= 0.4.2",
     "zpad": "^0.5.0"
   },
