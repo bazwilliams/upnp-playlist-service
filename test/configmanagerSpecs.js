@@ -15,7 +15,8 @@ describe('configmanager', function () {
     beforeEach(function () {
         persistFake = {
             getItemSync: sinon.stub(),
-            setItem: sinon.spy(function (filename, data, callback) { callback(); })
+            setItem: sinon.spy(function (filename, data, callback) { callback(); }),
+            initSync: sinon.spy()
         };
         mockery.enable({
             useCleanCache: true,

@@ -31,3 +31,5 @@ exports.storeConfiguration = function(newConfig, callback) {
 		}
 	});
 };
+
+storage.initSync();
