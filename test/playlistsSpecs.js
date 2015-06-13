@@ -20,16 +20,19 @@ describe('playlists', function () {
         musicRoot = 'music';
         fakeData = {
             currentTrack: void 0,
-            tracks: []
+            tracks: [],
+            trackIds: []
         };
         dsFake = {
             currentTrackDetails: function (callback) { callback(null, fakeData.currentTrack); },
             deleteAll: sinon.spy(function (callback) { callback(); }),
-            queueTrack: sinon.spy(function (trackXml, afterId, callback) { callback(); })
+            queueTrack: sinon.spy(function (trackXml, afterId, callback) { callback(); }),
+            getTrackIds: sinon.spy(function (callback) { callback(null, fakeData.trackIds); }),
+            retrieveTrackDetails: sinon.spy(function (trackIds, callback) { callback(null, fakeData.tracks); })
         };
         m3uFake = {
             read: function (playlistName, callback) { callback(null, fakeData.tracks ); },
-            write: function (tracks, playlistName, callback) { callback(); },
+            write: sinon.spy(function (tracks, playlistName, callback) { callback(); }),
             append: sinon.spy(function (track, playlistName, callback) { callback(null, track.metadata); })
         };
         mockery.enable({
@@ -99,11 +102,31 @@ describe('playlists', function () {
     describe('When saving a playlist', function () {
         var result;
         beforeEach(function (done) {
+            fakeData.trackIds = [ 11, 4, 14 ];
+            fakeData.tracks = [{
+                track: 'tidal://track?version=1&trackId=29512950',
+                metadata: '<DIDL-Lite xmlns="urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/"><item><dc:title xmlns:dc="http://purl.org/dc/elements/1.1/">Pulsing (feat. Nina K)</dc:title><upnp:class xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">object.item.audioItem.musicTrack</upnp:class><upnp:albumArtURI xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">http://images.tidalhifi.com/im/im?w=250&amp;h=250&amp;albumid=29512948</upnp:albumArtURI><upnp:album xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">Love Me</upnp:album><upnp:artist xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">Tomas Barfod</upnp:artist><res protocolInfo="http-get:*:*:*">tidal://track?version=1&amp;trackId=29512950</res></item></DIDL-Lite>'
+            }, {
+                track: 'tidal://track?version=1&trackId=34835954',
+                metadata: '<DIDL-Lite xmlns="urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/"><item><dc:title xmlns:dc="http://purl.org/dc/elements/1.1/">Gun</dc:title><upnp:class xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">object.item.audioItem.musicTrack</upnp:class><upnp:albumArtURI xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">http://images.tidalhifi.com/im/im?w=250&amp;h=250&amp;albumid=34835951</upnp:albumArtURI><upnp:album xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">The Bones Of What You Believe (Special Edition)</upnp:album><upnp:artist xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">CHVRCHES</upnp:artist><res protocolInfo="http-get:*:*:*">tidal://track?version=1&amp;trackId=34835954</res></item></DIDL-Lite>'
+            }, {
+                track: '/media/playlists/American Monster.flac',
+                metadata: '<DIDL-Lite xmlns="urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/"><item><dc:title xmlns:dc="http://purl.org/dc/elements/1.1/">American Monster</dc:title><upnp:class xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">object.item.audioItem.musicTrack</upnp:class><upnp:albumArtURI xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">http://images.tidalhifi.com/im/im?w=250&amp;h=250&amp;albumid=43375078</upnp:albumArtURI><upnp:album xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">American Monster</upnp:album><upnp:artist xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">Everclear</upnp:artist><res>tidal://track?version=1&amp;trackId=43375079</res></item></DIDL-Lite>'
+            }];
             sut.savePlaylist(dsFake, playlistName, function(err, data) {
                 expect(err).to.not.exist;
                 result = data;
                 done();
             });
+        });
+        it('Should request tracks from ds', function () {
+            expect(dsFake.getTrackIds).to.have.been.called;
+        });
+        it('Should request track details from ds', function () {
+            expect(dsFake.retrieveTrackDetails).to.have.been.calledWith(fakeData.trackIds);
+        });
+        it('Should then store the tracks', function () {
+            expect(m3uFake.write).to.have.been.calledWith(fakeData.tracks, playlistName);
         });
     });
 });
