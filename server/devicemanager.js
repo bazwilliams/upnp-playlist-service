@@ -102,8 +102,9 @@ ssdp.on("DeviceUnavailable:urn:av-openhome-org:service:Playlist:1", function onD
 });
 
 ssdp.on("DeviceFound", function onDeviceFound(res) {
-    var uuid = parseUuid(res.usn, res.st);
-    processDevice(res.location, function makeDeviceAvailable(err, device) {
+    if (res.st === searchType) {
+      var uuid = parseUuid(res.usn, res.st);
+      processDevice(res.location, function makeDeviceAvailable(err, device) {
         if (err) {
             logger.warn('Problem processing device at ' + res.location);
             logger.warn(err);
@@ -111,7 +112,8 @@ ssdp.on("DeviceFound", function onDeviceFound(res) {
             devices[uuid] = device;
             logger.info("Found: " + device.name);
         }
-    });
+      });
+    }
 });
 
 ssdp.mSearch(searchType);
