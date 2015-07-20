@@ -1,3 +1,5 @@
+"use strict";
+
 var storage = require('node-persist');
 var scheduler = require('node-schedule');
 var _ = require('underscore');
@@ -14,11 +16,6 @@ function recurrenceRuleFactory(schedule) {
     recurrence.hour = schedule.hour;
     recurrence.minute = schedule.minute;
     return recurrence;
-}
-function delay(milliseconds) {
-    return function (callback) {
-        setTimeout(callback, milliseconds);
-    };
 }
 function actionsTasks(uuid, actions, callback) {
     return function () {
@@ -108,7 +105,7 @@ exports.deleteSchedule = function deleteSchedule(uuid, id, callback) {
             callback(err);
         } else {
             var newSchedules = _.reject(schedules, function (schedule) {
-                return schedule.uuid === uuid && schedule.id == id;
+                return schedule.uuid === uuid && schedule.id === id;
             });
             if (newSchedules.length < schedules.length) {
                 storage.setItem('actions.json', newSchedules, scheduleAndReturnCallback(callback));
@@ -121,7 +118,4 @@ exports.deleteSchedule = function deleteSchedule(uuid, id, callback) {
 
 storage.initSync();
 
-if (!storage.getItem('actions.json')) {
-    storage.setItem('actions.json', []);
-}
 scheduleJobs();
