@@ -79,7 +79,7 @@ echo "Priority: optional" >> ${DEBIAN}/control
 echo "Architecture: amd64" >> ${DEBIAN}/control
 INSTALLED_SIZE=`du -s ${SYSROOT}`
 echo "Installed-Size: ${INSTALLED_SIZE}" >> ${DEBIAN}/control
-echo "Depends: nodejs (>= 0.12)" >> ${DEBIAN}/control
+echo "Depends: nodejs (>= 4.0.0)" >> ${DEBIAN}/control
 echo "Maintainer: Barry John Williams  <barry@bjw.me.uk>" >> ${DEBIAN}/control
 echo "Description: Playlist and Alarm Function for Linn Ds and other Upnp compatible devices" >> ${DEBIAN}/control
 
