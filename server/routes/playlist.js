@@ -1,4 +1,4 @@
-var manager = require('../devicemanager.js');
+var manager = require('openhome-devices-manager');
 var playlists = require('../playlists.js');
 var m3u = require('../m3u.js');
 var recipes = require('../recipes.js');

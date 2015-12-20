@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var manager = require('../devicemanager.js');
+var manager = require('openhome-devices-manager');
 var scheduleManager = require('../schedulemanager.js');
 
 function convertToSchedule(data) {
