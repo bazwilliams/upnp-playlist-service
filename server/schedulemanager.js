@@ -4,7 +4,7 @@ var storage = require('node-persist');
 var scheduler = require('node-schedule');
 var _ = require('underscore');
 var guid = require('node-uuid');
-var devices = require('./devicemanager.js');
+var manager = require('openhome-devices-manager');
 var recipes = require('./recipes.js');
 var logger = require('./logger.js');
 

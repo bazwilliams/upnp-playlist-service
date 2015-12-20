@@ -1,10 +1,12 @@
-var manager = require('../devicemanager.js');
-var scheduleManager = require('../schedulemanager.js');
-var _ = require('underscore');
-var zpad = require('zpad');
-var async = require('async');
-var recipes = require('../recipes.js');
-var logger = require('../logger.js');
+"use strict";
+
+let manager = require('openhome-devices-manager');
+let scheduleManager = require('../schedulemanager.js');
+let _ = require('underscore');
+let zpad = require('zpad');
+let async = require('async');
+let recipes = require('../recipes.js');
+let logger = require('../logger.js');
 
 function responseHandler(res) {
     return function handler(err, results) {
@@ -165,9 +167,10 @@ exports.toggleStandby = function toggleStandby(req, res) {
     }
 };
 exports.list = function list(req, res) {
+    let devices = Array.from(manager.getDevices());
     async.waterfall([
         function getUuids(iterCallback) {
-            iterCallback(null, manager.getDevices());
+            iterCallback(null, devices);
         },
         function createDeviceModels(uuids, iterCallback) {
             async.map(uuids, createDeviceModel, iterCallback);

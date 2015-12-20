@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Start Service" type="NodeJSConfigurationType" factoryName="Node.js" path-to-node="C:/Program Files/nodejs/node" path-to-js-file="server/app.js" working-dir="$PROJECT_DIR$">
+  <configuration default="false" name="Start Service" type="NodeJSConfigurationType" factoryName="Node.js" path-to-node="/usr/bin/node" path-to-js-file="server/app.js" working-dir="$PROJECT_DIR$">
     <method />
   </configuration>
 </component>
