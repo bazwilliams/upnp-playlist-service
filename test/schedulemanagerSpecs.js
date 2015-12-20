@@ -81,6 +81,28 @@ describe('Schedule Manager', function () {
             expect(results[0].id).to.be.eql('4dc81578-5172-46b6-8124-2129601075b5');
         });
     });
+    describe('When adding a schedule for the first time', function () {
+        var results;
+        beforeEach(function(done) {
+            var schedule = {
+                dayOfWeek: [0, 1, 2, 3, 4],
+                hour: 3,
+                minute: 14,
+                sourceId: 1,
+                playlistName: 'cool',
+                isStandby: false,
+                radioChannel: null
+            };
+            sut.addSchedule(uuid, schedule, function(err, data) {
+                expect(err).to.not.exist;
+                results = data;
+                done();
+            });
+        });
+        it('Should store data in correct file', function () {
+            expect(fakeStorage.setItem).to.have.been.calledWith('actions.json');
+        });
+    });
     describe('When adding a schedule', function () {
         var results;
         beforeEach(function(done) {

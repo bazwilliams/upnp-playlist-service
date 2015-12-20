@@ -90,7 +90,7 @@ exports.addSchedule = function addSchedule(uuid, schedule, callback) {
                         minute: schedule.minute
                     }
                 };
-                var newSchedules = _.clone(schedules);
+                var newSchedules = schedules ? _.clone(schedules) : [];
                 newSchedules.push(action);
                 storage.setItem('actions.json', newSchedules, scheduleAndReturnCallback(callback, action));
             }
