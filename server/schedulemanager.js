@@ -19,7 +19,7 @@ function recurrenceRuleFactory(schedule) {
 }
 function actionsTasks(uuid, actions, callback) {
     return function () {
-        var device = devices.getDevice(uuid);
+        var device = manager.getDevice(uuid);
         if (device) {
             if (actions.setStandby) {
                 device.ds.powerOff(callback);

@@ -44,7 +44,7 @@ describe('Schedule Manager', function () {
         mockery.registerMock('./configmanager.js', configFake);
         mockery.registerMock('node-persist', fakeStorage);
         mockery.registerMock('node-schedule', fakeScheduler);
-        mockery.registerMock('./devicemanager.js', fakeDevicemanager);
+        mockery.registerMock('openhome-devices-manager', fakeDevicemanager);
         mockery.registerMock('./logger.js', { stream: sinon.spy(), info: sinon.spy(), warn: sinon.spy(), debug: sinon.spy(), error: sinon.spy() });
 
         sut = require('../server/schedulemanager.js');
