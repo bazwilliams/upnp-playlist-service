@@ -23,6 +23,9 @@ function storePlaylist(tracks, playlistName, callback) {
 }
 function queueAllTracks(ds) {
     return function queueAllTracksGivenDs(tracks, callback) {
+        if (!_.isArray(tracks)) {
+            callback(new Error('Tracks should be an array (got ${tracks})'));
+        }
         async.mapSeries(
             _.clone(tracks).reverse(),
             function queueTrackAtFront(trackXml, iterCallback) {

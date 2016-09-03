@@ -73,6 +73,19 @@ describe('playlists', function () {
             });
         });
     });
+    describe('When loading playlist with 1 item', function () {
+        var result, error;
+        beforeEach(function (done) {
+            fakeData.tracks = '<DIDL-Lite xmlns="urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/"><item><dc:title xmlns:dc="http://purl.org/dc/elements/1.1/">Pulsing (feat. Nina K)</dc:title><upnp:class xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">object.item.audioItem.musicTrack</upnp:class><upnp:albumArtURI xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">http://images.tidalhifi.com/im/im?w=250&amp;h=250&amp;albumid=29512948</upnp:albumArtURI><upnp:album xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">Love Me</upnp:album><upnp:artist xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">Tomas Barfod</upnp:artist><res protocolInfo="http-get:*:*:*">tidal://track?version=1&amp;trackId=29512950</res></item></DIDL-Lite>';
+            sut.replacePlaylist(dsFake, playlistName, function(err, data) {
+                error = err;
+                done();
+            });
+        });
+        it('Should return an error', function() {
+            expect(error).to.exist;
+        });
+    });
     describe('When loading a playlist', function () {
         var result;
         beforeEach(function (done) {
