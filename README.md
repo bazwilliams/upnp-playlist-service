@@ -21,6 +21,14 @@ A playlist builder function exists to add tracks from any playing DS onto any pl
 
 ## Installation
 
+### Docker
+
+`docker run -d --net=host -v <MUSIC>:/media/music -v <PLAYLISTS>:/media/playlists -v <CONFIGURATION>:/config upnp-playlist-service:1`
+
+* MUSIC - folder on host machine where your music lives
+* PLAYLISTS - folder on host machine where you want your saved playlists to be kept
+* CONFIGURATION - folder on host machine where you want stored configuration to be saved (e.g. schedules)
+
 ### Debian
 
 Download the .deb file from https://github.com/bazwilliams/upnp-playlist-service/raw/master/packages/upnp-playlist-service-0.0.10.deb and install as normal. 

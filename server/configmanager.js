@@ -12,16 +12,20 @@ function configFactory(musicRoot, playlistPath) {
 	};
 }
 
+function defaultConfig() {
+	return configFactory(process.env.MUSIC_ROOT, process.env.PLAYLIST_PATH);
+}
+
 exports.config = function() {
 	if (dirty) {
-		cachedConfig = storage.getItemSync('configuration.json');
+		cachedConfig = storage.getItemSync('/config/configuration.json');
 		dirty = false;
 	}
-	return cachedConfig || {};
+	return cachedConfig || defaultConfig();
 };
 
 exports.storeConfiguration = function(newConfig, callback) {
-	storage.setItem('configuration.json', configFactory(newConfig.musicRoot, newConfig.playlistPath), function(err) {
+	storage.setItem('/config/configuration.json', configFactory(newConfig.musicRoot, newConfig.playlistPath), function(err) {
 		if (err) {
 			callback(err);
 		} else {
@@ -32,4 +36,12 @@ exports.storeConfiguration = function(newConfig, callback) {
 	});
 };
 
-storage.initSync();
+var configLocation = process.env.CONFIG_LOCATION;
+
+if (!configLocation) {
+	storage.initSync();
+} else {
+	storage.initSync({
+		dir: configLocation
+	});
+}

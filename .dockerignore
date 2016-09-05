@@ -1,0 +1,11 @@
+node_modules
+ContinuousIntegration
+test
+.idea
+.jshintrc
+.env
+.git
+.gitignore
+.travis.yml
+Makefile
+README.md
