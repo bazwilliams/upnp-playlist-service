@@ -15,7 +15,7 @@ define tag_docker
 endef
 
 define label_dockerfile
-	@echo "LABEL vendor=Barry John Williams \\" >> $(1)
+	@echo "LABEL vendor=Barry\ John\ Williams \\" >> $(1)
 	@echo "      uk.me.bjw.release-date=$(TIMESTAMP) \\" >> $(1)
 	@echo "      uk.me.bjw.build-number=$(TRAVIS_BUILD_NUMBER) \\" >> $(1)
 	@echo "      uk.me.bjw.commit=$(TRAVIS_COMMIT) \\" >> $(1)
