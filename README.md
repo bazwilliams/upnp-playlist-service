@@ -53,33 +53,25 @@ http://localhost:3000/playlists
 ![Existing Playlist for a DS](https://raw.githubusercontent.com/bazwilliams/upnp-playlist-service/master/docs/playlist-ui-screenshot.png)
 ![Creating Playlist for a DS](https://raw.githubusercontent.com/bazwilliams/upnp-playlist-service/master/docs/playlist-ui-create-screenshot.png)
 
-*Existing m3u playlists*
-
-If you want to use an existing m3u playlist, you'll need to have configured both `musicRoot` and `playlistPath` and be running Minimserver on the same machine as the Upnp playlist service. You'll need to use Minimserver to load your playlist into your media player which you can then reexport using the playlist service. 
-
-If everything is configured correctly, playlist items for which a file is discovered will be written back into the m3u file as relative path which Minimserver can still serve back up - along with other players which support m3u files. 
-
 ## API
 
 GET `/api/devices` to see a list of all discovered devices on your network, all wake up schedules will be included under `device.schedules`. Each of which will include a link-rel to delete that wake up by sending a DELETE to it. 
 
 ### Playlists
 
-GET `/api/playlists` to see a list of all M3U files in the configured playlist folder. Any M3U files created by this service can also be loaded back into the DS via the 'replace' button or as part of a schedule. 
-
-Storing the current play queue on a DS as an M3U file is optimised if you are serving your music from a Minimserver media server running on the same machine as a relative path to the original file will be stored in the M3U file. In all cases, the DIDL-LITE metadata will be stored as an M3U comment. 
+GET `/api/playlists` to see a list of all saved playlists. 
 
 #### To add currently playling track to a new or existing playlist
 
 POST to `/api/devices/{uuid}/playlists/{playlistName}`
 
-No body is required, the playlistName does not need to include any file suffix (one will be added).
+_No body required_
 
 #### To store a playlist already in a DS
 
 PUT to `/api/devices/{uuid}/playlists/{playlistName}`
 
-No body is required, the playlistName does not need to include any file suffix (one will be added). 
+_No body required_
 
 #### To toggle the standby state of a DS
 
@@ -113,7 +105,7 @@ Where decrement is a number of the amount you wish the volume to be reduced by, 
 
 #### To playback a playlist in a DS
 
-Loading a playlist and starting playback is now supported by parsing the DIDL-LITE out of an m3u file. The downsides are if the metadata should change, or the URI to the original track or artwork change, the track may not work as expected. Therefore this facility is only reliable if track URI and metadata are not changed. 
+Loading a playlist and starting playback is supported. However, if the metadata should change, or the URI to the original track or artwork change, the track may not work as expected. Therefore this facility is only reliable if track URI and metadata are not changed. 
 
 POST to `/api/devices/{uuid}/play` with Content-Type `application/json` with the following body. No suffix is required for the playlistName. This will clear the DS onboard playlist first and load the one from file and start playing from the first track. 
 
