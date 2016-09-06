@@ -38,7 +38,7 @@ describe('configmanager', function () {
             result = sut.config();
         });
         it('Should request from storage', function () {
-            expect(persistFake.getItemSync).to.have.been.calledWith('configuration.json');
+            expect(persistFake.getItemSync).to.have.been.calledWith('/config/configuration.json');
         });
         describe('and then getting configuration for second time', function () {
             beforeEach(function () {
@@ -62,7 +62,7 @@ describe('configmanager', function () {
                 sut.storeConfiguration(expectedConfiguration, done);
             });
             it('Should send configuration to storage', function () {
-                expect(persistFake.setItem).to.have.been.calledWith('configuration.json', expectedConfiguration);
+                expect(persistFake.setItem).to.have.been.calledWith('/config/configuration.json', expectedConfiguration);
             });
             describe('and then requesting the configuration', function () {
                 beforeEach(function () {
