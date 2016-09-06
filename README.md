@@ -1,5 +1,7 @@
 [![Build Status](https://travis-ci.org/bazwilliams/upnp-playlist-service.svg?branch=master)](https://travis-ci.org/bazwilliams/upnp-playlist-service)
 
+[![Microbadger](https://images.microbadger.com/badges/image/bazwilliams/upnp-playlist-service.svg)](http://microbadger.com/images/bazwilliams/upnp-playlist-service "Get your own image badge on microbadger.com")
+
 # DS Service
 
 Node.js based system for monitoring a suite of UPNP renderers on a network. It is intended to run all the time so it can discover your renderers and provides the following control features:
