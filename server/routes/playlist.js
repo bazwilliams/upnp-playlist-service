@@ -1,6 +1,6 @@
 var manager = require('openhome-devices-manager');
 var playlists = require('../playlists.js');
-var m3u = require('../m3u.js');
+var m3u = require('../playliststore.js');
 var recipes = require('../recipes.js');
 
 function createPlaylistResponseHandler(res) {

@@ -7,5 +7,6 @@ test
 .git
 .gitignore
 .travis.yml
+.nodepersist
 Makefile
 README.md

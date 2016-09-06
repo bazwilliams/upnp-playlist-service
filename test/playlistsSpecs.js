@@ -10,6 +10,8 @@ var sinonChai = require("sinon-chai");
 var expect = chai.expect;
 chai.use(sinonChai);
 
+let _ = require('underscore');
+
 var path = require('path');
 
 describe('playlists', function () {
@@ -33,13 +35,13 @@ describe('playlists', function () {
         m3uFake = {
             read: function (playlistName, callback) { callback(null, fakeData.tracks ); },
             write: sinon.spy(function (tracks, playlistName, callback) { callback(); }),
-            append: sinon.spy(function (track, playlistName, callback) { callback(null, track.metadata); })
+            append: sinon.spy(function (track, playlistName, callback) { callback(null, track); })
         };
         mockery.enable({
             useCleanCache: true,
             warnOnUnregistered: false
         });
-        mockery.registerMock('./m3u.js', m3uFake);
+        mockery.registerMock('./playliststore.js', m3uFake);
 
         sut = require('../server/playlists.js');
     });
@@ -62,7 +64,7 @@ describe('playlists', function () {
             });
         });
         it('Should append track details from the ds to the named playlist', function () {
-            expect(m3uFake.append).to.have.been.calledWith(track);
+            expect(m3uFake.append).to.have.been.calledWith(track.metadata);
         });
         it('Should return information about the track', function () {
             expect(result).to.be.eql({
@@ -139,7 +141,7 @@ describe('playlists', function () {
             expect(dsFake.retrieveTrackDetails).to.have.been.calledWith(fakeData.trackIds);
         });
         it('Should then store the tracks', function () {
-            expect(m3uFake.write).to.have.been.calledWith(fakeData.tracks, playlistName);
+            expect(m3uFake.write).to.have.been.calledWith(_.pluck(fakeData.tracks, 'metadata'), playlistName);
         });
     });
 });

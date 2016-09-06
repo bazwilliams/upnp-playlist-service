@@ -1,18 +1,14 @@
 "use strict";
 
 var async = require('async');
-var m3u = require('./m3u.js');
-var trackProcessor = require('./trackprocessor.js');
+var m3u = require('./playliststore.js');
 var xml2js = require('xml2js');
 var xmlParser = new xml2js.Parser({explicitArray: false});
 var _ = require('underscore');
 
 function storePlaylist(tracks, playlistName, callback) {
     async.mapSeries(tracks, function processTrack(track, iterCallback) {
-        iterCallback(null, {
-            track: trackProcessor.translate(track.track),
-            metadata: track.metadata
-        });
+        iterCallback(null, track.metadata);
     }, function writeM3u(err, transformedTracks) {
         if (err) {
             callback(err);
@@ -50,12 +46,7 @@ exports.appendCurrentTrack = function (ds, playlistName, callback) {
     async.waterfall([
         ds.currentTrackDetails,
         function addToM3u(track, iterCallback) {
-            m3u.append({
-                    track: trackProcessor.translate(track.track),
-                    metadata: track.metadata
-                },
-                playlistName,
-                iterCallback);
+            m3u.append(track.metadata, playlistName, iterCallback);
         }
         ], function parseTrackDetails(err, metadata) {
             if (err) {
