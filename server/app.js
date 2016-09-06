@@ -32,10 +32,6 @@ app.get('/playlists', function (req, res) {
 	res.render('playlists');
 });
 
-app.get('/configuration', function (req, res) {
-	res.render('configuration');
-});
-
 // JSON API
 app.get('/api/devices', api.device.list);
 app.get('/api/playlists', api.playlist.listPlaylists);
@@ -50,8 +46,6 @@ app.delete('/api/devices/:uuid/sleep-timer', api.device.clearSleepTimer);
 app.post('/api/devices/:uuid/volume-up', api.device.volumeUp);
 app.post('/api/devices/:uuid/volume-down', api.device.volumeDown);
 app.get('/api/devices/:uuid/radio-stations', api.device.listRadioStations);
-app.get('/api/configuration', api.configuration.list);
-app.put('/api/configuration', api.configuration.store);
 
 /**
  * Start Server
