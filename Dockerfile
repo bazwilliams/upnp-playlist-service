@@ -1,9 +1,7 @@
 FROM node:4-slim
 
 ENV PORT=3000
-ENV CONFIG_LOCATION=/config
-ENV MUSIC_ROOT=/media/music
-ENV PLAYLIST_PATH=/media/playlists
+ENV DATA_LOCATION=/data
 
 EXPOSE 3000
 
