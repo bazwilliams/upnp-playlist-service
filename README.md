@@ -1,6 +1,4 @@
-[![Build Status](https://travis-ci.org/bazwilliams/upnp-playlist-service.svg?branch=master)](https://travis-ci.org/bazwilliams/upnp-playlist-service)
-
-[![Microbadger](https://images.microbadger.com/badges/image/bazwilliams/upnp-playlist-service.svg)](http://microbadger.com/images/bazwilliams/upnp-playlist-service "Get your own image badge on microbadger.com")
+[![Build Status](https://travis-ci.org/bazwilliams/upnp-playlist-service.svg?branch=master)](https://travis-ci.org/bazwilliams/upnp-playlist-service) [![Microbadger](https://images.microbadger.com/badges/image/bazwilliams/upnp-playlist-service.svg)](http://microbadger.com/images/bazwilliams/upnp-playlist-service "Get your own image badge on microbadger.com")
 
 # DS Service
 
@@ -13,64 +11,34 @@ Node.js based system for monitoring a suite of UPNP renderers on a network. It i
 * Append currently playing track on any Upnp device to any existing playlist
 * Webpage to configure scheduled wakeup and sleep
 * Webpage to manipulate and playback stored playlists
-* Create m3u files from playlists containing locally served tracks from minimserver. 
 
 The playlist functionality has been optimised for mobile use. 
 
-Playlists already on a DS can be saved in their entirety for later playback either through the app or used as part of a schedule. If a track is served from a locally running Minimserver and playlist folders and music locations have been configured correctly, the resulting m3u file can be loaded in any media player or server and those tracks will be referenced correctly. The DIDL-Lite metadata is always stored so the full playlist can be restored through this application. 
+Playlists already on a DS can be saved in their entirety for later playback either through the app or used as part of a schedule. 
 
-A playlist builder function exists to add tracks from any playing DS onto any playlist. If the track is a Minimserver served track, the m3u file will contain a file reference. 
+A playlist builder function exists to add tracks from any playing DS onto any playlist. 
 
 ## Installation
 
 ### Docker
 
-`docker run -d --net=host -v <MUSIC>:/media/music -v <PLAYLISTS>:/media/playlists -v <CONFIGURATION>:/config upnp-playlist-service:1`
+```
+docker run -d --net=host -v <CONFIGURATION>:/config bazwilliams/upnp-playlist-service
+```
 
-* MUSIC - folder on host machine where your music lives
-* PLAYLISTS - folder on host machine where you want your saved playlists to be kept
 * CONFIGURATION - folder on host machine where you want stored configuration to be saved (e.g. schedules)
-
-### Debian
-
-Download the .deb file from https://github.com/bazwilliams/upnp-playlist-service/raw/master/packages/upnp-playlist-service-0.0.10.deb and install as normal. 
-
-You can run the service using
-`/etc/init.d/upnp-playlist-service start`
-
-### Windows
-
-Clone this repository onto your server and perform an `npm install` which will install all the dependencies. 
-
-I've had reports running this application as a Windows service using Winser works well http://jfromaniello.github.io/winser/.
-
-Alternatively, `npm start` within the repository in a command prompt. 
-
-### Other Linux Distributions
-
-Clone this repository onto your server and perform an `npm install` which will install all the dependencies. 
-
-For Linux, SysV script is also included in `etc/init.d/upnp-playlist-service` which assumes you have cloned the repository into `/opt/upnp-playlist-service` it also assumes you have node.js installed and have a user called `nodejs` which has read and write privileges to the `/opt/upnp-playlist-service/persist` folder. Modify and copy this into your `/etc/init/` folder to enable you to start the service at boot automatically. 
-
-Run `npm start` within the repository or using the service script `/etc/init.d/upnp-playlist-service start`. 
-
-## Configure
-
-http://localhost:18080/configuration
-
-You can configure the path to the root of your music (should be the same as your minimserver content directory) and specify a full path to a folder containing your minimserver served playlists. 
 
 ## Schedule
 
 Use the following URL to view your devices and manage schedules. 
 
-http://localhost:18080/
+http://localhost:3000/
 
 ## Playlist
 
 To view playlists.
 
-http://localhost:18080/playlists
+http://localhost:3000/playlists
 
 *Dashboard for viewing schedules on a DS*
 
