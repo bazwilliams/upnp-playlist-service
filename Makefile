@@ -1,6 +1,7 @@
 DOCKER := bazwilliams/upnp-playlist-service
 DOCKER_BRANCH_TAG := $(shell echo ${TRAVIS_BRANCH} | sed s/\#/_/g)
-TIMESTAMP := $(shell date --utc +%FT%TZ)
+BUILD_DATE :=`date -u +"%Y-%m-%dT%H:%M:%SZ"`
+VCS_REF :=`git rev-parse --short HEAD`
 
 define tag_docker
 	@if [ "$(TRAVIS_BRANCH)" != "master" ]; then \
@@ -16,9 +17,15 @@ endef
 
 define label_dockerfile
 	@echo "LABEL vendor=Barry\ John\ Williams \\" >> $(1)
-	@echo "      uk.me.bjw.release-date=$(TIMESTAMP) \\" >> $(1)
+	@echo "      org.label-schema.build-date=$(BUILD_DATE) \\" >> $(1)
+	@echo "      org.label-schema.docker.dockerfile="/Dockerfile" \\" >> $(1)
+	@echo "      org.label-schema.license="MIT" \\" >> $(1)
+	@echo "      org.label-schema.name="Upnp Playlist Service" \\" >> $(1)
+	@echo "      org.label-schema.url="https://blog.bjw.me.uk/" \\" >> $(1)
+	@echo "      org.label-schema.vcs-ref=$(VCS_REF) \\" >> $(1)
+	@echo "      org.label-schema.vcs-type=Git \\" >> $(1)
+	@echo "      org.label-schema.vcs-url=https://github.com/bazwilliams/upnp-playlist-service \\" >> $(1)
 	@echo "      uk.me.bjw.build-number=$(TRAVIS_BUILD_NUMBER) \\" >> $(1)
-	@echo "      uk.me.bjw.commit=$(TRAVIS_COMMIT) \\" >> $(1)
 	@echo "      uk.me.bjw.branch=$(TRAVIS_BRANCH) \\" >> $(1)
 	@if [ "$(TRAVIS_BRANCH)" = "master" -a "$(TRAVIS_PULL_REQUEST)" = "false" ]; then \
 		echo "      uk.me.bjw.is-production=true" >> $(1); \
