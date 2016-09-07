@@ -20,7 +20,7 @@ define label_dockerfile
 	@echo "      org.label-schema.build-date=$(BUILD_DATE) \\" >> $(1)
 	@echo "      org.label-schema.docker.dockerfile="/Dockerfile" \\" >> $(1)
 	@echo "      org.label-schema.license="MIT" \\" >> $(1)
-	@echo "      org.label-schema.name="Upnp Playlist Service" \\" >> $(1)
+	@echo "      org.label-schema.name="Upnp\ Playlist\ Service" \\" >> $(1)
 	@echo "      org.label-schema.url="https://blog.bjw.me.uk/" \\" >> $(1)
 	@echo "      org.label-schema.vcs-ref=$(VCS_REF) \\" >> $(1)
 	@echo "      org.label-schema.vcs-type=Git \\" >> $(1)
