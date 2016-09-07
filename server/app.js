@@ -5,10 +5,15 @@ var port = process.env.PORT || 18080;
 var morgan = require('morgan');
 var api = require('./routes');
 var logger = require('./logger.js');
+var storage = require('node-persist');
 
 /**
  * Configuration
  */
+
+storage.initSync({
+    dir: process.env.DATA_LOCATION
+});
 
 // all environments
 app.set('views', __dirname + '/views');
