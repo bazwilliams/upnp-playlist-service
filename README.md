@@ -23,12 +23,21 @@ A playlist builder function exists to add tracks from any playing DS onto any pl
 ### Docker
 
 ```
-docker run -d --net=host -v <DATA>:/data bazwilliams/upnp-playlist-service
+docker run -d --restart=always -e TZ=<TIMEZONE> --net=host -v <DATA>:/data bazwilliams/upnp-playlist-service
 ```
 
+* TIMEZONE - Your TZ timezone, e.g. Europe/London - see https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 * DATA - folder on host machine where you want playlists and schedules stored
 
-### Existing Playlists
+_If you do not set a time zone, the Docker will start in UTC and any schedules you add will also need to be UTC_
+
+#### Further options
+
+##### Alternative TCP Port
+
+If you wish the service to run on something other than TCP port 3000, you can override by passing in a `PORT` environment variable. E.g. `-e PORT=18080`
+
+##### Existing Playlists
 
 This version uses a different mechanism to store playlists, to migrate your old stored playlists saved with this application do the following: 
 
