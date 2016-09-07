@@ -34,6 +34,12 @@ exports.write = write;
 exports.append = function append(track, playlistName, callback) {
     read(playlistName, function(err, data) {
         data.push(track);
-        write(data, playlistName, callback);
+        write(data, playlistName, function(err, data) {
+            if (data) {
+                callback(null, track);
+            } else {
+                callback(err);
+            }
+	});
     });
 };

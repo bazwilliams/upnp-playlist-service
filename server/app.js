@@ -11,9 +11,7 @@ var storage = require('node-persist');
  * Configuration
  */
 
-storage.initSync({
-    dir: process.env.DATA_LOCATION
-});
+storage.initSync(process.env.DATA_LOCATION ? { dir: process.env.DATA_LOCATION } : {});
 
 // all environments
 app.set('views', __dirname + '/views');
