@@ -46,6 +46,7 @@
     "start": "node server/app.js",
     "test": "grunt",
     "postinstall": "bower install",
-    "ls": "dir"
+    "ls": "dir",
+    "migrate": "node tools/convert.js"
   }
 }

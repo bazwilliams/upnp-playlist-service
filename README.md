@@ -23,10 +23,21 @@ A playlist builder function exists to add tracks from any playing DS onto any pl
 ### Docker
 
 ```
-docker run -d --net=host -v <CONFIGURATION>:/config bazwilliams/upnp-playlist-service
+docker run -d --net=host -v <DATA>:/data bazwilliams/upnp-playlist-service
 ```
 
-* CONFIGURATION - folder on host machine where you want stored configuration to be saved (e.g. schedules)
+* DATA - folder on host machine where you want playlists and schedules stored
+
+### Existing Playlists
+
+This version uses a different mechanism to store playlists, to migrate your old stored playlists saved with this application do the following: 
+
+```
+docker run -d --net=host -v <CONFIGURATION>:/config -v <PLAYLISTS>:/playlists bazwilliams/upnp-playlist-service migrate
+```
+
+* DATA - folder on host machine where you want playlists and schedules stored
+* PLAYLISTS - folder on host machine where your original playlists were stored, these will not be changed
 
 ## Schedule
 

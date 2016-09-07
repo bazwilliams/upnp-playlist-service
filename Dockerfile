@@ -11,4 +11,6 @@ COPY . /usr/src/app
 
 RUN npm install --production --quiet
 
-CMD [ "npm", "start" ]
+ENTRYPOINT [ "npm", "run-script" ]
+
+CMD [ "start" ]
