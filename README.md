@@ -23,7 +23,7 @@ A playlist builder function exists to add tracks from any playing DS onto any pl
 ### Docker
 
 ```
-docker run -d --net=host -v <DATA>:/data bazwilliams/upnp-playlist-service
+docker run -d --restart=always -e PORT=18080 --net=host -v <DATA>:/data bazwilliams/upnp-playlist-service
 ```
 
 * DATA - folder on host machine where you want playlists and schedules stored
