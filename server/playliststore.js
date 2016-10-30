@@ -40,6 +40,6 @@ exports.append = function append(track, playlistName, callback) {
             } else {
                 callback(err);
             }
-	});
+        });
     });
 };

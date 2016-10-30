@@ -23,7 +23,8 @@ describe('playlists', function () {
         fakeData = {
             currentTrack: void 0,
             tracks: [],
-            trackIds: []
+            trackIds: [],
+            error: null
         };
         dsFake = {
             currentTrackDetails: function (callback) { callback(null, fakeData.currentTrack); },
@@ -33,7 +34,7 @@ describe('playlists', function () {
             retrieveTrackDetails: sinon.spy(function (trackIds, callback) { callback(null, fakeData.tracks); })
         };
         m3uFake = {
-            read: function (playlistName, callback) { callback(null, fakeData.tracks ); },
+            read: function (playlistName, callback) { callback(fakeData.error, fakeData.tracks ); },
             write: sinon.spy(function (tracks, playlistName, callback) { callback(); }),
             append: sinon.spy(function (track, playlistName, callback) { callback(null, track); })
         };
@@ -86,6 +87,18 @@ describe('playlists', function () {
         });
         it('Should return an error', function() {
             expect(error).to.exist;
+        });
+    });
+    describe('When loading a playlist that has not been found', function() {
+        beforeEach(function (done) {
+            fakeData.error = new Error('Playlist not found');
+            sut.replacePlaylist(dsFake, playlistName, function(err, data) {
+                done();
+            });
+        });
+        it('Should do nothing', function() {
+            expect(dsFake.deleteAll).not.to.have.been.called;
+            expect(dsFake.queueTrack).not.to.have.been.called;
         });
     });
     describe('When loading a playlist', function () {

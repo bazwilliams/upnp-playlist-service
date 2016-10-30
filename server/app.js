@@ -1,11 +1,13 @@
-var express = require('express');
-var bodyParser = require('body-parser');
-var app = module.exports = express();
-var port = process.env.PORT || 18080;
-var morgan = require('morgan');
-var api = require('./routes');
-var logger = require('./logger.js');
-var storage = require('node-persist');
+"use strict";
+
+const express = require('express');
+const bodyParser = require('body-parser');
+const app = module.exports = express();
+let port = process.env.PORT || 18080;
+const morgan = require('morgan');
+const api = require('./routes');
+const logger = require('./logger.js');
+const storage = require('node-persist');
 
 /**
  * Configuration

@@ -1,3 +1,5 @@
+"use strict";
+
 var async = require('async');
 var playlists = require('./playlists.js');
 
@@ -15,7 +17,7 @@ function ensureOn(ds) {
                 }
             }
         ], callback);
-    }
+    };
 }
 function returnStandbyState(standbyState, callback) {
     return function powerResponseHandler(err, results) {
@@ -28,12 +30,12 @@ function returnStandbyState(standbyState, callback) {
 }
 exports.volumeUp = function volumeUp(ds, delta, callback) {
     async.times(delta, function(n, next) {
-        ds.volumeInc(next)
+        ds.volumeInc(next);
     }, callback);
 };
 exports.volumeDown = function volumeDown(ds, delta, callback) {
     async.times(delta, function(n, next) {
-        ds.volumeDec(next)
+        ds.volumeDec(next);
     }, callback);
 };
 exports.toggleStandby = function toggleStandby(ds, callback) {
@@ -77,5 +79,5 @@ exports.play = function play(ds, sourceId, playlistName, shuffle, radioChannel, 
     async.waterfall(pipeline, callback);
 };
 exports.listRadioStations = function listRadioStations(ds, callback) {
-    async.waterfall([ds.getRadioIdArray, ds.retrieveRadioStationDetails], callback)
+    async.waterfall([ds.getRadioIdArray, ds.retrieveRadioStationDetails], callback);
 };
