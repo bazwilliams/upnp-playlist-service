@@ -74,6 +74,8 @@ exports.replacePlaylist = function (ds, playlistName, callback) {
     m3u.read(playlistName, function(err, data) {
         if (err) {
             callback(err);
+        } else if (!data) {
+            callback(new Error(`No playlist found called ${playlistName}`));
         } else {
             async.waterfall([
                 ds.deleteAll,

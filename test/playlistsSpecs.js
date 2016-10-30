@@ -89,9 +89,21 @@ describe('playlists', function () {
             expect(error).to.exist;
         });
     });
-    describe('When loading a playlist that has not been found', function() {
+    describe('When loading a playlist, but no data returned', function() {
         beforeEach(function (done) {
-            fakeData.error = new Error('Playlist not found');
+            fakeData.tracks = null;
+            sut.replacePlaylist(dsFake, playlistName, function(err, data) {
+                done();
+            });
+        });
+        it('Should do nothing', function() {
+            expect(dsFake.deleteAll).not.to.have.been.called;
+            expect(dsFake.queueTrack).not.to.have.been.called;
+        });
+    });
+    describe('When loading a playlist and an error is thrown', function() {
+        beforeEach(function (done) {
+            fakeData.error = new Error('Error');
             sut.replacePlaylist(dsFake, playlistName, function(err, data) {
                 done();
             });
