@@ -79,7 +79,8 @@ GET `/api/devices` to see a list of all discovered devices on your network, all 
 
 ### Playlists
 
-GET `/api/playlists` to see a list of all saved playlists. 
+GET `/api/playlists` to see a list of all saved playlists.
+GET `/api/playlists?search=[q]` to search for a saved playlist by name
 
 #### To add currently playling track to a new or existing playlist
 
