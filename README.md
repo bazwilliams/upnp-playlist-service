@@ -1,5 +1,10 @@
 [![Build Status](https://travis-ci.org/bazwilliams/upnp-playlist-service.svg?branch=master)](https://travis-ci.org/bazwilliams/upnp-playlist-service) [![](https://images.microbadger.com/badges/image/bazwilliams/upnp-playlist-service.svg)](http://microbadger.com/images/bazwilliams/upnp-playlist-service "Get your own image badge on microbadger.com") [![](https://images.microbadger.com/badges/version/bazwilliams/upnp-playlist-service.svg)](http://microbadger.com/images/bazwilliams/upnp-playlist-service "Get your own version badge on microbadger.com") [![](https://images.microbadger.com/badges/commit/bazwilliams/upnp-playlist-service.svg)](http://microbadger.com/images/bazwilliams/upnp-playlist-service "Get your own commit badge on microbadger.com") [![](https://images.microbadger.com/badges/license/bazwilliams/upnp-playlist-service.svg)](http://microbadger.com/images/bazwilliams/upnp-playlist-service "Get your own license badge on microbadger.com")
 
+# Breaking Changes
+
+* Dropped support for `.deb` installation. See Installation/Docker. 
+* Dropped support for creating `m3u` playlists referencing local content. See Further Options/Migrating Existing m3u Playlists.
+
 # DS Service
 
 Node.js based system for monitoring a suite of UPNP renderers on a network. It is intended to run all the time so it can discover your renderers and provides the following control features:
@@ -37,12 +42,12 @@ _If you do not set a time zone, the Docker will start in UTC and any schedules y
 
 If you wish the service to run on something other than TCP port 3000, you can override by passing in a `PORT` environment variable. E.g. `-e PORT=18080`
 
-##### Existing Playlists
+##### Migrate Existing Saved m3u Playlists
 
 This version uses a different mechanism to store playlists, to migrate your old stored playlists saved with this application do the following: 
 
 ```
-docker run -d --net=host -v <CONFIGURATION>:/config -v <PLAYLISTS>:/playlists bazwilliams/upnp-playlist-service migrate
+docker run -d --net=host -v <DATA>:/data -v <PLAYLISTS>:/playlists bazwilliams/upnp-playlist-service migrate
 ```
 
 * DATA - folder on host machine where you want playlists and schedules stored
@@ -80,7 +85,7 @@ GET `/api/devices` to see a list of all discovered devices on your network, all 
 ### Playlists
 
 GET `/api/playlists` to see a list of all saved playlists.
-GET `/api/playlists?search=[q]` to search for a saved playlist by name
+GET `/api/playlists?search=<NAME>` to search for a saved playlist by NAME
 
 #### To add currently playling track to a new or existing playlist
 
