@@ -1,5 +1,11 @@
 language: node_js
-node_js:
-  - "4.1"
-  - "4.0"
 before_install: npm install -g grunt-cli
+node_js: 4
+sudo: required
+services:
+  - docker
+before_script:
+  - docker login -u $DOCKER_HUB_USERNAME -p $DOCKER_HUB_PASSWORD -e $DOCKER_HUB_EMAIL
+after_success:
+  - make all-the-dockers
+  - make docker-push

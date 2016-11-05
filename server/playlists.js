@@ -1,18 +1,14 @@
 "use strict";
 
 var async = require('async');
-var m3u = require('./m3u.js');
-var trackProcessor = require('./trackprocessor.js');
+var m3u = require('./playliststore.js');
 var xml2js = require('xml2js');
 var xmlParser = new xml2js.Parser({explicitArray: false});
 var _ = require('underscore');
 
 function storePlaylist(tracks, playlistName, callback) {
     async.mapSeries(tracks, function processTrack(track, iterCallback) {
-        iterCallback(null, {
-            track: trackProcessor.translate(track.track),
-            metadata: track.metadata
-        });
+        iterCallback(null, track.metadata);
     }, function writeM3u(err, transformedTracks) {
         if (err) {
             callback(err);
@@ -21,11 +17,10 @@ function storePlaylist(tracks, playlistName, callback) {
         }
     });
 }
-function queueAllTracks(ds) {
-    return function queueAllTracksGivenDs(tracks, callback) {
-        if (!_.isArray(tracks)) {
-            callback(new Error('Tracks should be an array (got ${tracks})'));
-        }
+function queueAllTracks(ds, tracks, callback) {
+    if (!_.isArray(tracks)) {
+        callback(new Error(`Tracks should be an array (got ${tracks})`));
+    } else {
         async.mapSeries(
             _.clone(tracks).reverse(),
             function queueTrackAtFront(trackXml, iterCallback) {
@@ -38,7 +33,7 @@ function queueAllTracks(ds) {
                     callback(null, results);
                 }
             });
-    };
+    }
 }
 function elementText(element) {
     return _.isObject(element) ? element._ : element;
@@ -50,12 +45,7 @@ exports.appendCurrentTrack = function (ds, playlistName, callback) {
     async.waterfall([
         ds.currentTrackDetails,
         function addToM3u(track, iterCallback) {
-            m3u.append({
-                    track: trackProcessor.translate(track.track),
-                    metadata: track.metadata
-                },
-                playlistName,
-                iterCallback);
+            m3u.append(track.metadata, playlistName, iterCallback);
         }
         ], function parseTrackDetails(err, metadata) {
             if (err) {
@@ -81,13 +71,18 @@ exports.appendCurrentTrack = function (ds, playlistName, callback) {
         });
 };
 exports.replacePlaylist = function (ds, playlistName, callback) {
-    async.waterfall([
-        ds.deleteAll,
-        function readM3u(iterCallback) {
-            m3u.read(playlistName, iterCallback);
-        },
-        queueAllTracks(ds)
-    ], callback);
+    m3u.read(playlistName, function(err, data) {
+        if (err) {
+            callback(err);
+        } else if (!data) {
+            callback(new Error(`No playlist found called ${playlistName}`));
+        } else {
+            async.waterfall([
+                ds.deleteAll,
+                (iterCallback) => queueAllTracks(ds, data, iterCallback)
+            ], callback);
+        }
+    });
 };
 exports.savePlaylist = function (ds, playlistName, callback) {
     async.waterfall([

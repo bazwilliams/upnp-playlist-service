@@ -10,6 +10,8 @@ var sinonChai = require("sinon-chai");
 var expect = chai.expect;
 chai.use(sinonChai);
 
+let _ = require('underscore');
+
 var path = require('path');
 
 describe('playlists', function () {
@@ -21,7 +23,8 @@ describe('playlists', function () {
         fakeData = {
             currentTrack: void 0,
             tracks: [],
-            trackIds: []
+            trackIds: [],
+            error: null
         };
         dsFake = {
             currentTrackDetails: function (callback) { callback(null, fakeData.currentTrack); },
@@ -31,15 +34,15 @@ describe('playlists', function () {
             retrieveTrackDetails: sinon.spy(function (trackIds, callback) { callback(null, fakeData.tracks); })
         };
         m3uFake = {
-            read: function (playlistName, callback) { callback(null, fakeData.tracks ); },
+            read: function (playlistName, callback) { callback(fakeData.error, fakeData.tracks ); },
             write: sinon.spy(function (tracks, playlistName, callback) { callback(); }),
-            append: sinon.spy(function (track, playlistName, callback) { callback(null, track.metadata); })
+            append: sinon.spy(function (track, playlistName, callback) { callback(null, track); })
         };
         mockery.enable({
             useCleanCache: true,
             warnOnUnregistered: false
         });
-        mockery.registerMock('./m3u.js', m3uFake);
+        mockery.registerMock('./playliststore.js', m3uFake);
 
         sut = require('../server/playlists.js');
     });
@@ -62,7 +65,7 @@ describe('playlists', function () {
             });
         });
         it('Should append track details from the ds to the named playlist', function () {
-            expect(m3uFake.append).to.have.been.calledWith(track);
+            expect(m3uFake.append).to.have.been.calledWith(track.metadata);
         });
         it('Should return information about the track', function () {
             expect(result).to.be.eql({
@@ -84,6 +87,30 @@ describe('playlists', function () {
         });
         it('Should return an error', function() {
             expect(error).to.exist;
+        });
+    });
+    describe('When loading a playlist, but no data returned', function() {
+        beforeEach(function (done) {
+            fakeData.tracks = null;
+            sut.replacePlaylist(dsFake, playlistName, function(err, data) {
+                done();
+            });
+        });
+        it('Should do nothing', function() {
+            expect(dsFake.deleteAll).not.to.have.been.called;
+            expect(dsFake.queueTrack).not.to.have.been.called;
+        });
+    });
+    describe('When loading a playlist and an error is thrown', function() {
+        beforeEach(function (done) {
+            fakeData.error = new Error('Error');
+            sut.replacePlaylist(dsFake, playlistName, function(err, data) {
+                done();
+            });
+        });
+        it('Should do nothing', function() {
+            expect(dsFake.deleteAll).not.to.have.been.called;
+            expect(dsFake.queueTrack).not.to.have.been.called;
         });
     });
     describe('When loading a playlist', function () {
@@ -139,7 +166,7 @@ describe('playlists', function () {
             expect(dsFake.retrieveTrackDetails).to.have.been.calledWith(fakeData.trackIds);
         });
         it('Should then store the tracks', function () {
-            expect(m3uFake.write).to.have.been.calledWith(fakeData.tracks, playlistName);
+            expect(m3uFake.write).to.have.been.calledWith(_.pluck(fakeData.tracks, 'metadata'), playlistName);
         });
     });
 });

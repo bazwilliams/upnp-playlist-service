@@ -103,6 +103,12 @@ function toDeviceResource(deviceModel, callback) {
         },{
             rel: 'radio-stations',
             href: '/api/devices/' + deviceModel.uuid + '/radio-stations'
+        },{
+            rel: 'skip-track',
+            href: '/api/devices/' + deviceModel.uuid + '/skip-track'
+        },{
+            rel: 'info',
+            href: '/api/devices/' + deviceModel.uuid + '/info'
         }]
     });
 }
@@ -162,6 +168,22 @@ exports.toggleStandby = function toggleStandby(req, res) {
     var device = manager.getDevice(uuid);
     if (device) {
         recipes.toggleStandby(device.ds, responseHandler(res));
+    } else {
+        res.sendStatus(404);
+    }
+};
+exports.skipTrack = (req, res) => {
+    let device = manager.getDevice(req.params.uuid);
+    if (device) {
+        device.ds.skipTrack(responseHandler(res));
+    } else {
+        res.sendStatus(404);
+    }
+};
+exports.info = (req, res) => {
+    let device = manager.getDevice(req.params.uuid);
+    if (device) {
+        device.ds.currentTrackDetails(responseHandler(res));
     } else {
         res.sendStatus(404);
     }

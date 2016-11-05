@@ -1,4 +1,9 @@
-[![Build Status](https://travis-ci.org/bazwilliams/upnp-playlist-service.svg?branch=master)](https://travis-ci.org/bazwilliams/upnp-playlist-service)
+[![Build Status](https://travis-ci.org/bazwilliams/upnp-playlist-service.svg?branch=master)](https://travis-ci.org/bazwilliams/upnp-playlist-service) [![](https://images.microbadger.com/badges/image/bazwilliams/upnp-playlist-service.svg)](http://microbadger.com/images/bazwilliams/upnp-playlist-service "Get your own image badge on microbadger.com") [![](https://images.microbadger.com/badges/version/bazwilliams/upnp-playlist-service.svg)](http://microbadger.com/images/bazwilliams/upnp-playlist-service "Get your own version badge on microbadger.com") [![](https://images.microbadger.com/badges/commit/bazwilliams/upnp-playlist-service.svg)](http://microbadger.com/images/bazwilliams/upnp-playlist-service "Get your own commit badge on microbadger.com") [![](https://images.microbadger.com/badges/license/bazwilliams/upnp-playlist-service.svg)](http://microbadger.com/images/bazwilliams/upnp-playlist-service "Get your own license badge on microbadger.com")
+
+# Breaking Changes
+
+* Dropped support for `.deb` installation. See Installation/Docker. 
+* Dropped support for creating `m3u` playlists referencing local content. See Further Options/Migrating Existing m3u Playlists.
 
 # DS Service
 
@@ -11,56 +16,62 @@ Node.js based system for monitoring a suite of UPNP renderers on a network. It i
 * Append currently playing track on any Upnp device to any existing playlist
 * Webpage to configure scheduled wakeup and sleep
 * Webpage to manipulate and playback stored playlists
-* Create m3u files from playlists containing locally served tracks from minimserver. 
 
 The playlist functionality has been optimised for mobile use. 
 
-Playlists already on a DS can be saved in their entirety for later playback either through the app or used as part of a schedule. If a track is served from a locally running Minimserver and playlist folders and music locations have been configured correctly, the resulting m3u file can be loaded in any media player or server and those tracks will be referenced correctly. The DIDL-Lite metadata is always stored so the full playlist can be restored through this application. 
+Playlists already on a DS can be saved in their entirety for later playback either through the app or used as part of a schedule. 
 
-A playlist builder function exists to add tracks from any playing DS onto any playlist. If the track is a Minimserver served track, the m3u file will contain a file reference. 
+A playlist builder function exists to add tracks from any playing DS onto any playlist. 
 
 ## Installation
 
-### Debian
+### Docker
 
-Download the .deb file from https://github.com/bazwilliams/upnp-playlist-service/raw/master/packages/upnp-playlist-service-0.0.10.deb and install as normal. 
+```
+docker run -d --restart=always -e TZ=<TIMEZONE> --net=host -v <DATA>:/data bazwilliams/upnp-playlist-service
+```
 
-You can run the service using
-`/etc/init.d/upnp-playlist-service start`
+* TIMEZONE - Your TZ timezone, e.g. Europe/London - see https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+* DATA - folder on host machine where you want playlists and schedules stored
 
-### Windows
+_If you do not set a time zone, the Docker will start in UTC and any schedules you add will also need to be UTC_
 
-Clone this repository onto your server and perform an `npm install` which will install all the dependencies. 
+### Not Docker
+
+Clone this repository onto your server and perform an npm install which will install all the dependencies.
 
 I've had reports running this application as a Windows service using Winser works well http://jfromaniello.github.io/winser/.
 
-Alternatively, `npm start` within the repository in a command prompt. 
+Alternatively, npm start within the repository in a command prompt.
 
-### Other Linux Distributions
+#### Further options
 
-Clone this repository onto your server and perform an `npm install` which will install all the dependencies. 
+##### Alternative TCP Port
 
-For Linux, SysV script is also included in `etc/init.d/upnp-playlist-service` which assumes you have cloned the repository into `/opt/upnp-playlist-service` it also assumes you have node.js installed and have a user called `nodejs` which has read and write privileges to the `/opt/upnp-playlist-service/persist` folder. Modify and copy this into your `/etc/init/` folder to enable you to start the service at boot automatically. 
+If you wish the service to run on something other than TCP port 3000, you can override by passing in a `PORT` environment variable. E.g. `-e PORT=18080`
 
-Run `npm start` within the repository or using the service script `/etc/init.d/upnp-playlist-service start`. 
+##### Migrate Existing Saved m3u Playlists
 
-## Configure
+This version uses a different mechanism to store playlists, to migrate your old stored playlists saved with this application do the following: 
 
-http://localhost:18080/configuration
+```
+docker run -d --net=host -v <DATA>:/data -v <PLAYLISTS>:/playlists bazwilliams/upnp-playlist-service migrate
+```
 
-You can configure the path to the root of your music (should be the same as your minimserver content directory) and specify a full path to a folder containing your minimserver served playlists. 
+* DATA - folder on host machine where you want playlists and schedules stored
+* PLAYLISTS - folder on host machine where your original playlists were stored, these will not be changed
 
 ## Schedule
 
 Use the following URL to view your devices and manage schedules. 
 
-http://localhost:18080/
+http://localhost:3000/
 
 ## Playlist
 
 To view playlists.
 
-http://localhost:18080/playlists
+http://localhost:3000/playlists
 
 *Dashboard for viewing schedules on a DS*
 
@@ -75,33 +86,26 @@ http://localhost:18080/playlists
 ![Existing Playlist for a DS](https://raw.githubusercontent.com/bazwilliams/upnp-playlist-service/master/docs/playlist-ui-screenshot.png)
 ![Creating Playlist for a DS](https://raw.githubusercontent.com/bazwilliams/upnp-playlist-service/master/docs/playlist-ui-create-screenshot.png)
 
-*Existing m3u playlists*
-
-If you want to use an existing m3u playlist, you'll need to have configured both `musicRoot` and `playlistPath` and be running Minimserver on the same machine as the Upnp playlist service. You'll need to use Minimserver to load your playlist into your media player which you can then reexport using the playlist service. 
-
-If everything is configured correctly, playlist items for which a file is discovered will be written back into the m3u file as relative path which Minimserver can still serve back up - along with other players which support m3u files. 
-
 ## API
 
 GET `/api/devices` to see a list of all discovered devices on your network, all wake up schedules will be included under `device.schedules`. Each of which will include a link-rel to delete that wake up by sending a DELETE to it. 
 
 ### Playlists
 
-GET `/api/playlists` to see a list of all M3U files in the configured playlist folder. Any M3U files created by this service can also be loaded back into the DS via the 'replace' button or as part of a schedule. 
-
-Storing the current play queue on a DS as an M3U file is optimised if you are serving your music from a Minimserver media server running on the same machine as a relative path to the original file will be stored in the M3U file. In all cases, the DIDL-LITE metadata will be stored as an M3U comment. 
+GET `/api/playlists` to see a list of all saved playlists.
+GET `/api/playlists?search=<NAME>` to search for a saved playlist by NAME
 
 #### To add currently playling track to a new or existing playlist
 
 POST to `/api/devices/{uuid}/playlists/{playlistName}`
 
-No body is required, the playlistName does not need to include any file suffix (one will be added).
+_No body required_
 
 #### To store a playlist already in a DS
 
 PUT to `/api/devices/{uuid}/playlists/{playlistName}`
 
-No body is required, the playlistName does not need to include any file suffix (one will be added). 
+_No body required_
 
 #### To toggle the standby state of a DS
 
@@ -133,9 +137,19 @@ POST to `/api/devices/{uuid}/volume-down`
 
 Where decrement is a number of the amount you wish the volume to be reduced by, if empty it defaults to 1. 
 
+#### To skip current playing track on a DS
+
+POST to `/api/devices/{uuid}/skip-track`
+
+_No body required_
+
+#### To retrieve information about currently playing track
+
+GET to `/api/devices/{uuid}/info`
+
 #### To playback a playlist in a DS
 
-Loading a playlist and starting playback is now supported by parsing the DIDL-LITE out of an m3u file. The downsides are if the metadata should change, or the URI to the original track or artwork change, the track may not work as expected. Therefore this facility is only reliable if track URI and metadata are not changed. 
+Loading a playlist and starting playback is supported. However, if the metadata should change, or the URI to the original track or artwork change, the track may not work as expected. Therefore this facility is only reliable if track URI and metadata are not changed. 
 
 POST to `/api/devices/{uuid}/play` with Content-Type `application/json` with the following body. No suffix is required for the playlistName. This will clear the DS onboard playlist first and load the one from file and start playing from the first track. 
 

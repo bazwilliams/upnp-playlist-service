@@ -1,14 +1,19 @@
-var express = require('express');
-var bodyParser = require('body-parser');
-var app = module.exports = express();
-var port = process.env.PORT || 18080;
-var morgan = require('morgan');
-var api = require('./routes');
-var logger = require('./logger.js');
+"use strict";
+
+const express = require('express');
+const bodyParser = require('body-parser');
+const app = module.exports = express();
+let port = process.env.PORT || 18080;
+const morgan = require('morgan');
+const api = require('./routes');
+const logger = require('./logger.js');
+const storage = require('node-persist');
 
 /**
  * Configuration
  */
+
+storage.initSync(process.env.DATA_LOCATION ? { dir: process.env.DATA_LOCATION } : {});
 
 // all environments
 app.set('views', __dirname + '/views');
@@ -32,10 +37,6 @@ app.get('/playlists', function (req, res) {
 	res.render('playlists');
 });
 
-app.get('/configuration', function (req, res) {
-	res.render('configuration');
-});
-
 // JSON API
 app.get('/api/devices', api.device.list);
 app.get('/api/playlists', api.playlist.listPlaylists);
@@ -50,8 +51,8 @@ app.delete('/api/devices/:uuid/sleep-timer', api.device.clearSleepTimer);
 app.post('/api/devices/:uuid/volume-up', api.device.volumeUp);
 app.post('/api/devices/:uuid/volume-down', api.device.volumeDown);
 app.get('/api/devices/:uuid/radio-stations', api.device.listRadioStations);
-app.get('/api/configuration', api.configuration.list);
-app.put('/api/configuration', api.configuration.store);
+app.post('/api/devices/:uuid/skip-track', api.device.skipTrack);
+app.get('/api/devices/:uuid/info', api.device.info);
 
 /**
  * Start Server

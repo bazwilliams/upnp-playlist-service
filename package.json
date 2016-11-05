@@ -1,6 +1,6 @@
 {
   "name": "upnp-playlist-service",
-  "version": "0.0.10",
+  "version": "0.1.1",
   "description": "Playlist and Alarm Function for Linn Ds and other Upnp compatible devices",
   "author": "Barry John Williams <barry@bjw.me.uk>",
   "readme": "README.md",
@@ -18,12 +18,13 @@
     "express": "~4.10.4",
     "ip": "*",
     "jade": "~1.3.1",
+    "levdist": "^2.2.5",
     "morgan": "^1.5.0",
-    "node-persist": "0.0.3",
+    "node-persist": "^2.0.2",
     "node-schedule": "~0.1.13",
     "node-upnp-ssdp": "~0.0.3",
     "node-uuid": "~1.4.1",
-    "openhome-devices-manager": "^0.1.1",
+    "openhome-devices-manager": "^0.1.3",
     "underscore": ">= 1.6.0",
     "winston": "^1.0.0",
     "xml2js": ">= 0.4.2",
@@ -46,6 +47,6 @@
     "start": "node server/app.js",
     "test": "grunt",
     "postinstall": "bower install",
-    "ls": "dir"
+    "migrate": "node tools/convert.js"
   }
 }
