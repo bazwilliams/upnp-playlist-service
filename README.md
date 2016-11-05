@@ -36,6 +36,14 @@ docker run -d --restart=always -e TZ=<TIMEZONE> --net=host -v <DATA>:/data bazwi
 
 _If you do not set a time zone, the Docker will start in UTC and any schedules you add will also need to be UTC_
 
+### Not Docker
+
+Clone this repository onto your server and perform an npm install which will install all the dependencies.
+
+I've had reports running this application as a Windows service using Winser works well http://jfromaniello.github.io/winser/.
+
+Alternatively, npm start within the repository in a command prompt.
+
 #### Further options
 
 ##### Alternative TCP Port
@@ -128,6 +136,16 @@ POST to `/api/devices/{uuid}/volume-down`
 ```
 
 Where decrement is a number of the amount you wish the volume to be reduced by, if empty it defaults to 1. 
+
+#### To skip current playing track on a DS
+
+POST to `/api/devices/{uuid}/skip-track`
+
+_No body required_
+
+#### To retrieve information about currently playing track
+
+GET to `/api/devices/{uuid}/info`
 
 #### To playback a playlist in a DS
 
