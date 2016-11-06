@@ -139,7 +139,19 @@ Where decrement is a number of the amount you wish the volume to be reduced by, 
 
 #### To skip current playing track on a DS
 
-POST to `/api/devices/{uuid}/skip-track`
+POST to `/api/devices/{uuid}/skip`
+
+_No body required_
+
+#### To pause current playing track on a DS
+
+POST to `/api/devices/{uuid}/pause`
+
+_No body required_
+
+#### To resume current playing track on a DS
+
+POST to `/api/devices/{uuid}/resume`
 
 _No body required_
 

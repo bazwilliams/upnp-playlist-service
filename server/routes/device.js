@@ -83,8 +83,17 @@ function toDeviceResource(deviceModel, callback) {
             rel: 'add-to-playlist',
             href: '/api/devices/' + deviceModel.uuid + '/playlist/'
         },{
+            rel: 'pause-music',
+            href: '/api/devices/' + deviceModel.uuid + '/pause'
+        },{
+            rel: 'resume-music',
+            href: '/api/devices/' + deviceModel.uuid + '/resume'
+        },{
             rel: 'play-music',
             href: '/api/devices/' + deviceModel.uuid + '/play'
+        },{
+            rel: 'skip-music',
+            href: '/api/devices/' + deviceModel.uuid + '/skip'
         },{
             rel: 'add-schedule',
             href: '/api/devices/' + deviceModel.uuid + '/schedules'
@@ -103,9 +112,6 @@ function toDeviceResource(deviceModel, callback) {
         },{
             rel: 'radio-stations',
             href: '/api/devices/' + deviceModel.uuid + '/radio-stations'
-        },{
-            rel: 'skip-track',
-            href: '/api/devices/' + deviceModel.uuid + '/skip-track'
         },{
             rel: 'info',
             href: '/api/devices/' + deviceModel.uuid + '/info'
@@ -176,6 +182,22 @@ exports.skipTrack = (req, res) => {
     let device = manager.getDevice(req.params.uuid);
     if (device) {
         device.ds.skipTrack(responseHandler(res));
+    } else {
+        res.sendStatus(404);
+    }
+};
+exports.play = (req, res) => {
+    let device = manager.getDevice(req.params.uuid);
+    if (device) {
+        device.ds.playPlaylist(responseHandler(res));
+    } else {
+        res.sendStatus(404);
+    }
+};
+exports.pause = (req, res) => {
+    let device = manager.getDevice(req.params.uuid);
+    if (device) {
+        device.ds.pause(responseHandler(res));
     } else {
         res.sendStatus(404);
     }

@@ -45,13 +45,15 @@ app.delete('/api/devices/:uuid/schedules/:id', api.schedule.deleteSchedule);
 app.put('/api/devices/:uuid/playlist/:playlistName', api.playlist.storePlaylist);
 app.post('/api/devices/:uuid/playlist/:playlistName', api.playlist.addToPlaylist);
 app.post('/api/devices/:uuid/play', api.playlist.playMusic);
+app.post('/api/devices/:uuid/resume', api.device.play);
+app.post('/api/devices/:uuid/pause', api.device.pause);
+app.post('/api/devices/:uuid/skip', api.device.skipTrack);
 app.post('/api/devices/:uuid/toggle-standby', api.device.toggleStandby);
 app.post('/api/devices/:uuid/sleep-timer', api.device.setSleepTimer);
 app.delete('/api/devices/:uuid/sleep-timer', api.device.clearSleepTimer);
 app.post('/api/devices/:uuid/volume-up', api.device.volumeUp);
 app.post('/api/devices/:uuid/volume-down', api.device.volumeDown);
 app.get('/api/devices/:uuid/radio-stations', api.device.listRadioStations);
-app.post('/api/devices/:uuid/skip-track', api.device.skipTrack);
 app.get('/api/devices/:uuid/info', api.device.info);
 
 /**
