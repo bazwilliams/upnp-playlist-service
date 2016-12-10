@@ -41,32 +41,36 @@ function elementText(element) {
 function first(element) {
     return _.isArray(element) ? element[0] : element;
 }
+
+function parseTrackDetails(metadata, callback) {
+    xmlParser.parseString(metadata, function (err, result) {
+        if (err) {
+            callback(err);
+        } else {
+            if (result['DIDL-Lite'].item) {
+                callback(null, {
+                    artist: elementText(first(result['DIDL-Lite'].item['upnp:artist'])),
+                    title: elementText(first(result['DIDL-Lite'].item['dc:title'])),
+                    albumArt: elementText(first(result['DIDL-Lite'].item['upnp:albumArtURI'])),
+                    album: elementText(first(result['DIDL-Lite'].item['upnp:album']))
+                });
+            } else {
+                callback();
+            }
+        }
+    });
+}
 exports.appendCurrentTrack = function (ds, playlistName, callback) {
     async.waterfall([
         ds.currentTrackDetails,
         function addToM3u(track, iterCallback) {
             m3u.append(track.metadata, playlistName, iterCallback);
         }
-        ], function parseTrackDetails(err, metadata) {
+        ], (err, data) => {
             if (err) {
                 callback(err);
             } else {
-                xmlParser.parseString(metadata, function (err, result) {
-                    if (err) {
-                        callback(err);
-                    } else {
-                        if (result['DIDL-Lite'].item) {
-                            callback(null, {
-                                artist: elementText(first(result['DIDL-Lite'].item['upnp:artist'])),
-                                title: elementText(first(result['DIDL-Lite'].item['dc:title'])),
-                                albumArt: elementText(first(result['DIDL-Lite'].item['upnp:albumArtURI'])),
-                                album: elementText(first(result['DIDL-Lite'].item['upnp:album']))
-                            });
-                        } else {
-                            callback();
-                        }
-                    }
-                });
+                parseTrackDetails(data, callback);
             }
         });
 };
@@ -84,6 +88,18 @@ exports.replacePlaylist = function (ds, playlistName, callback) {
         }
     });
 };
+exports.getPlaylist = (playlistName, callback) => {
+    m3u.read(playlistName, (err, data) => {
+        if (err) {
+            callback(err);
+        } else if (!data) {
+            callback(null, []);
+        } else {
+            async.mapSeries(data, parseTrackDetails, callback);
+        }
+    });
+};
+
 exports.savePlaylist = function (ds, playlistName, callback) {
     async.waterfall([
         ds.getTrackIds,

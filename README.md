@@ -1,10 +1,5 @@
 [![Build Status](https://travis-ci.org/bazwilliams/upnp-playlist-service.svg?branch=master)](https://travis-ci.org/bazwilliams/upnp-playlist-service) [![](https://images.microbadger.com/badges/image/bazwilliams/upnp-playlist-service.svg)](http://microbadger.com/images/bazwilliams/upnp-playlist-service "Get your own image badge on microbadger.com") [![](https://images.microbadger.com/badges/version/bazwilliams/upnp-playlist-service.svg)](http://microbadger.com/images/bazwilliams/upnp-playlist-service "Get your own version badge on microbadger.com") [![](https://images.microbadger.com/badges/commit/bazwilliams/upnp-playlist-service.svg)](http://microbadger.com/images/bazwilliams/upnp-playlist-service "Get your own commit badge on microbadger.com") [![](https://images.microbadger.com/badges/license/bazwilliams/upnp-playlist-service.svg)](http://microbadger.com/images/bazwilliams/upnp-playlist-service "Get your own license badge on microbadger.com")
 
-# Breaking Changes
-
-* Dropped support for `.deb` installation. See Installation/Docker. 
-* Dropped support for creating `m3u` playlists referencing local content. See Further Options/Migrating Existing m3u Playlists.
-
 # DS Service
 
 Node.js based system for monitoring a suite of UPNP renderers on a network. It is intended to run all the time so it can discover your renderers and provides the following control features:
@@ -22,6 +17,11 @@ The playlist functionality has been optimised for mobile use.
 Playlists already on a DS can be saved in their entirety for later playback either through the app or used as part of a schedule. 
 
 A playlist builder function exists to add tracks from any playing DS onto any playlist. 
+
+## Breaking Changes
+
+* Dropped support for `.deb` installation. See Installation/Docker. 
+* Dropped support for creating `m3u` playlists referencing local content. See Further Options/Migrating Existing m3u Playlists.
 
 ## Installation
 
@@ -94,6 +94,7 @@ GET `/api/devices` to see a list of all discovered devices on your network, all 
 
 GET `/api/playlists` to see a list of all saved playlists.
 GET `/api/playlists?search=<NAME>` to search for a saved playlist by NAME
+GET `/api/playlists/{playlistName}` to see the contents of a saved playlist
 
 #### To add currently playling track to a new or existing playlist
 

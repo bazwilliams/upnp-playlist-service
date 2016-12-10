@@ -46,6 +46,17 @@ exports.listPlaylists = function listPlaylists(req, res) {
         }
     });
 };
+exports.getPlaylist = (req, res) => {
+    playlists.getPlaylist(req.params.playlistName, (err, data) => {
+        if (err) {
+            respond(err);
+        } else if (!data || !data.length) {
+            res.status(404).send('No playlist found. ');
+        } else {
+            res.status(200).send(data);
+        }
+    });
+};
 exports.addToPlaylist = function addToPlaylist(req, res) {
     let playlistName = req.params.playlistName;
     let device = manager.getDevice(req.params.uuid);
