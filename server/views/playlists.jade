@@ -10,9 +10,14 @@ mixin device
       form.form
         div.form-group
           label.control-label(for="playlist-name") Playlist
-          input.input-lg.form-control(id='playlist-name',type='text',list='playlists',name='playlist',placeholder='Name of playlist',ng-model='playlistName')
+          input.input-lg.form-control(id='playlist-name',type='text',list='playlists',name='playlist',placeholder='Name of playlist',ng-change='updatePlaylist(playlistName)',ng-model='playlistName')
           datalist#playlists
             option(ng-repeat='playlist in playlists | orderBy',value='{{playlist}}')
+        div.row
+            div.col-xs-12.playlist-item(ng-repeat='playlistItem in playlistItems', value='{{playlistItem}}')
+              div.col-xs-1
+                  img.album-art(ng-src='{{playlistItem.albumArt}}')
+              div.col-xs-11 {{playlistItem.artist}} / {{playlistItem.title}} / {{playlistItem.album}}
         div.row
           div.col-sm-12(ng-model='alerts')
             alert(ng-repeat="alert in alerts",type="{{alert.type}}",close="closeAlert($index)") {{alert.msg}}

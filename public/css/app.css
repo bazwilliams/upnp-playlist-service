@@ -11,3 +11,12 @@ form.add-schedule {
 body {
 	padding-top: 70px;
 }
+
+.playlist-item {
+	padding: 0.5em;
+	line-height: 2em;
+}
+
+.album-art {
+	max-height: 2em;
+}

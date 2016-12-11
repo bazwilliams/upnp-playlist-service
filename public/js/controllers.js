@@ -87,6 +87,20 @@
             var dsAppendPlaylist = _.findWhere($scope.device.links, { 'rel' : 'add-to-playlist' });
             var dsPlaymusic = _.findWhere($scope.device.links, { 'rel' : 'play-music' });
             $scope.alerts = [];
+            $scope.playlistItems = [];
+            $scope.updatePlaylist = function updatePlaylist(playlistName) {
+                if ($scope.isExistingPlaylist(playlistName)) {
+                    $http({
+                        method: 'GET',
+                        url: '/api/playlists/' + playlistName
+                    }).success(function (data, status, headers, config) {
+                        $scope.playlistItems = data;
+                    });
+                } else {
+                    $scope.playlistItems.length = 0;
+                }
+                console.log(playlistName);
+            };
             $scope.addAlert = function addAlert(type, message) {
                 var alert = { type: type, msg: message };
                 $scope.alerts.push(alert);
